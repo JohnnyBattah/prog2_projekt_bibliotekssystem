@@ -57,7 +57,7 @@ public class Main {
 
             switch (val) {
                 case 1:
-                    IO.println("Hämta alla böcker");
+                    IO.println("Hämtar alla böcker...");
                     HttpResponse<String> booksResponse;
                     try {
                         booksResponse = Unirest.get(baseURL + "/books").asString();
@@ -80,7 +80,7 @@ public class Main {
                     break;
 
                 case 2: 
-                    IO.println("Hämta alla tidningar");
+                    IO.println("Hämtar alla tidningar...");
                     HttpResponse<String> magazinesResponse;
                     try {
                         magazinesResponse = Unirest.get(baseURL + "/magazines").asString();
@@ -99,16 +99,90 @@ public class Main {
                     Type magazineListType = new TypeToken<ArrayList<Magazine>>(){}.getType();
                     magazines = gson.fromJson(magazinesBody, magazineListType);
 
-                    IO.println("Tidningar hämtade från servern. Antal: " + books.size());
+                    IO.println("Tidningar hämtade från servern. Antal: " + magazines.size());
                     break;
 
-                
+                case 3: 
+                    IO.println("Skriver ut alla böcker...");
+                    if (books.isEmpty()) {
+                        IO.println("Inga böcker finns");
+                    } else {
+                        IO.println("===Böcker===");
+                        for (Book b : books) {
+                            IO.println(b.getInfo());
+                        }
+                    }
+                    break;
+
+                case 4: 
+                    IO.println("Skriver ut alla tidningar...");
+                    if (magazines.isEmpty()) {
+                        IO.println("Inga tidningar finns");
+                    } else {
+                        IO.println("===Tidningar===");
+                        for (Magazine m : magazines) {
+                            IO.println(m.getInfo());
+                        }
+                    }
+                    break;
+
+                case 5:
+                    IO.println("Lägger till en bok...");
+                    String bookId = IO.readln("Ange Id: ");
+                    String bookTitle = IO.readln("Ange titel: ");
+                    String bookAuthor = IO.readln("Ange författare: ");
+                    String bookGenre = IO.readln("Ange genre: ");
+                    int pages;
+                    try {
+                        pages = Integer.parseInt(IO.readln("Ange antal sidor: "));
+                    } catch (NumberFormatException e) {
+                        IO.println("Felaktigt antal sidor");
+                        break;
+                    }
+
+                    Book newBook = new Book(bookId, bookTitle, true, bookAuthor, bookGenre, pages);
+                    books.add(newBook);
+                    IO.println("Boken lades till lokalt i samlingen");
+                    break;
+
+                case 6: 
+                    IO.println("Lägger till en tidning...");
+                    String magazineId = IO.readln("Ange Id: ");
+                    String magazineTitle = IO.readln("Ange titel: ");
+                    
+                    int issueNumber;
+                    try {
+                        issueNumber = Integer.parseInt(IO.readln("Ange nummer: "));
+                    } catch (NumberFormatException e) {
+                        IO.println("Felaktigt nummer");
+                        break;
+                    }
+
+                    String category = IO.readln("Ange kategori: ");
+
+                    int publishedYear;
+                    try {
+                        publishedYear = Integer.parseInt(IO.readln("Ange publiceringsår: "));
+                    } catch (NumberFormatException e) {
+                        IO.println("Felaktigt år");
+                        break;
+                    }
+
+                    Magazine newMagazine = new Magazine(magazineId, magazineTitle, true, issueNumber, category, publishedYear);
+                    magazines.add(newMagazine);
+                    IO.println("Tidningen lades till lokalt i samlingen");
+                    break;
+
+                case 7:
+                    kör =false;
+                    IO.println("Programmet avslutas");
+                    break;
             
                 default:
-                    break;
-            }
-
+                    IO.println("Ogiltigt val");
+            }   
         }
+        Unirest.shutDown();
 
 
 
