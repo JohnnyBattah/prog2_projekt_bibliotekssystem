@@ -34,8 +34,4 @@ public class Book extends LibraryItem {
         return "ID: " + id + ", Titel: " + title + ", Författare: " + author + ", Genre: " + genre + ", Sidor: " + pages + ", Tillgänglig: " + isAvailable;
     }
 
-
-
-
-
 }
