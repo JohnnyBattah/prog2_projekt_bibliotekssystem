@@ -24,16 +24,20 @@ import java.util.ArrayList;
 
 public class Main {
     public static void main(String[] args) {
-        String baseURL = "http://10.151.168.5:3137/";
-        Gson gson = new Gson(); 
 
+        String baseURL = "http://localhost:3000/"; // Basadress till servern
+        Gson gson = new Gson(); // JSON --> Java-objekt
+
+        // Lokala samlingar för böcker och tidningar
         ArrayList<Book> books = new ArrayList<>();
         ArrayList<Magazine> magazines = new ArrayList<>();
 
         boolean kör = true;
 
+        // Programmet körs tills användaren väljer att avsluta
         while (kör) {
             IO.println("""
+
                         === MENY ===
                         1. Hämta böcker
                         2. Hämta tidningar
@@ -48,6 +52,7 @@ public class Main {
             String input = IO.readln("Välj ett alternativ (1-7): ");
             int val;
 
+            // Försöker omvandla användarens val till ett heltal
             try {
                 val = Integer.parseInt(input);
             } catch (NumberFormatException e) {
@@ -60,19 +65,25 @@ public class Main {
                     IO.println("Hämtar alla böcker...");
                     HttpResponse<String> booksResponse;
                     try {
+                        // Hämtar böcker från servern
                         booksResponse = Unirest.get(baseURL + "/books").asString();
                     } catch (UnirestException e) {
                         IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
+                        IO.println();
                         break;
                     }
 
                     int bookStatus = booksResponse.getStatus();
                     if (bookStatus != 200) {
                         IO.println("Fel från servern vid hämtning av böcker. Statuskod: " + bookStatus);
+                        IO.println();
                         break;
                     }
 
+                    // JSON-texten från servern
                     String booksBody = booksResponse.getBody();
+
+                    // Gör om JSON till en lista av Book-objekt
                     Type bookListType = new TypeToken<ArrayList<Book>>(){}.getType();
                     books = gson.fromJson(booksBody, bookListType);
 
@@ -83,6 +94,7 @@ public class Main {
                     IO.println("Hämtar alla tidningar...");
                     HttpResponse<String> magazinesResponse;
                     try {
+                        // Hämtar tidningar från server
                         magazinesResponse = Unirest.get(baseURL + "/magazines").asString();
                     } catch (UnirestException e) {
                         IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
@@ -95,7 +107,10 @@ public class Main {
                         break;
                     }
 
+                    // JSON-texten från servern
                     String magazinesBody = magazinesResponse.getBody();
+
+                    // Gör om JSON till en lista av Book-objekt
                     Type magazineListType = new TypeToken<ArrayList<Magazine>>(){}.getType();
                     magazines = gson.fromJson(magazinesBody, magazineListType);
 
@@ -107,7 +122,7 @@ public class Main {
                     if (books.isEmpty()) {
                         IO.println("Inga böcker finns");
                     } else {
-                        IO.println("===Böcker===");
+                        IO.println("\n=== Böcker ===");
                         for (Book b : books) {
                             IO.println(b.getInfo());
                         }
@@ -119,7 +134,7 @@ public class Main {
                     if (magazines.isEmpty()) {
                         IO.println("Inga tidningar finns");
                     } else {
-                        IO.println("===Tidningar===");
+                        IO.println("\n===Tidningar===");
                         for (Magazine m : magazines) {
                             IO.println(m.getInfo());
                         }
@@ -140,6 +155,7 @@ public class Main {
                         break;
                     }
 
+                    // Skapar ett nytt bokobjekt och sparar lokalt
                     Book newBook = new Book(bookId, bookTitle, true, bookAuthor, bookGenre, pages);
                     books.add(newBook);
                     IO.println("Boken lades till lokalt i samlingen");
@@ -168,6 +184,7 @@ public class Main {
                         break;
                     }
 
+                    // Skapar ett nytt tidningsobjekt och sparar lokalt
                     Magazine newMagazine = new Magazine(magazineId, magazineTitle, true, issueNumber, category, publishedYear);
                     magazines.add(newMagazine);
                     IO.println("Tidningen lades till lokalt i samlingen");
@@ -182,10 +199,8 @@ public class Main {
                     IO.println("Ogiltigt val");
             }   
         }
-        Unirest.shutDown();
 
-
-
+        Unirest.shutDown(); // Stänger Unirest när programmet är klart
 
     }
 }
