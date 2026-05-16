@@ -42,35 +42,35 @@ public class LibraryManager {
     /**
      * Lägger till en bok i samlingen
      */
-    public void addBook(Book book){
+    public void addBook(Book book) {
         books.add(book);
     }
 
     /**
      * Lägger till en tidning i samlingen
      */
-    public void addMagazine(Magazine magazine){
+    public void addMagazine(Magazine magazine) {
         magazines.add(magazine);
     }
 
     /**
      * Lägger till en användare i samlingen
      */
-    public void addUser(User user){
+    public void addUser(User user) {
         users.add(user);
     }
 
     /**
      * Lägger till en avstängd användare i samlingen
      */
-    public void addSuspendedUser(SuspendedUser suspendedUser){
+    public void addSuspendedUser(SuspendedUser suspendedUser) {
         suspendedUsers.add(suspendedUser);
     }
 
     /**
      * skriver ut böcker sorterade på titel
      */
-    public void printBooksSorted(){
+    public void printBooksSorted() {
         ArrayList<Book> sortedBooks = new ArrayList<>(books);
         Collections.sort(sortedBooks);
 
@@ -78,7 +78,7 @@ public class LibraryManager {
             IO.println("Inga böcker finns.");
         } else {
             IO.println("=== Böcker sorterade på titel ===");
-            for (Book book : sortedBooks){
+            for (Book book : sortedBooks) {
                 IO.println(book.getInfo());
             }
         }
@@ -87,7 +87,7 @@ public class LibraryManager {
     /**
      * skriver ut tidningar sorterade på titel
      */
-    public void printMagazinesSorted(){
+    public void printMagazinesSorted() {
         ArrayList<Magazine> sortedMagazines = new ArrayList<>(magazines);
         Collections.sort(sortedMagazines);
 
@@ -95,7 +95,7 @@ public class LibraryManager {
             IO.println("Inga tidningar finns.");
         } else {
             IO.println("=== Tidningar sorterade på titel ===");
-            for (Magazine magazine : sortedMagazines){
+            for (Magazine magazine : sortedMagazines) {
                 IO.println(magazine.getInfo());
             }
         }
@@ -104,7 +104,7 @@ public class LibraryManager {
     /**
      * skriver ut användare sorterade på namn
      */
-    public void printUsersSorted(){
+    public void printUsersSorted() {
         ArrayList<User> sortedUsers = new ArrayList<>(users);
         Collections.sort(sortedUsers);
 
@@ -112,7 +112,7 @@ public class LibraryManager {
             IO.println("Inga användare finns.");
         } else {
             IO.println("=== Användare sorterade på namn ===");
-            for (User user : sortedUsers){
+            for (User user : sortedUsers) {
                 IO.println(user.getInfo());
             }
         }
@@ -121,10 +121,37 @@ public class LibraryManager {
     /**
      * Hittar en bok med hjälp av titel.
      */
-    
+    public Book findBookByTitle(String title) {
+        for (Book book : books){
+            if (book.getTitle().equalsIgnoreCase(title)) {
+                return book;
+            }
+        }
+        return null;
+    }
 
+    /**
+     * Hittar en tidning med hjälp av titel.
+     */
+    public Magazine findMagazineByTitle(String title) {
+        for (Magazine magazine : magazines){
+            if (magazine.getTitle().equalsIgnoreCase(title)) {
+                return magazine;
+            }
+        }
+        return null;
+    }
 
-
-
+    /**
+     * Hittar en användare med hjälp av email.
+     */
+    public User findUserByTitle(String email) {
+        for (User user : users){
+            if (user.getEmail().equalsIgnoreCase(email)) {
+                return user;
+            }
+        }
+        return null;
+    }
 
 }
