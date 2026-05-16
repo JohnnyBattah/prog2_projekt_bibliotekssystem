@@ -154,4 +154,17 @@ public class LibraryManager {
         return null;
     }
 
+    /**
+     * Avgör om en användare får låna eller inte.
+     * Retunerar false om användaren finns i listan över avstängda
+     */
+    public boolean canUserBorrow(String userId){
+        for (SuspendedUser suspendedUser : suspendedUsers){
+            if (suspendedUser.getId().equalsIgnoreCase(userId)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 }
