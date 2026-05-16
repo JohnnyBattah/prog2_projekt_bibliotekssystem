@@ -5,7 +5,7 @@ package jk;
  * Klassen Magazine representerar en tidning i bibliotekssystemet
  */
 
-public class Magazine extends LibraryItem {
+public class Magazine extends LibraryItem implements Comparable<Magazine>{
     private int issueNumber;
     private String category;
     private int publishedYear;
@@ -27,6 +27,11 @@ public class Magazine extends LibraryItem {
 
     public int getPublishedYear(){
         return publishedYear;
+    }
+
+    @Override
+    public int compareTo(Magazine other){
+        return this.title.compareTo(other.title);
     }
 
     @Override

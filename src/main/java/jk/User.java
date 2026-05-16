@@ -6,7 +6,7 @@ package jk;
  * Den innehåller: id, namn och email för en kund.
  */
 
-public class User {
+public class User implements Comparable<User>{
     private String id;
     private String name;
     private String email;
@@ -39,6 +39,11 @@ public class User {
 
     public String getInfo() {
         return "ID: " + id + ", Namn: " + name + ", Email: " + email;
+    }
+
+    @Override
+    public int compareTo(User other){
+        return this.name.compareToIgnoreCase(other.name);
     }
 
 }
