@@ -48,8 +48,7 @@ public class Main {
                         6. Lägg till tidning
                         7. Avsluta
                     """);
-                    
-        
+
             String input = IO.readln("Välj ett alternativ (1-7): ");
             int val;
 
@@ -85,13 +84,14 @@ public class Main {
                     String booksBody = booksResponse.getBody();
 
                     // Gör om JSON till en lista av Book-objekt
-                    Type bookListType = new TypeToken<ArrayList<Book>>(){}.getType();
+                    Type bookListType = new TypeToken<ArrayList<Book>>() {
+                    }.getType();
                     books = gson.fromJson(booksBody, bookListType);
 
                     IO.println("Böcker hämtade från servern. Antal: " + books.size());
                     break;
 
-                case 2: 
+                case 2:
                     IO.println("Hämtar alla tidningar...");
                     HttpResponse<String> magazinesResponse;
                     try {
@@ -112,13 +112,14 @@ public class Main {
                     String magazinesBody = magazinesResponse.getBody();
 
                     // Gör om JSON till en lista av Magazine-objekt
-                    Type magazineListType = new TypeToken<ArrayList<Magazine>>(){}.getType();
+                    Type magazineListType = new TypeToken<ArrayList<Magazine>>() {
+                    }.getType();
                     magazines = gson.fromJson(magazinesBody, magazineListType);
 
                     IO.println("Tidningar hämtade från servern. Antal: " + magazines.size());
                     break;
 
-                case 3: 
+                case 3:
                     IO.println("Skriver ut alla böcker...");
                     if (books.isEmpty()) {
                         IO.println("Inga böcker finns");
@@ -130,7 +131,7 @@ public class Main {
                     }
                     break;
 
-                case 4: 
+                case 4:
                     IO.println("Skriver ut alla tidningar...");
                     if (magazines.isEmpty()) {
                         IO.println("Inga tidningar finns");
@@ -162,11 +163,11 @@ public class Main {
                     IO.println("Boken lades till lokalt i samlingen");
                     break;
 
-                case 6: 
+                case 6:
                     IO.println("Lägger till en tidning...");
                     String magazineId = IO.readln("Ange Id: ");
                     String magazineTitle = IO.readln("Ange titel: ");
-                    
+
                     int issueNumber;
                     try {
                         issueNumber = Integer.parseInt(IO.readln("Ange nummer: "));
@@ -186,19 +187,20 @@ public class Main {
                     }
 
                     // Skapar ett nytt tidningsobjekt och sparar lokalt
-                    Magazine newMagazine = new Magazine(magazineId, magazineTitle, true, issueNumber, category, publishedYear);
+                    Magazine newMagazine = new Magazine(magazineId, magazineTitle, true, issueNumber, category,
+                            publishedYear);
                     magazines.add(newMagazine);
                     IO.println("Tidningen lades till lokalt i samlingen");
                     break;
 
                 case 7:
-                    kör =false;
+                    kör = false;
                     IO.println("Programmet avslutas");
                     break;
-            
+
                 default:
                     IO.println("Ogiltigt val");
-            }   
+            }
         }
 
         Unirest.shutDown(); // Stänger Unirest när programmet är klart

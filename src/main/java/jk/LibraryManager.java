@@ -39,19 +39,19 @@ public class LibraryManager {
         this.suspendedUsers = suspendedUsers;
     }
 
-    public ArrayList<Book> getBooks(){
+    public ArrayList<Book> getBooks() {
         return books;
     }
-    
-    public ArrayList<Magazine> getMagazines(){
+
+    public ArrayList<Magazine> getMagazines() {
         return magazines;
     }
 
-    public ArrayList<User> getUsers(){
+    public ArrayList<User> getUsers() {
         return users;
     }
 
-    public ArrayList<SuspendedUser> getSuspendedUsers(){
+    public ArrayList<SuspendedUser> getSuspendedUsers() {
         return suspendedUsers;
     }
 
@@ -138,7 +138,7 @@ public class LibraryManager {
      * Hittar en bok med hjälp av titel.
      */
     public Book findBookByTitle(String title) {
-        for (Book book : books){
+        for (Book book : books) {
             if (book.getTitle().equalsIgnoreCase(title)) {
                 return book;
             }
@@ -150,7 +150,7 @@ public class LibraryManager {
      * Hittar en tidning med hjälp av titel.
      */
     public Magazine findMagazineByTitle(String title) {
-        for (Magazine magazine : magazines){
+        for (Magazine magazine : magazines) {
             if (magazine.getTitle().equalsIgnoreCase(title)) {
                 return magazine;
             }
@@ -161,8 +161,8 @@ public class LibraryManager {
     /**
      * Hittar en användare med hjälp av email.
      */
-    public User findUserByTitle(String email) {
-        for (User user : users){
+    public User findUserByEmail(String email) {
+        for (User user : users) {
             if (user.getEmail().equalsIgnoreCase(email)) {
                 return user;
             }
@@ -174,9 +174,9 @@ public class LibraryManager {
      * Avgör om en användare får låna eller inte.
      * Retunerar false om användaren finns i listan över avstängda
      */
-    public boolean canUserBorrow(String userId){
-        for (SuspendedUser suspendedUser : suspendedUsers){
-            if (suspendedUser.getId().equalsIgnoreCase(userId)) {
+    public boolean canUserBorrow(String userId) {
+        for (SuspendedUser suspendedUser : suspendedUsers) {
+            if (suspendedUser.getUserId().equalsIgnoreCase(userId)) {
                 return false;
             }
         }

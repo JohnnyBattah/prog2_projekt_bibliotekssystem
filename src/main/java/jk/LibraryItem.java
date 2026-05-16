@@ -36,7 +36,7 @@ public class LibraryItem {
         this.title = title;
     }
 
-    public String getInfo(){
+    public String getInfo() {
         return "ID: " + id + "Titel: " + title + ", Tillgänglig: " + isAvailable;
     }
 }

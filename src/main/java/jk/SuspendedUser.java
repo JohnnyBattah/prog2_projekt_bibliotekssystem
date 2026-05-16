@@ -2,7 +2,8 @@ package jk;
 
 /**
  * Författare: Johnny Battah
- * Klassen SuspendedUser representerar en avstängd användare i bibliotekssystemet.
+ * Klassen SuspendedUser representerar en avstängd användare i
+ * bibliotekssystemet.
  * Den används för att avgöra om en kund får låna eller inte
  */
 

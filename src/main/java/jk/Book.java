@@ -5,7 +5,7 @@ package jk;
  * Klassen Book representerar en bok i bibliotekssystemet
  */
 
-public class Book extends LibraryItem implements Comparable<Book>{
+public class Book extends LibraryItem implements Comparable<Book> {
     private String author;
     private String genre;
     private int pages;
@@ -21,22 +21,23 @@ public class Book extends LibraryItem implements Comparable<Book>{
         return author;
     }
 
-    public String getGenre(){
+    public String getGenre() {
         return genre;
     }
 
-    public int getPages(){
+    public int getPages() {
         return pages;
     }
 
     @Override
-    public int compareTo(Book other){
+    public int compareTo(Book other) {
         return this.title.compareTo(other.title);
     }
 
     @Override
-    public String getInfo(){
-        return "ID: " + id + ", Titel: " + title + ", Författare: " + author + ", Genre: " + genre + ", Sidor: " + pages + ", Tillgänglig: " + isAvailable;
+    public String getInfo() {
+        return "ID: " + id + ", Titel: " + title + ", Författare: " + author + ", Genre: " + genre + ", Sidor: " + pages
+                + ", Tillgänglig: " + isAvailable;
     }
 
 }
