@@ -83,4 +83,48 @@ public class LibraryManager {
             }
         }
     }
+
+    /**
+     * skriver ut tidningar sorterade på titel
+     */
+    public void printMagazinesSorted(){
+        ArrayList<Magazine> sortedMagazines = new ArrayList<>(magazines);
+        Collections.sort(sortedMagazines);
+
+        if (sortedMagazines.isEmpty()) {
+            IO.println("Inga tidningar finns.");
+        } else {
+            IO.println("=== Tidningar sorterade på titel ===");
+            for (Magazine magazine : sortedMagazines){
+                IO.println(magazine.getInfo());
+            }
+        }
+    }
+
+    /**
+     * skriver ut användare sorterade på namn
+     */
+    public void printUsersSorted(){
+        ArrayList<User> sortedUsers = new ArrayList<>(users);
+        Collections.sort(sortedUsers);
+
+        if (sortedUsers.isEmpty()) {
+            IO.println("Inga användare finns.");
+        } else {
+            IO.println("=== Användare sorterade på namn ===");
+            for (User user : sortedUsers){
+                IO.println(user.getInfo());
+            }
+        }
+    }
+
+    /**
+     * Hittar en bok med hjälp av titel.
+     */
+    
+
+
+
+
+
 }
