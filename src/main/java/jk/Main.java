@@ -27,7 +27,7 @@ public class Main {
         // skoladress: http://10.151.168.5:3137/
         // hemadress: http://localhost:3000/
 
-        String baseURL = "http://10.151.168.5:3137/"; // Basadress till servern
+        String baseURL = "http://localhost:3000/"; // Basadress till servern
         Gson gson = new Gson(); // JSON --> Java-objekt
 
         LibraryManager manager = new LibraryManager();
@@ -36,6 +36,7 @@ public class Main {
 
         // Programmet körs tills användaren väljer att avsluta
         while (kör) {
+            // To do - undermenyer samt flytta kod till manager
             IO.println("""
 
                         === MENY ===
@@ -45,10 +46,13 @@ public class Main {
                         4. Skriv ut tidningar
                         5. Lägg till bok
                         6. Lägg till tidning
-                        7. Avsluta
+                        7. Hämta användare
+                        8. Skriv ut användare
+                        9. Hitta användare via email
+                        10. avsluta
                     """);
 
-            String input = IO.readln("Välj ett alternativ (1-7): ");
+            String input = IO.readln("Välj ett alternativ (1-10): ");
             int val;
 
             // Försöker omvandla användarens val till ett heltal
@@ -179,6 +183,29 @@ public class Main {
                     break;
 
                 case 7:
+                    IO.println("Hämtar alla användare...");
+                    HttpResponse<String> usersResponse;
+                    try {
+                        usersResponse = Unirest.get(baseURL + "/users").asString();
+                    } catch (UnirestException e) {
+                        IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
+                        break;
+                    }
+
+                    int userStatus = usersResponse.getStatus();
+                    if (userStatus != 200) {
+                        IO.println("Fel från servern vid hämtning av användare. Statuskod: " + userStatus);
+                        break;
+                    }
+
+                    String usersBody = usersResponse.getBody();
+                    Type userListType = new TypeToken<ArrayList<User>>(){}.getType();
+                    manager.setUsers(gson.fromJson(usersBody, userListType));
+
+                    IO.println("Användare hämtade från servern. Antal: " + manager.getUsers().size());
+                    break;
+
+                case 10:
                     kör = false;
                     IO.println("Programmet avslutas");
                     break;
