@@ -49,10 +49,12 @@ public class Main {
                         7. Hämta användare
                         8. Skriv ut användare
                         9. Hitta användare via email
-                        10. avsluta
+                        10. Hämta avstängda användare
+                        11. Kontrollera om användare får låna
+                        12. Avsluta
                     """);
 
-            String input = IO.readln("Välj ett alternativ (1-10): ");
+            String input = IO.readln("Välj ett alternativ (1-12): ");
             int val;
 
             // Försöker omvandla användarens val till ett heltal
@@ -205,7 +207,60 @@ public class Main {
                     IO.println("Användare hämtade från servern. Antal: " + manager.getUsers().size());
                     break;
 
-                case 10:
+                case 8:
+                    IO.println("Skriver ut alla användare...");
+                    manager.printUsersSorted();
+                    break;
+
+                case 9:
+                    IO.println("Hitta användare via email...");
+                    String email = IO.readln("Ange email: ");
+
+                    User foundUser = manager.findUserByEmail(email);
+
+                    if (foundUser == null) {
+                        IO.println("Ingen användare hittades med den email-adressen");
+                    } else {
+                        IO.println("Användaren hittad");
+                        IO.println(foundUser.getInfo());
+                    }
+                    break;
+
+                case 10: 
+                    IO.print("Hämtar alla avstängda användare...");
+                    HttpResponse<String> suspendedResponse;
+                    try {
+                        suspendedResponse = Unirest.get(baseURL + "/suspended").asString();
+                    } catch (UnirestException e) {
+                        IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
+                        break;
+                    }
+
+                    int suspendedStatus = suspendedResponse.getStatus();
+                    if (suspendedStatus != 200) {
+                        IO.println("Fel vid hämtning av avstängda användare. Statuskod: " + suspendedStatus);
+                        break;
+                    }
+
+                    String suspendedBody = suspendedResponse.getBody();
+                    Type suspendedListType = new TypeToken<ArrayList<SuspendedUser>>() {}.getType();
+                    manager.setSuspendedUsers(gson.fromJson(suspendedBody, suspendedListType));
+
+                    IO.println("Avstängda användare hämtad från servern. Antal: " + manager.getSuspendedUsers().size());
+                    break;
+
+                case 11:
+                    IO.println("Kontrollerar om användare får låna...");
+                    String userIdToCheck = IO.readln("Ange användarens id: ");
+
+                    if (manager.canUserBorrow(userIdToCheck)) {
+                        IO.println("Användaren får låna");
+                    } else {
+                        IO.println("användaren är avstängd och får inte låna.");
+                    }
+                    break;
+
+                case 12:
                     kör = false;
                     IO.println("Programmet avslutas");
                     break;
