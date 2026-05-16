@@ -1,5 +1,11 @@
 package jk;
 
+/**
+ * Författare: Johnny Battah
+ * Klassen User representerar en användare i bibliotekssystemet.
+ * Den innehåller: id, namn och email för en kund.
+ */
+
 public class User {
     private String id;
     private String name;
