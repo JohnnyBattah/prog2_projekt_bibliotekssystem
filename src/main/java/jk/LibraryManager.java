@@ -39,6 +39,22 @@ public class LibraryManager {
         this.suspendedUsers = suspendedUsers;
     }
 
+    public ArrayList<Book> getBooks(){
+        return books;
+    }
+    
+    public ArrayList<Magazine> getMagazines(){
+        return magazines;
+    }
+
+    public ArrayList<User> getUsers(){
+        return users;
+    }
+
+    public ArrayList<SuspendedUser> getSuspendedUsers(){
+        return suspendedUsers;
+    }
+
     /**
      * Lägger till en bok i samlingen
      */
