@@ -24,8 +24,9 @@ import java.util.ArrayList;
 
 public class Main {
     public static void main(String[] args) {
-
-        String baseURL = "http://localhost:3000/"; // Basadress till servern
+        // skoladress: http://10.151.168.5:3137/
+        // hemadress: http://localhost:3000/
+        String baseURL = "http://10.151.168.5:3137/"; // Basadress till servern
         Gson gson = new Gson(); // JSON --> Java-objekt
 
         // Lokala samlingar för böcker och tidningar
@@ -110,7 +111,7 @@ public class Main {
                     // JSON-texten från servern
                     String magazinesBody = magazinesResponse.getBody();
 
-                    // Gör om JSON till en lista av Book-objekt
+                    // Gör om JSON till en lista av Magazine-objekt
                     Type magazineListType = new TypeToken<ArrayList<Magazine>>(){}.getType();
                     magazines = gson.fromJson(magazinesBody, magazineListType);
 
@@ -134,7 +135,7 @@ public class Main {
                     if (magazines.isEmpty()) {
                         IO.println("Inga tidningar finns");
                     } else {
-                        IO.println("\n===Tidningar===");
+                        IO.println("\n=== Tidningar ===");
                         for (Magazine m : magazines) {
                             IO.println(m.getInfo());
                         }
