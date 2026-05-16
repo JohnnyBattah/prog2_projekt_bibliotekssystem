@@ -30,7 +30,7 @@ public class Magazine extends LibraryItem implements Comparable<Magazine> {
     }
 
     @Override
-    public int compareTo(Magazine other) {
+    public int compareToIgnoreCase(Magazine other) {
         return this.title.compareTo(other.title);
     }
 

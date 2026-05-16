@@ -31,7 +31,7 @@ public class Book extends LibraryItem implements Comparable<Book> {
 
     @Override
     public int compareTo(Book other) {
-        return this.title.compareTo(other.title);
+        return this.title.compareToIgnoreCase(other.title);
     }
 
     @Override

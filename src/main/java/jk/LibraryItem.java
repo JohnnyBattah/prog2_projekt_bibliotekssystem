@@ -37,6 +37,6 @@ public class LibraryItem {
     }
 
     public String getInfo() {
-        return "ID: " + id + "Titel: " + title + ", Tillgänglig: " + isAvailable;
+        return "ID: " + id + ", Titel: " + title + ", Tillgänglig: " + isAvailable;
     }
 }

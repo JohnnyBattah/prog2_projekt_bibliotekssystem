@@ -5,9 +5,9 @@ import java.util.Collections;
 
 /**
  * Författare: Johnny Battah
- * Klassen LibraryManager ansvarar för att lagra och hämta böcker,
+ * Klassen LibraryManager ansvarar för att lagra och hantera böcker,
  * tidningar, användare och avstängda användare i bibliotekssystemet.
- * Klassen används för sökning, sortering och kontroll av Lånerätt
+ * Klassen används för sökning, sortering och kontroll av lånerätt
  */
 
 public class LibraryManager {
@@ -172,7 +172,7 @@ public class LibraryManager {
 
     /**
      * Avgör om en användare får låna eller inte.
-     * Retunerar false om användaren finns i listan över avstängda
+     * Returnerar false om användaren finns i listan över avstängda
      */
     public boolean canUserBorrow(String userId) {
         for (SuspendedUser suspendedUser : suspendedUsers) {

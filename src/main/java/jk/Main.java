@@ -26,12 +26,11 @@ public class Main {
     public static void main(String[] args) {
         // skoladress: http://10.151.168.5:3137/
         // hemadress: http://localhost:3000/
+
         String baseURL = "http://10.151.168.5:3137/"; // Basadress till servern
         Gson gson = new Gson(); // JSON --> Java-objekt
 
-        // Lokala samlingar för böcker och tidningar
-        ArrayList<Book> books = new ArrayList<>();
-        ArrayList<Magazine> magazines = new ArrayList<>();
+        LibraryManager manager = new LibraryManager();
 
         boolean kör = true;
 
@@ -86,9 +85,9 @@ public class Main {
                     // Gör om JSON till en lista av Book-objekt
                     Type bookListType = new TypeToken<ArrayList<Book>>() {
                     }.getType();
-                    books = gson.fromJson(booksBody, bookListType);
+                    manager.setBooks(gson.fromJson(booksBody, bookListType));
 
-                    IO.println("Böcker hämtade från servern. Antal: " + books.size());
+                    IO.println("Böcker hämtade från servern. Antal: " + manager.getBooks().size());
                     break;
 
                 case 2:
@@ -114,33 +113,19 @@ public class Main {
                     // Gör om JSON till en lista av Magazine-objekt
                     Type magazineListType = new TypeToken<ArrayList<Magazine>>() {
                     }.getType();
-                    magazines = gson.fromJson(magazinesBody, magazineListType);
+                    manager.setMagazines(gson.fromJson(magazinesBody, magazineListType));
 
-                    IO.println("Tidningar hämtade från servern. Antal: " + magazines.size());
+                    IO.println("Tidningar hämtade från servern. Antal: " + manager.getMagazines().size());
                     break;
 
                 case 3:
                     IO.println("Skriver ut alla böcker...");
-                    if (books.isEmpty()) {
-                        IO.println("Inga böcker finns");
-                    } else {
-                        IO.println("\n=== Böcker ===");
-                        for (Book b : books) {
-                            IO.println(b.getInfo());
-                        }
-                    }
+                    manager.printBooksSorted();
                     break;
 
                 case 4:
                     IO.println("Skriver ut alla tidningar...");
-                    if (magazines.isEmpty()) {
-                        IO.println("Inga tidningar finns");
-                    } else {
-                        IO.println("\n=== Tidningar ===");
-                        for (Magazine m : magazines) {
-                            IO.println(m.getInfo());
-                        }
-                    }
+                    manager.printMagazinesSorted();
                     break;
 
                 case 5:
@@ -159,7 +144,7 @@ public class Main {
 
                     // Skapar ett nytt bokobjekt och sparar lokalt
                     Book newBook = new Book(bookId, bookTitle, true, bookAuthor, bookGenre, pages);
-                    books.add(newBook);
+                    manager.addBook(newBook);
                     IO.println("Boken lades till lokalt i samlingen");
                     break;
 
@@ -189,7 +174,7 @@ public class Main {
                     // Skapar ett nytt tidningsobjekt och sparar lokalt
                     Magazine newMagazine = new Magazine(magazineId, magazineTitle, true, issueNumber, category,
                             publishedYear);
-                    magazines.add(newMagazine);
+                    manager.addMagazine(newMagazine);
                     IO.println("Tidningen lades till lokalt i samlingen");
                     break;
 
