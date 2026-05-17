@@ -174,9 +174,9 @@ public class LibraryManager {
      * Avgör om en användare får låna eller inte.
      * Returnerar false om användaren finns i listan över avstängda
      */
-    public boolean canUserBorrow(String userId) {
+    public boolean canUserBorrow(String customerId) {
         for (SuspendedUser suspendedUser : suspendedUsers) {
-            if (suspendedUser.getUserId().equalsIgnoreCase(userId)) {
+            if (suspendedUser.getCustomer_id().equalsIgnoreCase(customerId)) {
                 return false;
             }
         }

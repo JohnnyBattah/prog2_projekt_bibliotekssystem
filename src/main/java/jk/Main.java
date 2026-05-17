@@ -227,7 +227,7 @@ public class Main {
                     break;
 
                 case 10: 
-                    IO.print("Hämtar alla avstängda användare...");
+                    IO.println("Hämtar alla avstängda användare...");
                     HttpResponse<String> suspendedResponse;
                     try {
                         suspendedResponse = Unirest.get(baseURL + "/suspended").asString();
@@ -246,7 +246,7 @@ public class Main {
                     Type suspendedListType = new TypeToken<ArrayList<SuspendedUser>>() {}.getType();
                     manager.setSuspendedUsers(gson.fromJson(suspendedBody, suspendedListType));
 
-                    IO.println("Avstängda användare hämtad från servern. Antal: " + manager.getSuspendedUsers().size());
+                    IO.println("Avstängda användare hämtade från servern. Antal: " + manager.getSuspendedUsers().size());
                     break;
 
                 case 11:
@@ -256,7 +256,7 @@ public class Main {
                     if (manager.canUserBorrow(userIdToCheck)) {
                         IO.println("Användaren får låna");
                     } else {
-                        IO.println("användaren är avstängd och får inte låna.");
+                        IO.println("Användaren är avstängd och får inte låna.");
                     }
                     break;
 
