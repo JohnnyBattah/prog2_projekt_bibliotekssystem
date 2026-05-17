@@ -85,112 +85,22 @@ public class Main {
                         switch (hämtaVal) {
                             case 1:
                                 IO.println("Hämtar alla böcker...");
-                                HttpResponse<String> booksResponse;
-                                try {
-                                    // Hämtar böcker från servern
-                                    booksResponse = Unirest.get(baseURL + "/books").asString();
-                                } catch (UnirestException e) {
-                                    IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
-                                    IO.println();
-                                    break;
-                                }
-
-                                int bookStatus = booksResponse.getStatus();
-                                if (bookStatus != 200) {
-                                    IO.println("Fel från servern vid hämtning av böcker. Statuskod: " + bookStatus);
-                                    IO.println();
-                                    break;
-                                }
-
-                                // JSON-texten från servern
-                                String booksBody = booksResponse.getBody();
-
-                                // Gör om JSON till en lista av Book-objekt
-                                Type bookListType = new TypeToken<ArrayList<Book>>() {
-                                }.getType();
-                                manager.setBooks(gson.fromJson(booksBody, bookListType));
-
-                                IO.println("Böcker hämtade från servern. Antal: " + manager.getBooks().size());
+                                manager.fetchBooks(baseURL, gson);
                                 break;
 
                             case 2:
                                 IO.println("Hämtar alla tidningar...");
-                                HttpResponse<String> magazinesResponse;
-                                try {
-                                    // Hämtar tidningar från server
-                                    magazinesResponse = Unirest.get(baseURL + "/magazines").asString();
-                                } catch (UnirestException e) {
-                                    IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
-                                    break;
-                                }
-
-                                int magazineStatus = magazinesResponse.getStatus();
-                                if (magazineStatus != 200) {
-                                    IO.println(
-                                            "Fel från servern vid hämtning av tidningar. Statuskod: " + magazineStatus);
-                                    break;
-                                }
-
-                                // JSON-texten från servern
-                                String magazinesBody = magazinesResponse.getBody();
-
-                                // Gör om JSON till en lista av Magazine-objekt
-                                Type magazineListType = new TypeToken<ArrayList<Magazine>>() {
-                                }.getType();
-                                manager.setMagazines(gson.fromJson(magazinesBody, magazineListType));
-
-                                IO.println("Tidningar hämtade från servern. Antal: " + manager.getMagazines().size());
+                                manager.fetchMagazines(baseURL, gson);
                                 break;
 
                             case 3:
                                 IO.println("Hämtar alla användare...");
-                                HttpResponse<String> usersResponse;
-                                try {
-                                    usersResponse = Unirest.get(baseURL + "/users").asString();
-                                } catch (UnirestException e) {
-                                    IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
-                                    break;
-                                }
-
-                                int userStatus = usersResponse.getStatus();
-                                if (userStatus != 200) {
-                                    IO.println("Fel från servern vid hämtning av användare. Statuskod: " + userStatus);
-                                    break;
-                                }
-
-                                String usersBody = usersResponse.getBody();
-                                Type userListType = new TypeToken<ArrayList<User>>() {
-                                }.getType();
-                                manager.setUsers(gson.fromJson(usersBody, userListType));
-
-                                IO.println("Användare hämtade från servern. Antal: " + manager.getUsers().size());
+                                manager.fetchUsers(baseURL, gson);
                                 break;
 
                             case 4:
                                 IO.println("Hämtar alla avstängda användare...");
-                                HttpResponse<String> suspendedResponse;
-                                try {
-                                    suspendedResponse = Unirest.get(baseURL + "/suspended").asString();
-                                } catch (UnirestException e) {
-                                    IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
-                                    break;
-                                }
-
-                                int suspendedStatus = suspendedResponse.getStatus();
-                                if (suspendedStatus != 200) {
-                                    IO.println(
-                                            "Fel vid hämtning av avstängda användare. Statuskod: " + suspendedStatus);
-                                    break;
-                                }
-
-                                String suspendedBody = suspendedResponse.getBody();
-                                Type suspendedListType = new TypeToken<ArrayList<SuspendedUser>>() {
-                                }.getType();
-                                manager.setSuspendedUsers(gson.fromJson(suspendedBody, suspendedListType));
-
-                                IO.println(
-                                        "Avstängda användare hämtade från servern. Antal: "
-                                                + manager.getSuspendedUsers().size());
+                                manager.fetchSuspendedUsers(baseURL, gson);
                                 break;
 
                             case 5:
@@ -244,7 +154,7 @@ public class Main {
 
                             case 4:
                                 IO.println("Skriver ut alla avstängda användare...");
-                                manager.printSuspendedUsers();
+                                manager.printSuspendedUsersSorted();
                                 break;
 
                             case 5:
@@ -483,7 +393,7 @@ public class Main {
 
                                 int postSuspendedStatus = postSuspendedResponse.getStatus();
                                 if (postSuspendedStatus != 201 && postSuspendedStatus != 200) {
-                                    IO.println("Fel vid skapande av tidning. Statuskod: " + postSuspendedStatus);
+                                    IO.println("Fel vid skapande av avstängd användare. Statuskod: " + postSuspendedStatus);
                                     IO.println("Svar från servern: " + postSuspendedResponse.getBody());
                                     break;
                                 }
@@ -491,7 +401,7 @@ public class Main {
                                 SuspendedUser savedSuspendedUser = gson.fromJson(postSuspendedResponse.getBody(), SuspendedUser.class);
                                 manager.addSuspendedUser(savedSuspendedUser);
 
-                                IO.println("Den anvstängda användaren lades till på servern och i den lokala samlingen.");
+                                IO.println("Den avstängda användaren lades till på servern och i den lokala samlingen.");
                                 break;
 
                             case 5:

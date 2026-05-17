@@ -7,7 +7,7 @@ package jk;
  * Den används för att avgöra om en kund får låna eller inte
  */
 
-public class SuspendedUser{
+public class SuspendedUser implements Comparable<SuspendedUser>{
     private String id;
     private String customer_id;
 
@@ -26,5 +26,10 @@ public class SuspendedUser{
 
     public String getInfo() {
         return "ID: " + id + ", Customer ID: " + customer_id;
+    }
+
+    @Override
+    public int compareTo(SuspendedUser other){
+        return this.id.compareToIgnoreCase(other.id);
     }
 }
