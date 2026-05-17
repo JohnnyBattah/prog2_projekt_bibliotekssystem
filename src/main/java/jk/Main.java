@@ -51,7 +51,8 @@ public class Main {
                         9. Hitta användare via email
                         10. Hämta avstängda användare
                         11. Kontrollera om användare får låna
-                        12. Avsluta
+                        12. Lägg till användare på server
+                        13. Avsluta
                     """);
 
             String input = IO.readln("Välj ett alternativ (1-12): ");
@@ -251,9 +252,9 @@ public class Main {
 
                 case 11:
                     IO.println("Kontrollerar om användare får låna...");
-                    String userIdToCheck = IO.readln("Ange användarens id: ");
+                    String customerIdToCheck = IO.readln("Ange användarens id: ");
 
-                    if (manager.canUserBorrow(userIdToCheck)) {
+                    if (manager.canUserBorrow(customerIdToCheck)) {
                         IO.println("Användaren får låna");
                     } else {
                         IO.println("Användaren är avstängd och får inte låna.");
@@ -261,6 +262,39 @@ public class Main {
                     break;
 
                 case 12:
+                    IO.println("Lägger till en användare på servern...");
+                    String userId = IO.readln("Ange id: ");
+                    String userName = IO.readln("Ange namn: ");
+                    String userEmail = IO.readln("Ange email: ");
+
+                    User newUser = new User(userId, userName, userEmail);
+                    String userJson = gson.toJson(newUser);
+
+                    HttpResponse<String> postUserResponse;
+                    try {
+                        postUserResponse = Unirest.post(baseURL + "/users")
+                                .header("Content-Type", "application/json")
+                                .body(userJson)
+                                .asString();
+                    } catch (UnirestException e) {
+                        IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
+                        break;
+                    }
+
+                    IO.println("Statuskod: " + postUserResponse.getStatus());
+                    IO.println("Svar från servern: " + postUserResponse.getBody());
+                    IO.println("JSON som skickades: " + userJson);
+
+                    int postUserStatus = postUserResponse.getStatus();
+                    if (postUserStatus != 201 && postUserStatus != 200) {
+                        IO.println("Fel vid skapande av användare. Statuskod: " + postUserStatus);
+                        break;
+                    }
+
+                    IO.println("Användaren lades till på servern");
+                    break;
+
+                case 13:
                     kör = false;
                     IO.println("Programmet avslutas");
                     break;
