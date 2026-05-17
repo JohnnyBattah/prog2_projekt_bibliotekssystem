@@ -7,7 +7,7 @@ package jk;
  * Den används för att avgöra om en kund får låna eller inte
  */
 
-public class SuspendedUser {
+public class SuspendedUser{
     private String id;
     private String customer_id;
 

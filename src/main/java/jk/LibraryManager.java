@@ -155,6 +155,17 @@ public class LibraryManager {
         }
     }
 
+    public void printSuspendedUsers() {
+        if (suspendedUsers.isEmpty()) {
+            IO.println("Inga avstängda användare finns.");
+        } else {
+            IO.println("=== Avstängda användare ===");
+            for (SuspendedUser suspendedUser : suspendedUsers){
+                IO.println(suspendedUser.getInfo());
+            }
+        }
+    }
+
     /**
      * Hittar en bok med hjälp av titel.
      */

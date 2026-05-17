@@ -212,10 +212,11 @@ public class Main {
                                     1. Skriv ut böcker
                                     2. Skriv ut tidningar
                                     3. Skriv ut användare
-                                    4. Tillbaka
+                                    4. Skriv ut avstängda användare
+                                    5. Tillbaka
                                 """);
 
-                        String skrivUtInput = IO.readln("Välj ett alternativ (1-4): ");
+                        String skrivUtInput = IO.readln("Välj ett alternativ (1-5): ");
                         int skrivUtVal;
 
                         try {
@@ -242,6 +243,11 @@ public class Main {
                                 break;
 
                             case 4:
+                                IO.println("Skriver ut alla avstängda användare...");
+                                manager.printSuspendedUsers();
+                                break;
+
+                            case 5:
                                 skrivUtMeny = false;
                                 break;
 
@@ -319,10 +325,11 @@ public class Main {
                                     1. Lägg till användare på servern
                                     2. Lägg till bok på servern
                                     3. Lägg till tidning på servern
-                                    4. Tillbaka
+                                    4. Lägg till avstängd användare på servern
+                                    5. Tillbaka
                                 """);
 
-                        String läggTillInput = IO.readln("Välj ett alternativ (1-4): ");
+                        String läggTillInput = IO.readln("Välj ett alternativ (1-5): ");
                         int läggTillVal;
 
                         try {
@@ -456,6 +463,38 @@ public class Main {
                                 break;
 
                             case 4:
+                                IO.println("Lägger till en avstängd användare på servern...");
+                                String suspendedId = IO.readln("Ange id för avstängningen: ");
+                                String customerId = IO.readln("Ange användarens id: ");
+
+                                SuspendedUser newSuspendedUser = new SuspendedUser(suspendedId, customerId);
+                                String suspendedJson = gson.toJson(newSuspendedUser);
+
+                                HttpResponse<String> postSuspendedResponse;
+                                try {
+                                    postSuspendedResponse = Unirest.post(baseURL + "suspended")
+                                            .header("Content-Type", "application/json")
+                                            .body(suspendedJson)
+                                            .asString();
+                                } catch (UnirestException e) {
+                                    IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
+                                    break;
+                                }
+
+                                int postSuspendedStatus = postSuspendedResponse.getStatus();
+                                if (postSuspendedStatus != 201 && postSuspendedStatus != 200) {
+                                    IO.println("Fel vid skapande av tidning. Statuskod: " + postSuspendedStatus);
+                                    IO.println("Svar från servern: " + postSuspendedResponse.getBody());
+                                    break;
+                                }
+
+                                SuspendedUser savedSuspendedUser = gson.fromJson(postSuspendedResponse.getBody(), SuspendedUser.class);
+                                manager.addSuspendedUser(savedSuspendedUser);
+
+                                IO.println("Den anvstängda användaren lades till på servern och i den lokala samlingen.");
+                                break;
+
+                            case 5:
                                 läggTillMeny = false;
                                 break;
 
