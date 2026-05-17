@@ -52,10 +52,13 @@ public class Main {
                         10. Hämta avstängda användare
                         11. Kontrollera om användare får låna
                         12. Lägg till användare på server
-                        13. Avsluta
+                        13. Lägg till bok på servern
+                        14. Lägg till tidning på servern
+                        15. Ta bort användare via email
+                        16. Avsluta
                     """);
 
-            String input = IO.readln("Välj ett alternativ (1-12): ");
+            String input = IO.readln("Välj ett alternativ (1-16): ");
             int val;
 
             // Försöker omvandla användarens val till ett heltal
@@ -263,16 +266,15 @@ public class Main {
 
                 case 12:
                     IO.println("Lägger till en användare på servern...");
-                    String userId = IO.readln("Ange id: ");
                     String userName = IO.readln("Ange namn: ");
                     String userEmail = IO.readln("Ange email: ");
 
-                    User newUser = new User(userId, userName, userEmail);
+                    User newUser = new User(null, userName, userEmail);
                     String userJson = gson.toJson(newUser);
 
                     HttpResponse<String> postUserResponse;
                     try {
-                        postUserResponse = Unirest.post(baseURL + "/users")
+                        postUserResponse = Unirest.post(baseURL + "users")
                                 .header("Content-Type", "application/json")
                                 .body(userJson)
                                 .asString();
@@ -281,20 +283,107 @@ public class Main {
                         break;
                     }
 
-                    IO.println("Statuskod: " + postUserResponse.getStatus());
-                    IO.println("Svar från servern: " + postUserResponse.getBody());
-                    IO.println("JSON som skickades: " + userJson);
-
                     int postUserStatus = postUserResponse.getStatus();
                     if (postUserStatus != 201 && postUserStatus != 200) {
                         IO.println("Fel vid skapande av användare. Statuskod: " + postUserStatus);
+                        IO.println("Svar från servern: " + postUserResponse.getBody());
                         break;
                     }
 
                     IO.println("Användaren lades till på servern");
                     break;
 
-                case 13:
+                case 13: 
+                    IO.println("Lägger till en bok på servern...");
+                    String postBookTitle = IO.readln("Ange titel: ");
+                    String postBookAuthor = IO.readln("Ange författare: ");
+                    String postBookGenre = IO.readln("Ange genre: ");
+                    int postBookPages;
+                    try {
+                        postBookPages = Integer.parseInt(IO.readln("Ange antal sidor: "));
+                    } catch (NumberFormatException e) {
+                        IO.println("Felaktigt antal sidor.");
+                        break;
+                    }
+
+                    Book newServerBook = new Book(null, postBookTitle, true, postBookAuthor, postBookGenre, postBookPages);
+                    String bookJson = gson.toJson(newServerBook);
+
+                    HttpResponse<String> postBookResponse;
+                    try {
+                        postBookResponse = Unirest.post(baseURL + "books")
+                                .header("Content-Type", "application/json")
+                                .body(bookJson)
+                                .asString();
+                    } catch (UnirestException e) {
+                        IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
+                        break;
+                    }
+
+                    int postBookStatus = postBookResponse.getStatus();
+                    if (postBookStatus != 201 && postBookStatus != 200) {
+                        IO.println("Fel vid skapande av bok. Statuskod: " + postBookStatus);
+                        IO.println("Svar från servern: " + postBookResponse.getBody());
+                        break;
+                    }
+
+                    IO.println("Boken lades till på servern");
+                    break;
+
+                case 14:
+                    IO.println("Lägger till en tidning på servern...");
+                    String postMagazineTitle = IO.readln("Ange titel: ");
+                    String postMagazineCategory = IO.readln("Ange kategori: ");
+                    
+                    int postIssueNumber;
+                    try {
+                        postIssueNumber = Integer.parseInt(IO.readln("Ange nummer: "));
+                    } catch (NumberFormatException e) {
+                        IO.println("Felaktigt nummer");
+                        break;
+                    }
+
+                    int postPublishedYear;
+                    try {
+                        postPublishedYear = Integer.parseInt(IO.readln("Ange publiceringsår: "));
+                    } catch (NumberFormatException e) {
+                        IO.println("Felaktigt år.");
+                        break;
+                    }
+
+                    Magazine newServerMagazine = new Magazine(null, postMagazineTitle, true, postIssueNumber, postMagazineCategory, postPublishedYear);
+                    String magazineJson = gson.toJson(newServerMagazine);
+
+                    HttpResponse<String> postMagazineResponse;
+                    try {
+                        postMagazineResponse = Unirest.post(baseURL + "magazines")
+                                .header("Content-Type", "application/json")
+                                .body(magazineJson)
+                                .asString();
+                    } catch (UnirestException e) {
+                        IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
+                        break;
+                    }
+
+                    int postMagazineStatus = postMagazineResponse.getStatus();
+                    if (postMagazineStatus != 201 && postMagazineStatus != 200) {
+                        IO.println("Fel vid skapande av tidning. Statuskod: " + postMagazineStatus);
+                        IO.println("Svar från servern: " + postMagazineResponse.getBody());
+                        break;
+                    }
+
+                    IO.println("Tidningen lades till på servern");
+                    break;
+
+                case 15:
+                    IO.println("Tar bort användare via email...");
+                    String emailToDelete = IO.readln("Ange email för användare som ska tas bort: ");
+
+                    User userToDelete = manager.findUserByEmail(emailToDelete);
+
+                    
+
+                case 16:
                     kör = false;
                     IO.println("Programmet avslutas");
                     break;
