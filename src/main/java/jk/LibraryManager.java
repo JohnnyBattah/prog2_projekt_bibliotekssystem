@@ -83,6 +83,27 @@ public class LibraryManager {
         suspendedUsers.add(suspendedUser);
     }
 
+    public void removeBook(Book book){
+        books.remove(book);
+    }
+
+    public void removeMagazine(Magazine magazine){
+        magazines.remove(magazine);
+    }
+
+    public void removeUser(User user){
+        users.remove(user);
+    }
+
+    public void removeSuspendedUserById(String id){
+        for (int i = 0; i < suspendedUsers.size(); i++) {
+            if (suspendedUsers.get(i).getId().equalsIgnoreCase(id)) {
+                suspendedUsers.remove(i);
+                return;
+            }
+        }
+    }
+
     /**
      * skriver ut böcker sorterade på titel
      */

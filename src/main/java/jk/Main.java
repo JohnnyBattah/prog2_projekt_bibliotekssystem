@@ -2,9 +2,9 @@ package jk;
 
 /**
  * Författare: Johnny Battah
- * Programmet är ett enkelt bibliotekssystem på E nivå
- * Det kan hämta böcker och tidningar från en server, visa dem, 
- * och lägga till Nya böcker/tidningar lokalt i Arraylist
+ * Programmet är ett enkelt bibliotekssystem som hämtar, visar, skapar och tar bort
+ * böcker, tidningar, användare och avstängda användare via en JSON-server. 
+ * Programmet kan också söka användare via email och kontrollera om en användare får låna.
  */
 
 // Gson objekt som vi behöver
@@ -293,6 +293,9 @@ public class Main {
                         break;
                     }
 
+                    User savedUser = gson.fromJson(postUserResponse.getBody(), User.class);
+                    manager.addUser(savedUser);
+
                     IO.println("Användaren lades till på servern");
                     break;
 
@@ -329,6 +332,9 @@ public class Main {
                         IO.println("Svar från servern: " + postBookResponse.getBody());
                         break;
                     }
+
+                    Book savedBook = gson.fromJson(postBookResponse.getBody(), Book.class);
+                    manager.addBook(savedBook);
 
                     IO.println("Boken lades till på servern");
                     break;
@@ -375,6 +381,9 @@ public class Main {
                         break;
                     }
 
+                    Magazine savedMagazine = gson.fromJson(postMagazineResponse.getBody(), Magazine.class);
+                    manager.addMagazine(savedMagazine);
+
                     IO.println("Tidningen lades till på servern");
                     break;
 
@@ -406,7 +415,8 @@ public class Main {
                         break;
                     }
 
-                    IO.println("Användaren togs bort från servern.");
+                    manager.removeUser(userToDelete);
+                    IO.println("Användaren togs bort från servern och från den lokala samlingen");
                     break;
 
                 case 16:
@@ -437,7 +447,8 @@ public class Main {
                         break;
                     }
 
-                    IO.println("Boken togs bort från servern.");
+                    manager.removeBook(bookToDelete);
+                    IO.println("Boken togs bort från servern och från den lokala samlingen.");
                     break;
 
                 case 17:
@@ -468,12 +479,13 @@ public class Main {
                         break;
                     }
 
-                    IO.println("Tidningen togs bort från servern.");
+                    manager.removeMagazine(magazineToDelete);
+                    IO.println("Tidningen togs bort från servern och från den lokala samlingen.");
                     break;
 
                 case 18:
                     IO.println("Tar bort avstängd användare via id...");
-                    String suspendedIdToDelete = IO.readln("Ange id på avstängningensom ska tas bort");
+                    String suspendedIdToDelete = IO.readln("Ange id på avstängningen som ska tas bort: ");
 
                     HttpResponse<String> deleteSuspendedResponse;
                     try {
@@ -490,7 +502,8 @@ public class Main {
                         break;
                     }
 
-                    IO.println("Den avstängda användare togs bort från servern.");
+                    manager.removeSuspendedUserById(suspendedIdToDelete);
+                    IO.println("Den avstängda användaren togs bort från servern och från den lokala samlingen.");
                     break;
 
                 case 19:
