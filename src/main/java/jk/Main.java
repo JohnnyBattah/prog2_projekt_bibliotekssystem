@@ -55,10 +55,13 @@ public class Main {
                         13. Lägg till bok på servern
                         14. Lägg till tidning på servern
                         15. Ta bort användare via email
-                        16. Avsluta
+                        16. Ta bort bok via titel
+                        17. Ta bort tidning via titel
+                        18. Ta bort avstängd användare via id
+                        19. Avsluta
                     """);
 
-            String input = IO.readln("Välj ett alternativ (1-16): ");
+            String input = IO.readln("Välj ett alternativ (1-19): ");
             int val;
 
             // Försöker omvandla användarens val till ett heltal
@@ -381,9 +384,116 @@ public class Main {
 
                     User userToDelete = manager.findUserByEmail(emailToDelete);
 
-                    
+                    if (userToDelete == null) {
+                        IO.println("Ingen användare hittades med den email-adressen.");
+                        break;
+                    }
+
+                    String userIdToDelete = userToDelete.getId();
+
+                    HttpResponse<String> deleteUserResponse;
+                    try {
+                        deleteUserResponse = Unirest.delete(baseURL + "users/" + userIdToDelete).asString();
+                    } catch (UnirestException e) {
+                        IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
+                        break;
+                    }
+
+                    int deleteUserStatus = deleteUserResponse.getStatus();
+                    if (deleteUserStatus != 200 && deleteUserStatus != 204) {
+                        IO.println("Fel vid borttagning av användare. Statuskod: " + deleteUserStatus);
+                        IO.println("Svar från servern: " + deleteUserResponse.getBody());
+                        break;
+                    }
+
+                    IO.println("Användaren togs bort från servern.");
+                    break;
 
                 case 16:
+                    IO.println("Tar bort bok via titel...");
+                    String titleToDelete = IO.readln("Ange titel på boken som ska tas bort: ");
+
+                    Book bookToDelete = manager.findBookByTitle(titleToDelete);
+
+                    if (bookToDelete == null) {
+                        IO.println("Ingen bok hittades med den titeln.");
+                        break;
+                    }
+
+                    String bookIdToDelete = bookToDelete.getId();
+
+                    HttpResponse<String> deleteBookResponse;
+                    try {
+                        deleteBookResponse = Unirest.delete(baseURL + "books/" + bookIdToDelete).asString();
+                    } catch (UnirestException e) {
+                        IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
+                        break;
+                    }
+
+                    int deleteBookStatus = deleteBookResponse.getStatus();
+                    if (deleteBookStatus != 200 && deleteBookStatus != 204) {
+                        IO.println("Fel vid borttagning av bok. Statuskod: " + deleteBookStatus);
+                        IO.println("Svar från servern: " + deleteBookResponse.getBody());
+                        break;
+                    }
+
+                    IO.println("Boken togs bort från servern.");
+                    break;
+
+                case 17:
+                    IO.println("Tar bort tidning via titel...");
+                    String magazineTitleToDelete = IO.readln("Ange titel på tidningen som ska tas bort: ");
+
+                    Magazine magazineToDelete = manager.findMagazineByTitle(magazineTitleToDelete);
+
+                    if (magazineToDelete == null) {
+                        IO.println("Ingen tidning hittades med den titeln.");
+                        break;
+                    }
+
+                    String magazineIdToDelete = magazineToDelete.getId();
+
+                    HttpResponse<String> deleteMagazineResponse;
+                    try {
+                        deleteMagazineResponse = Unirest.delete(baseURL + "magazines/" + magazineIdToDelete).asString();
+                    } catch (UnirestException e) {
+                        IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
+                        break;
+                    }
+
+                    int deleteMagazineStatus = deleteMagazineResponse.getStatus();
+                    if (deleteMagazineStatus != 200 && deleteMagazineStatus != 204) {
+                        IO.println("Fel vid borttagning av tidning. Statuskod: " + deleteMagazineStatus);
+                        IO.println("Svar från servern: " + deleteMagazineResponse.getBody());
+                        break;
+                    }
+
+                    IO.println("Tidningen togs bort från servern.");
+                    break;
+
+                case 18:
+                    IO.println("Tar bort avstängd användare via id...");
+                    String suspendedIdToDelete = IO.readln("Ange id på avstängningensom ska tas bort");
+
+                    HttpResponse<String> deleteSuspendedResponse;
+                    try {
+                        deleteSuspendedResponse = Unirest.delete(baseURL + "suspended/" + suspendedIdToDelete).asString();
+                    } catch (UnirestException e) {
+                        IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
+                        break;
+                    }
+
+                    int deleteSuspendedStatus = deleteSuspendedResponse.getStatus();
+                    if (deleteSuspendedStatus != 200 && deleteSuspendedStatus != 204) {
+                        IO.println("Fel vid borttagning av avstängd användare. Statuskod: " + deleteSuspendedStatus);
+                        IO.println("Svar från servern: " + deleteSuspendedResponse.getBody());
+                        break;
+                    }
+
+                    IO.println("Den avstängda användare togs bort från servern.");
+                    break;
+
+                case 19:
                     kör = false;
                     IO.println("Programmet avslutas");
                     break;
