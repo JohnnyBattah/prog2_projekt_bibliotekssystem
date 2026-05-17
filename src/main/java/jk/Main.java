@@ -28,11 +28,43 @@ public class Main {
         // hemadress: http://localhost:3000/
 
         String baseURL = "http://localhost:3000/"; // Basadress till servern
-        Gson gson = new Gson(); // JSON --> Java-objekt
+        Gson gson = new Gson(); // Omvandla mellan JSON och Java-objekt
 
         LibraryManager manager = new LibraryManager();
 
         boolean kör = true;
+
+        while (kör) {
+            IO.println("""
+
+                        === HUVUDMENY ===
+                        1. Hämta data
+                        2. Skriv ut data
+                        3. Sök och kontrollera
+                        4. Lägg till
+                        5. Ta bort
+                        6. avsluta
+                    """);
+
+            String input = IO.readln("Välj ett alternativ (1-6): ");
+            int val;
+
+            switch (val) {
+                case 1:
+                    IO.println("Öppnar undermeny för hämtning...");
+                    break;
+
+                case 2: 
+                    IO.println("Öppnar undermeny för utskrigt...");
+                    break;
+            
+                default:
+                    break;
+            }
+
+        }
+
+
 
         // Programmet körs tills användaren väljer att avsluta
         while (kör) {
@@ -44,8 +76,8 @@ public class Main {
                         2. Hämta tidningar
                         3. Skriv ut böcker
                         4. Skriv ut tidningar
-                        5. Lägg till bok
-                        6. Lägg till tidning
+                        5. Lägg till bok lokalt
+                        6. Lägg till tidning lokalt
                         7. Hämta användare
                         8. Skriv ut användare
                         9. Hitta användare via email
@@ -68,7 +100,7 @@ public class Main {
             try {
                 val = Integer.parseInt(input);
             } catch (NumberFormatException e) {
-                IO.println("Felaktig inmatning. Ange en siffra");
+                IO.println("Felaktig inmatning. Ange ett nummer från menyn.");
                 continue;
             }
 
@@ -143,7 +175,7 @@ public class Main {
 
                 case 5:
                     IO.println("Lägger till en bok...");
-                    String bookId = IO.readln("Ange Id: ");
+                    String bookId = IO.readln("Ange id: ");
                     String bookTitle = IO.readln("Ange titel: ");
                     String bookAuthor = IO.readln("Ange författare: ");
                     String bookGenre = IO.readln("Ange genre: ");
@@ -151,7 +183,7 @@ public class Main {
                     try {
                         pages = Integer.parseInt(IO.readln("Ange antal sidor: "));
                     } catch (NumberFormatException e) {
-                        IO.println("Felaktigt antal sidor");
+                        IO.println("Felaktigt antal sidor.");
                         break;
                     }
 
@@ -163,14 +195,14 @@ public class Main {
 
                 case 6:
                     IO.println("Lägger till en tidning...");
-                    String magazineId = IO.readln("Ange Id: ");
+                    String magazineId = IO.readln("Ange id: ");
                     String magazineTitle = IO.readln("Ange titel: ");
 
                     int issueNumber;
                     try {
                         issueNumber = Integer.parseInt(IO.readln("Ange nummer: "));
                     } catch (NumberFormatException e) {
-                        IO.println("Felaktigt nummer");
+                        IO.println("Felaktigt nummer.");
                         break;
                     }
 
@@ -180,7 +212,7 @@ public class Main {
                     try {
                         publishedYear = Integer.parseInt(IO.readln("Ange publiceringsår: "));
                     } catch (NumberFormatException e) {
-                        IO.println("Felaktigt år");
+                        IO.println("Felaktigt år.");
                         break;
                     }
 
@@ -221,14 +253,14 @@ public class Main {
 
                 case 9:
                     IO.println("Hitta användare via email...");
-                    String email = IO.readln("Ange email: ");
+                    String email = IO.readln("Ange e-post: ");
 
                     User foundUser = manager.findUserByEmail(email);
 
                     if (foundUser == null) {
                         IO.println("Ingen användare hittades med den email-adressen");
                     } else {
-                        IO.println("Användaren hittad");
+                        IO.println("Användaren hittadades: ");
                         IO.println(foundUser.getInfo());
                     }
                     break;
@@ -261,7 +293,7 @@ public class Main {
                     String customerIdToCheck = IO.readln("Ange användarens id: ");
 
                     if (manager.canUserBorrow(customerIdToCheck)) {
-                        IO.println("Användaren får låna");
+                        IO.println("Användaren får låna.");
                     } else {
                         IO.println("Användaren är avstängd och får inte låna.");
                     }
@@ -270,7 +302,7 @@ public class Main {
                 case 12:
                     IO.println("Lägger till en användare på servern...");
                     String userName = IO.readln("Ange namn: ");
-                    String userEmail = IO.readln("Ange email: ");
+                    String userEmail = IO.readln("Ange e-post: ");
 
                     User newUser = new User(null, userName, userEmail);
                     String userJson = gson.toJson(newUser);
@@ -296,7 +328,7 @@ public class Main {
                     User savedUser = gson.fromJson(postUserResponse.getBody(), User.class);
                     manager.addUser(savedUser);
 
-                    IO.println("Användaren lades till på servern");
+                    IO.println("Användaren lades till på servern och i den lokala samlingen.");
                     break;
 
                 case 13: 
@@ -336,7 +368,7 @@ public class Main {
                     Book savedBook = gson.fromJson(postBookResponse.getBody(), Book.class);
                     manager.addBook(savedBook);
 
-                    IO.println("Boken lades till på servern");
+                    IO.println("Boken lades till på servern och i den lokala samlingen.");
                     break;
 
                 case 14:
@@ -384,12 +416,12 @@ public class Main {
                     Magazine savedMagazine = gson.fromJson(postMagazineResponse.getBody(), Magazine.class);
                     manager.addMagazine(savedMagazine);
 
-                    IO.println("Tidningen lades till på servern");
+                    IO.println("Tidningen lades till på servern och i den lokala samlingen.");
                     break;
 
                 case 15:
                     IO.println("Tar bort användare via email...");
-                    String emailToDelete = IO.readln("Ange email för användare som ska tas bort: ");
+                    String emailToDelete = IO.readln("Ange e-post för användare som ska tas bort: ");
 
                     User userToDelete = manager.findUserByEmail(emailToDelete);
 
@@ -416,7 +448,7 @@ public class Main {
                     }
 
                     manager.removeUser(userToDelete);
-                    IO.println("Användaren togs bort från servern och från den lokala samlingen");
+                    IO.println("Användaren togs bort från servern och från den lokala samlingen.");
                     break;
 
                 case 16:
