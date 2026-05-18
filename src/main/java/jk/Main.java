@@ -7,20 +7,8 @@ package jk;
  * Programmet kan också söka användare via e-post och kontrollera om en användare får låna.
  */
 
-// Gson objekt som vi behöver
-import com.google.gson.*;
-import com.google.gson.reflect.TypeToken;
-
-// Importera Type för att hjälpa json att omvandla data
-import java.lang.reflect.Type;
-
-// UniREST objekt som vi behöver
+import com.google.gson.Gson;
 import kong.unirest.Unirest;
-import kong.unirest.HttpResponse;
-import kong.unirest.UnirestException;
-
-// ArrayList för att lagra objekt
-import java.util.ArrayList;
 
 public class Main {
     public static void main(String[] args) {
@@ -208,7 +196,16 @@ public class Main {
                                 IO.println("Kontrollerar om användare får låna...");
                                 String customerIdToCheck = IO.readln("Ange användarens id: ");
 
-                                if (manager.canUserBorrow(customerIdToCheck)) {
+                                if (customerIdToCheck.isBlank()) {
+                                    IO.println("Id får inte vara tomt");
+                                    break;
+                                }
+
+                                User userToCheck = manager.findUserById(customerIdToCheck);
+
+                                if (userToCheck == null) {
+                                    IO.println("Ingen användare hittades med det id:t.");
+                                } else if (manager.canUserBorrow(customerIdToCheck)) {
                                     IO.println("Användaren får låna.");
                                 } else {
                                     IO.println("Användaren är avstängd och får inte låna.");
@@ -255,31 +252,7 @@ public class Main {
                                 String userName = IO.readln("Ange namn: ");
                                 String userEmail = IO.readln("Ange e-post: ");
 
-                                User newUser = new User(null, userName, userEmail);
-                                String userJson = gson.toJson(newUser);
-
-                                HttpResponse<String> postUserResponse;
-                                try {
-                                    postUserResponse = Unirest.post(baseURL + "users")
-                                            .header("Content-Type", "application/json")
-                                            .body(userJson)
-                                            .asString();
-                                } catch (UnirestException e) {
-                                    IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
-                                    break;
-                                }
-
-                                int postUserStatus = postUserResponse.getStatus();
-                                if (postUserStatus != 201 && postUserStatus != 200) {
-                                    IO.println("Fel vid skapande av användare. Statuskod: " + postUserStatus);
-                                    IO.println("Svar från servern: " + postUserResponse.getBody());
-                                    break;
-                                }
-
-                                User savedUser = gson.fromJson(postUserResponse.getBody(), User.class);
-                                manager.addUser(savedUser);
-
-                                IO.println("Användaren lades till på servern och i den lokala samlingen.");
+                                manager.addUserToServer(baseURL, gson, userName, userEmail);
                                 break;
 
                             case 2:
@@ -295,32 +268,8 @@ public class Main {
                                     break;
                                 }
 
-                                Book newServerBook = new Book(null, postBookTitle, true, postBookAuthor, postBookGenre,
+                                manager.addBookToServer(baseURL, gson, postBookTitle, postBookAuthor, postBookGenre,
                                         postBookPages);
-                                String bookJson = gson.toJson(newServerBook);
-
-                                HttpResponse<String> postBookResponse;
-                                try {
-                                    postBookResponse = Unirest.post(baseURL + "books")
-                                            .header("Content-Type", "application/json")
-                                            .body(bookJson)
-                                            .asString();
-                                } catch (UnirestException e) {
-                                    IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
-                                    break;
-                                }
-
-                                int postBookStatus = postBookResponse.getStatus();
-                                if (postBookStatus != 201 && postBookStatus != 200) {
-                                    IO.println("Fel vid skapande av bok. Statuskod: " + postBookStatus);
-                                    IO.println("Svar från servern: " + postBookResponse.getBody());
-                                    break;
-                                }
-
-                                Book savedBook = gson.fromJson(postBookResponse.getBody(), Book.class);
-                                manager.addBook(savedBook);
-
-                                IO.println("Boken lades till på servern och i den lokala samlingen.");
                                 break;
 
                             case 3:
@@ -344,32 +293,8 @@ public class Main {
                                     break;
                                 }
 
-                                Magazine newServerMagazine = new Magazine(null, postMagazineTitle, true,
-                                        postIssueNumber, postMagazineCategory, postPublishedYear);
-                                String magazineJson = gson.toJson(newServerMagazine);
-
-                                HttpResponse<String> postMagazineResponse;
-                                try {
-                                    postMagazineResponse = Unirest.post(baseURL + "magazines")
-                                            .header("Content-Type", "application/json")
-                                            .body(magazineJson)
-                                            .asString();
-                                } catch (UnirestException e) {
-                                    IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
-                                    break;
-                                }
-
-                                int postMagazineStatus = postMagazineResponse.getStatus();
-                                if (postMagazineStatus != 201 && postMagazineStatus != 200) {
-                                    IO.println("Fel vid skapande av tidning. Statuskod: " + postMagazineStatus);
-                                    IO.println("Svar från servern: " + postMagazineResponse.getBody());
-                                    break;
-                                }
-
-                                Magazine savedMagazine = gson.fromJson(postMagazineResponse.getBody(), Magazine.class);
-                                manager.addMagazine(savedMagazine);
-
-                                IO.println("Tidningen lades till på servern och i den lokala samlingen.");
+                                manager.addMagazineToServer(baseURL, gson, postMagazineTitle, postMagazineCategory,
+                                        postIssueNumber, postPublishedYear);
                                 break;
 
                             case 4:
@@ -377,31 +302,7 @@ public class Main {
                                 String suspendedId = IO.readln("Ange id för avstängningen: ");
                                 String customerId = IO.readln("Ange användarens id: ");
 
-                                SuspendedUser newSuspendedUser = new SuspendedUser(suspendedId, customerId);
-                                String suspendedJson = gson.toJson(newSuspendedUser);
-
-                                HttpResponse<String> postSuspendedResponse;
-                                try {
-                                    postSuspendedResponse = Unirest.post(baseURL + "suspended")
-                                            .header("Content-Type", "application/json")
-                                            .body(suspendedJson)
-                                            .asString();
-                                } catch (UnirestException e) {
-                                    IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
-                                    break;
-                                }
-
-                                int postSuspendedStatus = postSuspendedResponse.getStatus();
-                                if (postSuspendedStatus != 201 && postSuspendedStatus != 200) {
-                                    IO.println("Fel vid skapande av avstängd användare. Statuskod: " + postSuspendedStatus);
-                                    IO.println("Svar från servern: " + postSuspendedResponse.getBody());
-                                    break;
-                                }
-
-                                SuspendedUser savedSuspendedUser = gson.fromJson(postSuspendedResponse.getBody(), SuspendedUser.class);
-                                manager.addSuspendedUser(savedSuspendedUser);
-
-                                IO.println("Den avstängda användaren lades till på servern och i den lokala samlingen.");
+                                manager.addSuspendedUserToServer(baseURL, gson, suspendedId, customerId);
                                 break;
 
                             case 5:
@@ -443,126 +344,28 @@ public class Main {
                                 IO.println("Tar bort användare via e-post...");
                                 String emailToDelete = IO.readln("Ange e-post för användare som ska tas bort: ");
 
-                                User userToDelete = manager.findUserByEmail(emailToDelete);
-
-                                if (userToDelete == null) {
-                                    IO.println("Ingen användare hittades med den e-postadressen.");
-                                    break;
-                                }
-
-                                String userIdToDelete = userToDelete.getId();
-
-                                HttpResponse<String> deleteUserResponse;
-                                try {
-                                    deleteUserResponse = Unirest.delete(baseURL + "users/" + userIdToDelete).asString();
-                                } catch (UnirestException e) {
-                                    IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
-                                    break;
-                                }
-
-                                int deleteUserStatus = deleteUserResponse.getStatus();
-                                if (deleteUserStatus != 200 && deleteUserStatus != 204) {
-                                    IO.println("Fel vid borttagning av användare. Statuskod: " + deleteUserStatus);
-                                    IO.println("Svar från servern: " + deleteUserResponse.getBody());
-                                    break;
-                                }
-
-                                manager.removeUser(userToDelete);
-                                IO.println("Användaren togs bort från servern och från den lokala samlingen.");
+                                manager.deleteUserByEmailFromServer(baseURL, emailToDelete);
                                 break;
 
                             case 2:
                                 IO.println("Tar bort bok via titel...");
                                 String titleToDelete = IO.readln("Ange titel på boken som ska tas bort: ");
 
-                                Book bookToDelete = manager.findBookByTitle(titleToDelete);
-
-                                if (bookToDelete == null) {
-                                    IO.println("Ingen bok hittades med den titeln.");
-                                    break;
-                                }
-
-                                String bookIdToDelete = bookToDelete.getId();
-
-                                HttpResponse<String> deleteBookResponse;
-                                try {
-                                    deleteBookResponse = Unirest.delete(baseURL + "books/" + bookIdToDelete).asString();
-                                } catch (UnirestException e) {
-                                    IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
-                                    break;
-                                }
-
-                                int deleteBookStatus = deleteBookResponse.getStatus();
-                                if (deleteBookStatus != 200 && deleteBookStatus != 204) {
-                                    IO.println("Fel vid borttagning av bok. Statuskod: " + deleteBookStatus);
-                                    IO.println("Svar från servern: " + deleteBookResponse.getBody());
-                                    break;
-                                }
-
-                                manager.removeBook(bookToDelete);
-                                IO.println("Boken togs bort från servern och från den lokala samlingen.");
+                                manager.deleteBookByTitleFromServer(baseURL, titleToDelete);
                                 break;
 
                             case 3:
                                 IO.println("Tar bort tidning via titel...");
                                 String magazineTitleToDelete = IO.readln("Ange titel på tidningen som ska tas bort: ");
 
-                                Magazine magazineToDelete = manager.findMagazineByTitle(magazineTitleToDelete);
-
-                                if (magazineToDelete == null) {
-                                    IO.println("Ingen tidning hittades med den titeln.");
-                                    break;
-                                }
-
-                                String magazineIdToDelete = magazineToDelete.getId();
-
-                                HttpResponse<String> deleteMagazineResponse;
-                                try {
-                                    deleteMagazineResponse = Unirest.delete(baseURL + "magazines/" + magazineIdToDelete)
-                                            .asString();
-                                } catch (UnirestException e) {
-                                    IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
-                                    break;
-                                }
-
-                                int deleteMagazineStatus = deleteMagazineResponse
-                                        .getStatus();
-                                if (deleteMagazineStatus != 200 && deleteMagazineStatus != 204) {
-                                    IO.println("Fel vid borttagning av tidning. Statuskod: " + deleteMagazineStatus);
-                                    IO.println("Svar från servern: " + deleteMagazineResponse.getBody());
-                                    break;
-                                }
-
-                                manager.removeMagazine(magazineToDelete);
-                                IO.println("Tidningen togs bort från servern och från den lokala samlingen.");
+                                manager.deleteMagazineByTitleFromServer(baseURL, magazineTitleToDelete);
                                 break;
 
                             case 4:
                                 IO.println("Tar bort avstängd användare via id...");
                                 String suspendedIdToDelete = IO.readln("Ange id på avstängningen som ska tas bort: ");
 
-                                HttpResponse<String> deleteSuspendedResponse;
-                                try {
-                                    deleteSuspendedResponse = Unirest
-                                            .delete(baseURL + "suspended/" + suspendedIdToDelete)
-                                            .asString();
-                                } catch (UnirestException e) {
-                                    IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
-                                    break;
-                                }
-
-                                int deleteSuspendedStatus = deleteSuspendedResponse
-                                        .getStatus();
-                                if (deleteSuspendedStatus != 200 && deleteSuspendedStatus != 204) {
-                                    IO.println("Fel vid borttagning av avstängd användare. Statuskod: "
-                                            + deleteSuspendedStatus);
-                                    IO.println("Svar från servern: " + deleteSuspendedResponse.getBody());
-                                    break;
-                                }
-
-                                manager.removeSuspendedUserById(suspendedIdToDelete);
-                                IO.println(
-                                        "Den avstängda användaren togs bort från servern och från den lokala samlingen.");
+                                manager.deleteSuspendedUserByIdFromServer(baseURL, suspendedIdToDelete);
                                 break;
 
                             case 5:
@@ -582,11 +385,8 @@ public class Main {
 
                 default:
                     IO.println("Ogiltigt val. Ange ett nummer från menyn.");
-
             }
         }
-
         Unirest.shutDown(); // Stänger Unirest när programmet är klart
-
     }
 }
