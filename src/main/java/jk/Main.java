@@ -180,7 +180,18 @@ public class Main {
                         switch (sökVal) {
                             case 1:
                                 IO.println("Hitta användare via e-post...");
+
+                                if (manager.getUsers().isEmpty()) {
+                                    IO.println("Inga användare är hämtade. Hämta användare först.");
+                                    break;
+                                }
+
                                 String email = IO.readln("Ange e-post: ");
+
+                                if (email.isBlank()) {
+                                    IO.println("E-post får inte vara tom.");
+                                    break;
+                                }
 
                                 User foundUser = manager.findUserByEmail(email);
 
@@ -194,10 +205,16 @@ public class Main {
 
                             case 2:
                                 IO.println("Kontrollerar om användare får låna...");
+
+                                if (manager.getUsers().isEmpty()) {
+                                    IO.println("Inga användare är hämtade. Hämta användare först.");
+                                    break;
+                                }
+
                                 String customerIdToCheck = IO.readln("Ange användarens id: ");
 
                                 if (customerIdToCheck.isBlank()) {
-                                    IO.println("Id får inte vara tomt");
+                                    IO.println("Id får inte vara tomt.");
                                     break;
                                 }
 
@@ -250,16 +267,40 @@ public class Main {
                             case 1:
                                 IO.println("Lägger till en användare på servern...");
                                 String userName = IO.readln("Ange namn: ");
+                                if (userName.isBlank()) {
+                                    IO.println("Namn får inte vara tomt.");
+                                    break;
+                                }
                                 String userEmail = IO.readln("Ange e-post: ");
+                                if (userEmail.isBlank()) {
+                                    IO.println("E-post får inte vara tom.");
+                                    break;
+                                }
 
                                 manager.addUserToServer(baseURL, gson, userName, userEmail);
                                 break;
 
                             case 2:
                                 IO.println("Lägger till en bok på servern...");
+
                                 String postBookTitle = IO.readln("Ange titel: ");
+                                if (postBookTitle.isBlank()) {
+                                    IO.println("Titel får inte vara tom.");
+                                    break;
+                                }
+
                                 String postBookAuthor = IO.readln("Ange författare: ");
+                                if (postBookAuthor.isBlank()) {
+                                    IO.println("Författare får inte vara tom.");
+                                    break;
+                                }
+
                                 String postBookGenre = IO.readln("Ange genre: ");
+                                if (postBookGenre.isBlank()) {
+                                    IO.println("Genre får inte vara tom.");
+                                    break;
+                                }
+
                                 int postBookPages;
                                 try {
                                     postBookPages = Integer.parseInt(IO.readln("Ange antal sidor: "));
@@ -268,20 +309,38 @@ public class Main {
                                     break;
                                 }
 
-                                manager.addBookToServer(baseURL, gson, postBookTitle, postBookAuthor, postBookGenre,
-                                        postBookPages);
+                                if (postBookPages <= 0) {
+                                    IO.println("Antal sidor måste vara större än 0.");
+                                    break;
+                                }
+
+                                manager.addBookToServer(baseURL, gson, postBookTitle, postBookAuthor, postBookGenre, postBookPages);
                                 break;
 
                             case 3:
                                 IO.println("Lägger till en tidning på servern...");
                                 String postMagazineTitle = IO.readln("Ange titel: ");
+                                if (postMagazineTitle.isBlank()) {
+                                    IO.println("Titel får inte vara tom.");
+                                    break;
+                                }
+
                                 String postMagazineCategory = IO.readln("Ange kategori: ");
+                                if (postMagazineCategory.isBlank()) {
+                                    IO.println("Kategori får inte vara tom.");
+                                    break;
+                                }
 
                                 int postIssueNumber;
                                 try {
                                     postIssueNumber = Integer.parseInt(IO.readln("Ange nummer: "));
                                 } catch (NumberFormatException e) {
                                     IO.println("Felaktigt nummer.");
+                                    break;
+                                }
+
+                                if (postIssueNumber <= 0) {
+                                    IO.println("Nummer måste vara större än 0.");
                                     break;
                                 }
 
@@ -293,14 +352,41 @@ public class Main {
                                     break;
                                 }
 
+                                if (postPublishedYear <= 0) {
+                                    IO.println("Publiceringsår måste vara större än 0.");
+                                    break;
+                                }
+
                                 manager.addMagazineToServer(baseURL, gson, postMagazineTitle, postMagazineCategory,
                                         postIssueNumber, postPublishedYear);
                                 break;
 
                             case 4:
                                 IO.println("Lägger till en avstängd användare på servern...");
+                                
+                                if (manager.getUsers().isEmpty()) {
+                                    IO.println("Inga användare är hämtade. Hämta användare först.");
+                                    break;
+                                }
+
                                 String suspendedId = IO.readln("Ange id för avstängningen: ");
+                                if (suspendedId.isBlank()) {
+                                    IO.println("Id får inte vara tomt.");
+                                    break;
+                                }
+
                                 String customerId = IO.readln("Ange användarens id: ");
+                                if (customerId.isBlank()) {
+                                    IO.println("Användarens id får inte vara tomt.");
+                                    break;
+                                }
+
+                                User userToSuspend = manager.findUserById(customerId);
+
+                                if (userToSuspend == null) {
+                                    IO.println("Ingen användare hittades med det id:t.");
+                                    break;
+                                }
 
                                 manager.addSuspendedUserToServer(baseURL, gson, suspendedId, customerId);
                                 break;
@@ -342,28 +428,72 @@ public class Main {
                         switch (taBortVal) {
                             case 1:
                                 IO.println("Tar bort användare via e-post...");
+
+                                if (manager.getUsers().isEmpty()) {
+                                    IO.println("Inga användare är hämtade. Hämta användare först.");
+                                    break;
+                                }
+
                                 String emailToDelete = IO.readln("Ange e-post för användare som ska tas bort: ");
+
+                                if (emailToDelete.isBlank()) {
+                                    IO.println("E-post får inte vara tom.");
+                                    break;
+                                }
 
                                 manager.deleteUserByEmailFromServer(baseURL, emailToDelete);
                                 break;
 
                             case 2:
                                 IO.println("Tar bort bok via titel...");
+
+                                if (manager.getBooks().isEmpty()) {
+                                    IO.println("Inga böcker är hämtade. Hämta böcker först.");
+                                    break;
+                                }
+
                                 String titleToDelete = IO.readln("Ange titel på boken som ska tas bort: ");
+
+                                if (titleToDelete.isBlank()) {
+                                    IO.println("Titel får inte vara tom.");
+                                    break;
+                                }
 
                                 manager.deleteBookByTitleFromServer(baseURL, titleToDelete);
                                 break;
 
                             case 3:
                                 IO.println("Tar bort tidning via titel...");
+
+                                if (manager.getMagazines().isEmpty()) {
+                                    IO.println("Inga tidningar är hämtade. Hämta tidningar först.");
+                                    break;
+                                }
+
                                 String magazineTitleToDelete = IO.readln("Ange titel på tidningen som ska tas bort: ");
+
+                                if (magazineTitleToDelete.isBlank()) {
+                                    IO.println("Titel får inte vara tom.");
+                                    break;
+                                }
 
                                 manager.deleteMagazineByTitleFromServer(baseURL, magazineTitleToDelete);
                                 break;
 
                             case 4:
                                 IO.println("Tar bort avstängd användare via id...");
+
+                                if (manager.getSuspendedUsers().isEmpty()) {
+                                    IO.println("Inga avstängda användare är hämtade. Hämta avstängda användare först.");
+                                    break;
+                                }
+
                                 String suspendedIdToDelete = IO.readln("Ange id på avstängningen som ska tas bort: ");
+
+                                if (suspendedIdToDelete.isBlank()) {
+                                    IO.println("Id får inte vara tomt.");
+                                    break;
+                                }
 
                                 manager.deleteSuspendedUserByIdFromServer(baseURL, suspendedIdToDelete);
                                 break;
