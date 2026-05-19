@@ -393,6 +393,9 @@ public class LibraryManager {
         return true;
     }
 
+    /**
+     * Hittar en användare med hjälp av id.
+     */
     public User findUserById(String id){
         for (User user : users) {
             if (user.getId().equalsIgnoreCase(id)) {
@@ -400,6 +403,54 @@ public class LibraryManager {
             }
         }
         return null;
+    }
+
+    /**
+     * Kontrollerar om e-postadressen redan finns bland användarna.
+     */
+    public boolean emailExists(String email){
+        for (User user : users){
+            if (user.getEmail().equalsIgnoreCase(email)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Kontrollerar om en användare redan finns i listan över avstängda användare.
+     */
+    public boolean isUserAlreadySuspended(String customerId){
+        for (SuspendedUser suspendedUser : suspendedUsers){
+            if (suspendedUser.getCustomer_id().equalsIgnoreCase(customerId)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Kontrollerar om en boktitel redan finns i samlingen.
+     */
+    public boolean bookTitleExists(String title){
+        for (Book book : books){
+            if (book.getTitle().equalsIgnoreCase(title)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Kontrollerar om en tidningstitel redan finns i samlingen.
+     */
+    public boolean magazineTitleExists(String title){
+        for (Magazine magazine : magazines){
+            if (magazine.getTitle().equalsIgnoreCase(title)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

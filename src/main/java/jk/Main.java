@@ -277,6 +277,11 @@ public class Main {
                                     break;
                                 }
 
+                                if (manager.emailExists(userEmail)) {
+                                    IO.println("Det finns redan en användare med den e-postadressen.");
+                                    break;
+                                }
+
                                 manager.addUserToServer(baseURL, gson, userName, userEmail);
                                 break;
 
@@ -311,6 +316,11 @@ public class Main {
 
                                 if (postBookPages <= 0) {
                                     IO.println("Antal sidor måste vara större än 0.");
+                                    break;
+                                }
+
+                                if (manager.bookTitleExists(postBookTitle)) {
+                                    IO.println("Det finns redan en bok med denna titel");
                                     break;
                                 }
 
@@ -357,6 +367,11 @@ public class Main {
                                     break;
                                 }
 
+                                if (manager.magazineTitleExists(postMagazineTitle)) {
+                                    IO.println("Det finns redan en tidning med denna titel.");
+                                    break;
+                                }
+
                                 manager.addMagazineToServer(baseURL, gson, postMagazineTitle, postMagazineCategory,
                                         postIssueNumber, postPublishedYear);
                                 break;
@@ -385,6 +400,11 @@ public class Main {
 
                                 if (userToSuspend == null) {
                                     IO.println("Ingen användare hittades med det id:t.");
+                                    break;
+                                }
+
+                                if (manager.isUserAlreadySuspended(customerId)) {
+                                    IO.println("Användaren är redan avstängd.");
                                     break;
                                 }
 
