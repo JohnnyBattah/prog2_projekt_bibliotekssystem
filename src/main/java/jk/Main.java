@@ -468,12 +468,6 @@ public class Main {
                                     break;
                                 }
 
-                                String suspendedId = IO.readln("Ange id för avstängningen: ");
-                                if (suspendedId.isBlank()) {
-                                    IO.println("Id får inte vara tomt.");
-                                    break;
-                                }
-
                                 String customerId = IO.readln("Ange användarens id: ");
                                 if (customerId.isBlank()) {
                                     IO.println("Användarens id får inte vara tomt.");
@@ -492,7 +486,7 @@ public class Main {
                                     break;
                                 }
 
-                                manager.addSuspendedUserToServer(baseURL, gson, suspendedId, customerId);
+                                manager.addSuspendedUserToServer(baseURL, gson, customerId);
                                 break;
 
                             case 5:

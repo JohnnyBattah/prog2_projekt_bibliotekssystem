@@ -28,8 +28,6 @@ public class LibraryManager {
     private ArrayList<Magazine> magazines;
     private ArrayList<User> users;
     private ArrayList<SuspendedUser> suspendedUsers;
-    private Map<String, Book> bookMap;
-    private Map<String, Magazine> magazineMap;
     private Map<String, User> userMap;
     private Set<String> suspendedIdSet;
 
@@ -38,9 +36,6 @@ public class LibraryManager {
         magazines = new ArrayList<>();
         users = new ArrayList<>();
         suspendedUsers = new ArrayList<>();
-
-        bookMap =  new HashMap<>();
-        magazineMap = new HashMap<>();
         userMap = new HashMap<>();
         suspendedIdSet = new HashSet<>();
     }
@@ -203,6 +198,11 @@ public class LibraryManager {
         }.getType();
         this.users = gson.fromJson(usersBody, userListType);
 
+        userMap.clear();
+        for (User user : users){
+            userMap.put(user.getEmail().toLowerCase(), user);
+        }
+
         IO.println("Användare hämtade från servern. Antal: " + users.size());
         return true;
     }
@@ -253,6 +253,11 @@ public class LibraryManager {
         Type suspendedListType = new TypeToken<ArrayList<SuspendedUser>>() {
         }.getType();
         this.suspendedUsers = gson.fromJson(suspendedBody, suspendedListType);
+
+        suspendedIdSet.clear();
+        for (SuspendedUser suspendedUser : suspendedUsers){
+            suspendedIdSet.add(suspendedUser.getCustomer_id());
+        }
 
         IO.println("Avstängda användare hämtade från servern. Antal: " + suspendedUsers.size());
         return true;
@@ -374,6 +379,7 @@ public class LibraryManager {
 
         User savedUser = gson.fromJson(postUserResponse.getBody(), User.class);
         users.add(savedUser);
+        userMap.put(savedUser.getEmail().toLowerCase(), savedUser);
 
         IO.println("Användaren lades till på servern och i den lokala samlingen.");
         return true;
@@ -382,8 +388,8 @@ public class LibraryManager {
     /**
      * Lägger till en ny avstängd användare på servern och sparar den lokalt i listan.
      */
-    public boolean addSuspendedUserToServer(String baseURL, Gson gson, String id, String customerId) {
-        SuspendedUser newSuspendedUser = new SuspendedUser(id, customerId);
+    public boolean addSuspendedUserToServer(String baseURL, Gson gson, String customerId) {
+        SuspendedUser newSuspendedUser = new SuspendedUser(null, customerId);
         String suspendedJson = gson.toJson(newSuspendedUser);
 
         HttpResponse<String> postSuspendedResponse;
@@ -406,6 +412,7 @@ public class LibraryManager {
 
         SuspendedUser savedSuspendedUser = gson.fromJson(postSuspendedResponse.getBody(), SuspendedUser.class);
         suspendedUsers.add(savedSuspendedUser);
+        suspendedIdSet.add(savedSuspendedUser.getCustomer_id());
 
         IO.println("Den avstängda användaren lades till på servern och i den lokala samlingen.");
         return true;
@@ -525,6 +532,7 @@ public class LibraryManager {
         }
 
         users.remove(userToDelete);
+        userMap.remove(userToDelete.getEmail().toLowerCase());
         IO.println("Användaren togs bort från servern och från den lokala samlingen.");
         return true;
     }
@@ -555,6 +563,11 @@ public class LibraryManager {
         }
 
         removeSuspendedUserById(id);
+
+        suspendedIdSet.clear();
+        for (SuspendedUser suspendedUser : suspendedUsers){
+            suspendedIdSet.add(suspendedUser.getCustomer_id());
+        }
         IO.println("Den avstängda användaren togs bort från servern och från den lokala samlingen.");
 
         return true;
@@ -585,27 +598,17 @@ public class LibraryManager {
     }
 
     /**
-     * Kontrollerar om e-postadressen redan finns bland användarna.
+     * Kontrollerar om e-postadressen redan finns bland användarna via HashMap.
      */
     public boolean emailExists(String email) {
-        for (User user : users) {
-            if (user.getEmail().equalsIgnoreCase(email)) {
-                return true;
-            }
-        }
-        return false;
+        return userMap.containsKey(email.toLowerCase());
     }
 
     /**
-     * Kontrollerar om en användare redan finns i listan över avstängda användare.
+     * Kontrollerar om en användares id redan finns i mängden avstängda användare.
      */
     public boolean isUserAlreadySuspended(String customerId) {
-        for (SuspendedUser suspendedUser : suspendedUsers) {
-            if (suspendedUser.getCustomer_id().equalsIgnoreCase(customerId)) {
-                return true;
-            }
-        }
-        return false;
+        return suspendedIdSet.contains(customerId);
     }
 
     /**
@@ -774,27 +777,17 @@ public class LibraryManager {
     }
 
     /**
-     * Hittar en användare med hjälp av e-post.
+     * Hittar en användare med hjälp av e-post via HashMap.
      */
     public User findUserByEmail(String email) {
-        for (User user : users) {
-            if (user.getEmail().equalsIgnoreCase(email)) {
-                return user;
-            }
-        }
-        return null;
+        return userMap.get(email.toLowerCase());
     }
 
     /**
      * Avgör om en användare får låna eller inte.
-     * Returnerar false om användaren finns i listan över avstängda användare.
+     * Returnerar false om användarens id finns i mängden över avstängda användare.
      */
     public boolean canUserBorrow(String customerId) {
-        for (SuspendedUser suspendedUser : suspendedUsers) {
-            if (suspendedUser.getCustomer_id().equalsIgnoreCase(customerId)) {
-                return false;
-            }
-        }
-        return true;
+        return !suspendedIdSet.contains(customerId);
     }
 }
