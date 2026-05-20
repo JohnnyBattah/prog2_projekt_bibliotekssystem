@@ -11,11 +11,16 @@ import kong.unirest.Unirest;
 import kong.unirest.UnirestException;
 import kong.unirest.HttpResponse;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * Författare: Johnny Battah
  * Klassen LibraryManager ansvarar för att lagra och hantera böcker,
  * tidningar, användare och avstängda användare i bibliotekssystemet.
- * Klassen används för sökning, sortering och kontroll av lånerätt
+ * Klassen används för sökning, sortering och kontroll av lånerätt.
  */
 
 public class LibraryManager {
@@ -23,12 +28,21 @@ public class LibraryManager {
     private ArrayList<Magazine> magazines;
     private ArrayList<User> users;
     private ArrayList<SuspendedUser> suspendedUsers;
+    private Map<String, Book> bookMap;
+    private Map<String, Magazine> magazineMap;
+    private Map<String, User> userMap;
+    private Set<String> suspendedIdSet;
 
     public LibraryManager() {
         books = new ArrayList<>();
         magazines = new ArrayList<>();
         users = new ArrayList<>();
         suspendedUsers = new ArrayList<>();
+
+        bookMap =  new HashMap<>();
+        magazineMap = new HashMap<>();
+        userMap = new HashMap<>();
+        suspendedIdSet = new HashSet<>();
     }
 
     public void setBooks(ArrayList<Book> books) {
@@ -64,7 +78,7 @@ public class LibraryManager {
     }
 
     /**
-     * Hämtar alla böcker från servern och sparardem i listan
+     * Hämtar alla böcker från servern och sparar dem i listan.
      */
     public boolean fetchBooks(String baseURL, Gson gson) {
         HttpResponse<String> booksResponse;
@@ -90,6 +104,9 @@ public class LibraryManager {
         return true;
     }
 
+    /**
+     * Hämtar en bok från servern med hjälp av id.
+     */
     public boolean fetchOneBook(String baseURL, Gson gson, String id) {
         HttpResponse<String> response;
 
@@ -111,6 +128,9 @@ public class LibraryManager {
         return true;
     }
 
+    /**
+     * Hämtar alla tidningar från servern och sparar dem i listan.
+     */
     public boolean fetchMagazines(String baseURL, Gson gson) {
         HttpResponse<String> magazinesResponse;
         try {
@@ -135,6 +155,9 @@ public class LibraryManager {
         return true;
     }
 
+    /**
+     * Hämtar en tidning från servern med hjälp av id.
+     */
     public boolean fetchOneMagazine(String baseURL, Gson gson, String id) {
         HttpResponse<String> response;
 
@@ -156,6 +179,9 @@ public class LibraryManager {
         return true;
     }
 
+    /**
+     * Hämtar alla användare från servern och sparar dem i listan.
+     */
     public boolean fetchUsers(String baseURL, Gson gson) {
         HttpResponse<String> usersResponse;
 
@@ -181,6 +207,9 @@ public class LibraryManager {
         return true;
     }
 
+    /**
+     * Hämtar en användare från servern med hjälp av id.
+     */
     public boolean fetchOneUser(String baseURL, Gson gson, String id) {
         HttpResponse<String> response;
 
@@ -202,6 +231,9 @@ public class LibraryManager {
         return true;
     }
 
+    /**
+     * Hämtar alla avstängda användare från servern och sparar dem i listan.
+     */
     public boolean fetchSuspendedUsers(String baseURL, Gson gson) {
         HttpResponse<String> suspendedResponse;
         try {
@@ -226,6 +258,9 @@ public class LibraryManager {
         return true;
     }
 
+    /**
+     * Hämtar en avstängd användare från servern med hjälp av id.
+     */
     public boolean fetchOneSuspendedUser(String baseURL, Gson gson, String id) {
         HttpResponse<String> response;
 
@@ -247,35 +282,9 @@ public class LibraryManager {
         return true;
     }
 
-    public boolean addUserToServer(String baseURL, Gson gson, String name, String email) {
-        User newUser = new User(null, name, email);
-        String userJson = gson.toJson(newUser);
-
-        HttpResponse<String> postUserResponse;
-        try {
-            postUserResponse = Unirest.post(baseURL + "users")
-                    .header("Content-Type", "application/json")
-                    .body(userJson)
-                    .asString();
-        } catch (UnirestException e) {
-            IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
-            return false;
-        }
-
-        int postUserStatus = postUserResponse.getStatus();
-        if (postUserStatus != 201 && postUserStatus != 200) {
-            IO.println("Fel vid skapande av användare. Statuskod: " + postUserStatus);
-            IO.println("Svar från servern: " + postUserResponse.getBody());
-            return false;
-        }
-
-        User savedUser = gson.fromJson(postUserResponse.getBody(), User.class);
-        users.add(savedUser);
-
-        IO.println("Användaren lades till på servern och i den lokala samlingen.");
-        return true;
-    }
-
+    /**
+     * Lägger till en ny bok på servern och sparar den lokalt i listan.
+     */
     public boolean addBookToServer(String baseURL, Gson gson, String title, String author, String genre, int pages) {
         Book newBook = new Book(null, title, true, author, genre, pages);
         String bookJson = gson.toJson(newBook);
@@ -305,6 +314,9 @@ public class LibraryManager {
         return true;
     }
 
+    /**
+     * Lägger till en ny tidning på servern och sparar den lokalt i listan.
+     */
     public boolean addMagazineToServer(String baseURL, Gson gson, String title, String category, int issueNumber,
             int publishedYear) {
         Magazine newServerMagazine = new Magazine(null, title, true, issueNumber, category, publishedYear);
@@ -335,6 +347,41 @@ public class LibraryManager {
         return true;
     }
 
+    /**
+     * Lägger till en ny användare på servern och sparar den lokalt i listan.
+     */
+    public boolean addUserToServer(String baseURL, Gson gson, String name, String email) {
+        User newUser = new User(null, name, email);
+        String userJson = gson.toJson(newUser);
+
+        HttpResponse<String> postUserResponse;
+        try {
+            postUserResponse = Unirest.post(baseURL + "users")
+                    .header("Content-Type", "application/json")
+                    .body(userJson)
+                    .asString();
+        } catch (UnirestException e) {
+            IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
+            return false;
+        }
+
+        int postUserStatus = postUserResponse.getStatus();
+        if (postUserStatus != 201 && postUserStatus != 200) {
+            IO.println("Fel vid skapande av användare. Statuskod: " + postUserStatus);
+            IO.println("Svar från servern: " + postUserResponse.getBody());
+            return false;
+        }
+
+        User savedUser = gson.fromJson(postUserResponse.getBody(), User.class);
+        users.add(savedUser);
+
+        IO.println("Användaren lades till på servern och i den lokala samlingen.");
+        return true;
+    }
+
+    /**
+     * Lägger till en ny avstängd användare på servern och sparar den lokalt i listan.
+     */
     public boolean addSuspendedUserToServer(String baseURL, Gson gson, String id, String customerId) {
         SuspendedUser newSuspendedUser = new SuspendedUser(id, customerId);
         String suspendedJson = gson.toJson(newSuspendedUser);
@@ -364,41 +411,9 @@ public class LibraryManager {
         return true;
     }
 
-    public boolean deleteUserByEmailFromServer(String baseURL, String email) {
-        User userToDelete = findUserByEmail(email);
-
-        if (userToDelete == null) {
-            IO.println("Ingen användare hittades med den e-postadressen.");
-            return false;
-        }
-
-        String userIdToDelete = userToDelete.getId();
-
-        HttpResponse<String> deleteUserResponse;
-        try {
-            deleteUserResponse = Unirest.delete(baseURL + "users/" + userIdToDelete).asString();
-        } catch (UnirestException e) {
-            IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
-            return false;
-        }
-
-        int deleteUserStatus = deleteUserResponse.getStatus();
-        if (deleteUserStatus == 404) {
-            IO.println("Ingen användare hittades med det id:t.");
-            return false;
-        }
-
-        if (deleteUserStatus != 200 && deleteUserStatus != 204) {
-            IO.println("Fel vid borttagning av användare. Statuskod: " + deleteUserStatus);
-            IO.println("Svar från servern: " + deleteUserResponse.getBody());
-            return false;
-        }
-
-        users.remove(userToDelete);
-        IO.println("Användaren togs bort från servern och från den lokala samlingen.");
-        return true;
-    }
-
+    /**
+     * Tar bort en bok från servern och lokalt med hjälp av titel.
+     */
     public boolean deleteBookByTitleFromServer(String baseURL, String title) {
         Book bookToDelete = findBookByTitle(title);
 
@@ -435,6 +450,9 @@ public class LibraryManager {
         return true;
     }
 
+    /**
+     * Tar bort en tidning från servern och lokalt med hjälp av titel.
+     */
     public boolean deleteMagazineByTitleFromServer(String baseURL, String title) {
         Magazine magazineToDelete = findMagazineByTitle(title);
 
@@ -473,6 +491,47 @@ public class LibraryManager {
         return true;
     }
 
+    /**
+     * Tar bort en användare från servern och lokalt med hjälp av e-post.
+     */
+    public boolean deleteUserByEmailFromServer(String baseURL, String email) {
+        User userToDelete = findUserByEmail(email);
+
+        if (userToDelete == null) {
+            IO.println("Ingen användare hittades med den e-postadressen.");
+            return false;
+        }
+
+        String userIdToDelete = userToDelete.getId();
+
+        HttpResponse<String> deleteUserResponse;
+        try {
+            deleteUserResponse = Unirest.delete(baseURL + "users/" + userIdToDelete).asString();
+        } catch (UnirestException e) {
+            IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
+            return false;
+        }
+
+        int deleteUserStatus = deleteUserResponse.getStatus();
+        if (deleteUserStatus == 404) {
+            IO.println("Ingen användare hittades med det id:t.");
+            return false;
+        }
+
+        if (deleteUserStatus != 200 && deleteUserStatus != 204) {
+            IO.println("Fel vid borttagning av användare. Statuskod: " + deleteUserStatus);
+            IO.println("Svar från servern: " + deleteUserResponse.getBody());
+            return false;
+        }
+
+        users.remove(userToDelete);
+        IO.println("Användaren togs bort från servern och från den lokala samlingen.");
+        return true;
+    }
+
+    /**
+     * Tar bort en avstängd användare från servern och lokalt med hjälp av id.
+     */
     public boolean deleteSuspendedUserByIdFromServer(String baseURL, String id) {
         HttpResponse<String> deleteSuspendedResponse;
         try {
@@ -492,7 +551,6 @@ public class LibraryManager {
 
         if (deleteSuspendedStatus != 200 && deleteSuspendedStatus != 204) {
             IO.println("Fel vid borttagning av avstängd användare. Statuskod: " + deleteSuspendedStatus);
-            IO.println("Svar från servern: " + deleteSuspendedResponse.getBody());
             return false;
         }
 
@@ -500,42 +558,6 @@ public class LibraryManager {
         IO.println("Den avstängda användaren togs bort från servern och från den lokala samlingen.");
 
         return true;
-    }
-
-    /**
-     * Hittar en användare med hjälp av id.
-     */
-    public User findUserById(String id) {
-        for (User user : users) {
-            if (user.getId().equalsIgnoreCase(id)) {
-                return user;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Kontrollerar om e-postadressen redan finns bland användarna.
-     */
-    public boolean emailExists(String email) {
-        for (User user : users) {
-            if (user.getEmail().equalsIgnoreCase(email)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Kontrollerar om en användare redan finns i listan över avstängda användare.
-     */
-    public boolean isUserAlreadySuspended(String customerId) {
-        for (SuspendedUser suspendedUser : suspendedUsers) {
-            if (suspendedUser.getCustomer_id().equalsIgnoreCase(customerId)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**
@@ -563,45 +585,81 @@ public class LibraryManager {
     }
 
     /**
-     * Lägger till en bok i samlingen
+     * Kontrollerar om e-postadressen redan finns bland användarna.
+     */
+    public boolean emailExists(String email) {
+        for (User user : users) {
+            if (user.getEmail().equalsIgnoreCase(email)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Kontrollerar om en användare redan finns i listan över avstängda användare.
+     */
+    public boolean isUserAlreadySuspended(String customerId) {
+        for (SuspendedUser suspendedUser : suspendedUsers) {
+            if (suspendedUser.getCustomer_id().equalsIgnoreCase(customerId)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Lägger till en bok i samlingen.
      */
     public void addBook(Book book) {
         books.add(book);
     }
 
     /**
-     * Lägger till en tidning i samlingen
+     * Lägger till en tidning i samlingen.
      */
     public void addMagazine(Magazine magazine) {
         magazines.add(magazine);
     }
 
     /**
-     * Lägger till en användare i samlingen
+     * Lägger till en användare i samlingen.
      */
     public void addUser(User user) {
         users.add(user);
     }
 
     /**
-     * Lägger till en avstängd användare i samlingen
+     * Lägger till en avstängd användare i samlingen.
      */
     public void addSuspendedUser(SuspendedUser suspendedUser) {
         suspendedUsers.add(suspendedUser);
     }
 
+    /**
+     * Tar bort en bok ur den lokala listan.
+     */
     public void removeBook(Book book) {
         books.remove(book);
     }
 
+    /**
+     * Tar bort en tidning ur den lokala listan.
+     */
     public void removeMagazine(Magazine magazine) {
         magazines.remove(magazine);
     }
 
+    /**
+     * Tar bort en användare ur den lokala listan.
+     */
     public void removeUser(User user) {
         users.remove(user);
     }
 
+    /**
+     * Tar bort en avstängd användare ur den lokala listan med hjälp av id.
+     */
     public void removeSuspendedUserById(String id) {
         for (int i = 0; i < suspendedUsers.size(); i++) {
             if (suspendedUsers.get(i).getId().equalsIgnoreCase(id)) {
@@ -612,7 +670,7 @@ public class LibraryManager {
     }
 
     /**
-     * skriver ut böcker sorterade på titel
+     * Skriver ut böcker sorterade på titel.
      */
     public void printBooksSorted() {
         ArrayList<Book> sortedBooks = new ArrayList<>(books);
@@ -629,7 +687,7 @@ public class LibraryManager {
     }
 
     /**
-     * skriver ut tidningar sorterade på titel
+     * Skriver ut tidningar sorterade på titel.
      */
     public void printMagazinesSorted() {
         ArrayList<Magazine> sortedMagazines = new ArrayList<>(magazines);
@@ -646,7 +704,7 @@ public class LibraryManager {
     }
 
     /**
-     * skriver ut användare sorterade på namn
+     * Skriver ut användare sorterade på namn.
      */
     public void printUsersSorted() {
         ArrayList<User> sortedUsers = new ArrayList<>(users);
@@ -662,6 +720,9 @@ public class LibraryManager {
         }
     }
 
+    /**
+     * Skriver ut avstängda användare sorterade på id.
+     */
     public void printSuspendedUsersSorted() {
         ArrayList<SuspendedUser> sortedSuspendedUsers = new ArrayList<>(suspendedUsers);
         Collections.sort(sortedSuspendedUsers);
@@ -701,7 +762,19 @@ public class LibraryManager {
     }
 
     /**
-     * Hittar en användare med hjälp av email.
+     * Hittar en användare med hjälp av id.
+     */
+    public User findUserById(String id) {
+        for (User user : users) {
+            if (user.getId().equalsIgnoreCase(id)) {
+                return user;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Hittar en användare med hjälp av e-post.
      */
     public User findUserByEmail(String email) {
         for (User user : users) {
@@ -714,7 +787,7 @@ public class LibraryManager {
 
     /**
      * Avgör om en användare får låna eller inte.
-     * Returnerar false om användaren finns i listan över avstängda
+     * Returnerar false om användaren finns i listan över avstängda användare.
      */
     public boolean canUserBorrow(String customerId) {
         for (SuspendedUser suspendedUser : suspendedUsers) {
@@ -724,5 +797,4 @@ public class LibraryManager {
         }
         return true;
     }
-
 }

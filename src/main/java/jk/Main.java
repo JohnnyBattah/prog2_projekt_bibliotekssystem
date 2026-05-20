@@ -329,9 +329,9 @@ public class Main {
                         IO.println("""
 
                                     === LÄGG TILL ===
-                                    1. Lägg till användare på servern
-                                    2. Lägg till bok på servern
-                                    3. Lägg till tidning på servern
+                                    1. Lägg till bok på servern
+                                    2. Lägg till tidning på servern
+                                    3. Lägg till användare på servern
                                     4. Lägg till avstängd användare på servern
                                     5. Tillbaka
                                 """);
@@ -348,27 +348,6 @@ public class Main {
 
                         switch (läggTillVal) {
                             case 1:
-                                IO.println("Lägger till en användare på servern...");
-                                String userName = IO.readln("Ange namn: ");
-                                if (userName.isBlank()) {
-                                    IO.println("Namn får inte vara tomt.");
-                                    break;
-                                }
-                                String userEmail = IO.readln("Ange e-post: ");
-                                if (userEmail.isBlank()) {
-                                    IO.println("E-post får inte vara tom.");
-                                    break;
-                                }
-
-                                if (manager.emailExists(userEmail)) {
-                                    IO.println("Det finns redan en användare med den e-postadressen.");
-                                    break;
-                                }
-
-                                manager.addUserToServer(baseURL, gson, userName, userEmail);
-                                break;
-
-                            case 2:
                                 IO.println("Lägger till en bok på servern...");
 
                                 String postBookTitle = IO.readln("Ange titel: ");
@@ -411,7 +390,7 @@ public class Main {
                                         postBookPages);
                                 break;
 
-                            case 3:
+                            case 2:
                                 IO.println("Lägger till en tidning på servern...");
                                 String postMagazineTitle = IO.readln("Ange titel: ");
                                 if (postMagazineTitle.isBlank()) {
@@ -458,6 +437,27 @@ public class Main {
 
                                 manager.addMagazineToServer(baseURL, gson, postMagazineTitle, postMagazineCategory,
                                         postIssueNumber, postPublishedYear);
+                                break;
+
+                            case 3:
+                                IO.println("Lägger till en användare på servern...");
+                                String userName = IO.readln("Ange namn: ");
+                                if (userName.isBlank()) {
+                                    IO.println("Namn får inte vara tomt.");
+                                    break;
+                                }
+                                String userEmail = IO.readln("Ange e-post: ");
+                                if (userEmail.isBlank()) {
+                                    IO.println("E-post får inte vara tom.");
+                                    break;
+                                }
+
+                                if (manager.emailExists(userEmail)) {
+                                    IO.println("Det finns redan en användare med den e-postadressen.");
+                                    break;
+                                }
+
+                                manager.addUserToServer(baseURL, gson, userName, userEmail);
                                 break;
 
                             case 4:
@@ -512,9 +512,9 @@ public class Main {
                         IO.println("""
 
                                     === TA BORT ===
-                                    1. Ta bort användare via e-post
-                                    2. Ta bort bok via titel
-                                    3. Ta bort tidning via titel
+                                    1. Ta bort bok via titel
+                                    2. Ta bort tidning via titel
+                                    3. Ta bort användare via e-post
                                     4. Ta bort avstängd användare via id
                                     5. Tillbaka
                                 """);
@@ -531,24 +531,6 @@ public class Main {
 
                         switch (taBortVal) {
                             case 1:
-                                IO.println("Tar bort användare via e-post...");
-
-                                if (manager.getUsers().isEmpty()) {
-                                    IO.println("Inga användare är hämtade. Hämta användare först.");
-                                    break;
-                                }
-
-                                String emailToDelete = IO.readln("Ange e-post för användare som ska tas bort: ");
-
-                                if (emailToDelete.isBlank()) {
-                                    IO.println("E-post får inte vara tom.");
-                                    break;
-                                }
-
-                                manager.deleteUserByEmailFromServer(baseURL, emailToDelete);
-                                break;
-
-                            case 2:
                                 IO.println("Tar bort bok via titel...");
 
                                 if (manager.getBooks().isEmpty()) {
@@ -566,7 +548,7 @@ public class Main {
                                 manager.deleteBookByTitleFromServer(baseURL, titleToDelete);
                                 break;
 
-                            case 3:
+                            case 2:
                                 IO.println("Tar bort tidning via titel...");
 
                                 if (manager.getMagazines().isEmpty()) {
@@ -582,6 +564,24 @@ public class Main {
                                 }
 
                                 manager.deleteMagazineByTitleFromServer(baseURL, magazineTitleToDelete);
+                                break;
+
+                            case 3:
+                                IO.println("Tar bort användare via e-post...");
+
+                                if (manager.getUsers().isEmpty()) {
+                                    IO.println("Inga användare är hämtade. Hämta användare först.");
+                                    break;
+                                }
+
+                                String emailToDelete = IO.readln("Ange e-post för användare som ska tas bort: ");
+
+                                if (emailToDelete.isBlank()) {
+                                    IO.println("E-post får inte vara tom.");
+                                    break;
+                                }
+
+                                manager.deleteUserByEmailFromServer(baseURL, emailToDelete);
                                 break;
 
                             case 4:
