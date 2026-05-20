@@ -28,10 +28,17 @@ public class LibraryManager {
     private ArrayList<Magazine> magazines;
     private ArrayList<User> users;
     private ArrayList<SuspendedUser> suspendedUsers;
+
     private Map<String, User> userMap;
     private Set<String> suspendedIdSet;
 
+    private String baseURL;
+    private Gson gson;
+
     public LibraryManager() {
+        baseURL = "http://localhost:3000/";
+        gson = new Gson();
+
         books = new ArrayList<>();
         magazines = new ArrayList<>();
         users = new ArrayList<>();
@@ -39,6 +46,8 @@ public class LibraryManager {
         userMap = new HashMap<>();
         suspendedIdSet = new HashSet<>();
     }
+
+    
 
     public void setBooks(ArrayList<Book> books) {
         this.books = books;
@@ -75,7 +84,7 @@ public class LibraryManager {
     /**
      * Hämtar alla böcker från servern och sparar dem i listan.
      */
-    public boolean fetchBooks(String baseURL, Gson gson) {
+    public boolean fetchBooks() {
         HttpResponse<String> booksResponse;
         try {
             booksResponse = Unirest.get(baseURL + "/books").asString();
@@ -102,7 +111,7 @@ public class LibraryManager {
     /**
      * Hämtar en bok från servern med hjälp av id.
      */
-    public boolean fetchOneBook(String baseURL, Gson gson, String id) {
+    public boolean fetchOneBook(String id) {
         HttpResponse<String> response;
 
         try {
@@ -126,7 +135,7 @@ public class LibraryManager {
     /**
      * Hämtar alla tidningar från servern och sparar dem i listan.
      */
-    public boolean fetchMagazines(String baseURL, Gson gson) {
+    public boolean fetchMagazines() {
         HttpResponse<String> magazinesResponse;
         try {
             magazinesResponse = Unirest.get(baseURL + "/magazines").asString();
@@ -153,7 +162,7 @@ public class LibraryManager {
     /**
      * Hämtar en tidning från servern med hjälp av id.
      */
-    public boolean fetchOneMagazine(String baseURL, Gson gson, String id) {
+    public boolean fetchOneMagazine(String id) {
         HttpResponse<String> response;
 
         try {
@@ -177,7 +186,7 @@ public class LibraryManager {
     /**
      * Hämtar alla användare från servern och sparar dem i listan.
      */
-    public boolean fetchUsers(String baseURL, Gson gson) {
+    public boolean fetchUsers() {
         HttpResponse<String> usersResponse;
 
         try {
@@ -210,7 +219,7 @@ public class LibraryManager {
     /**
      * Hämtar en användare från servern med hjälp av id.
      */
-    public boolean fetchOneUser(String baseURL, Gson gson, String id) {
+    public boolean fetchOneUser(String id) {
         HttpResponse<String> response;
 
         try {
@@ -234,7 +243,7 @@ public class LibraryManager {
     /**
      * Hämtar alla avstängda användare från servern och sparar dem i listan.
      */
-    public boolean fetchSuspendedUsers(String baseURL, Gson gson) {
+    public boolean fetchSuspendedUsers() {
         HttpResponse<String> suspendedResponse;
         try {
             suspendedResponse = Unirest.get(baseURL + "/suspended").asString();
@@ -266,7 +275,7 @@ public class LibraryManager {
     /**
      * Hämtar en avstängd användare från servern med hjälp av id.
      */
-    public boolean fetchOneSuspendedUser(String baseURL, Gson gson, String id) {
+    public boolean fetchOneSuspendedUser(String id) {
         HttpResponse<String> response;
 
         try {
@@ -290,7 +299,7 @@ public class LibraryManager {
     /**
      * Lägger till en ny bok på servern och sparar den lokalt i listan.
      */
-    public boolean addBookToServer(String baseURL, Gson gson, String title, String author, String genre, int pages) {
+    public boolean addBookToServer(String title, String author, String genre, int pages) {
         Book newBook = new Book(null, title, true, author, genre, pages);
         String bookJson = gson.toJson(newBook);
 
@@ -322,7 +331,7 @@ public class LibraryManager {
     /**
      * Lägger till en ny tidning på servern och sparar den lokalt i listan.
      */
-    public boolean addMagazineToServer(String baseURL, Gson gson, String title, String category, int issueNumber,
+    public boolean addMagazineToServer(String title, String category, int issueNumber,
             int publishedYear) {
         Magazine newServerMagazine = new Magazine(null, title, true, issueNumber, category, publishedYear);
         String magazineJson = gson.toJson(newServerMagazine);
@@ -355,7 +364,7 @@ public class LibraryManager {
     /**
      * Lägger till en ny användare på servern och sparar den lokalt i listan.
      */
-    public boolean addUserToServer(String baseURL, Gson gson, String name, String email) {
+    public boolean addUserToServer(String name, String email) {
         User newUser = new User(null, name, email);
         String userJson = gson.toJson(newUser);
 
@@ -388,7 +397,7 @@ public class LibraryManager {
     /**
      * Lägger till en ny avstängd användare på servern och sparar den lokalt i listan.
      */
-    public boolean addSuspendedUserToServer(String baseURL, Gson gson, String customerId) {
+    public boolean addSuspendedUserToServer(String customerId) {
         SuspendedUser newSuspendedUser = new SuspendedUser(null, customerId);
         String suspendedJson = gson.toJson(newSuspendedUser);
 
@@ -421,7 +430,7 @@ public class LibraryManager {
     /**
      * Tar bort en bok från servern och lokalt med hjälp av titel.
      */
-    public boolean deleteBookByTitleFromServer(String baseURL, String title) {
+    public boolean deleteBookByTitleFromServer(String title) {
         Book bookToDelete = findBookByTitle(title);
 
         if (bookToDelete == null) {
@@ -460,7 +469,7 @@ public class LibraryManager {
     /**
      * Tar bort en tidning från servern och lokalt med hjälp av titel.
      */
-    public boolean deleteMagazineByTitleFromServer(String baseURL, String title) {
+    public boolean deleteMagazineByTitleFromServer(String title) {
         Magazine magazineToDelete = findMagazineByTitle(title);
 
         if (magazineToDelete == null) {
@@ -501,7 +510,7 @@ public class LibraryManager {
     /**
      * Tar bort en användare från servern och lokalt med hjälp av e-post.
      */
-    public boolean deleteUserByEmailFromServer(String baseURL, String email) {
+    public boolean deleteUserByEmailFromServer(String email) {
         User userToDelete = findUserByEmail(email);
 
         if (userToDelete == null) {
@@ -540,7 +549,7 @@ public class LibraryManager {
     /**
      * Tar bort en avstängd användare från servern och lokalt med hjälp av id.
      */
-    public boolean deleteSuspendedUserByIdFromServer(String baseURL, String id) {
+    public boolean deleteSuspendedUserByIdFromServer(String id) {
         HttpResponse<String> deleteSuspendedResponse;
         try {
             deleteSuspendedResponse = Unirest.delete(baseURL + "suspended/" + id).asString();
@@ -605,7 +614,7 @@ public class LibraryManager {
     }
 
     /**
-     * Kontrollerar om en användares id redan finns i mängden avstängda användare.
+     * Kontrollerar om en användares id redan finns bland de avstängda användarna.
      */
     public boolean isUserAlreadySuspended(String customerId) {
         return suspendedIdSet.contains(customerId);
@@ -785,7 +794,7 @@ public class LibraryManager {
 
     /**
      * Avgör om en användare får låna eller inte.
-     * Returnerar false om användarens id finns i mängden över avstängda användare.
+     * Returnerar false om användarens id finns bland de avstängda användarna.
      */
     public boolean canUserBorrow(String customerId) {
         return !suspendedIdSet.contains(customerId);

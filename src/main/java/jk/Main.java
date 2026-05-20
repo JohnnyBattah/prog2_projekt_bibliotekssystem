@@ -7,16 +7,12 @@ package jk;
  * Programmet kan också söka användare via e-post och kontrollera om en användare får låna.
  */
 
-import com.google.gson.Gson;
 import kong.unirest.Unirest;
 
 public class Main {
     public static void main(String[] args) {
         // skoladress: http://10.151.168.5:3137/
         // hemadress: http://localhost:3000/
-
-        String baseURL = "http://localhost:3000/"; // Basadress till servern
-        Gson gson = new Gson(); // Omvandla mellan JSON och Java-objekt
 
         LibraryManager manager = new LibraryManager();
 
@@ -74,22 +70,22 @@ public class Main {
                         switch (hämtaVal) {
                             case 1:
                                 IO.println("Hämtar alla böcker...");
-                                manager.fetchBooks(baseURL, gson);
+                                manager.fetchBooks();
                                 break;
 
                             case 2:
                                 IO.println("Hämtar alla tidningar...");
-                                manager.fetchMagazines(baseURL, gson);
+                                manager.fetchMagazines();
                                 break;
 
                             case 3:
                                 IO.println("Hämtar alla användare...");
-                                manager.fetchUsers(baseURL, gson);
+                                manager.fetchUsers();
                                 break;
 
                             case 4:
                                 IO.println("Hämtar alla avstängda användare...");
-                                manager.fetchSuspendedUsers(baseURL, gson);
+                                manager.fetchSuspendedUsers();
                                 break;
 
                             case 5:
@@ -135,7 +131,7 @@ public class Main {
                                     break;
                                 }
 
-                                manager.fetchOneBook(baseURL, gson, bookId);
+                                manager.fetchOneBook(bookId);
                                 break;
 
                             case 2:
@@ -147,7 +143,7 @@ public class Main {
                                     break;
                                 }
 
-                                manager.fetchOneMagazine(baseURL, gson, magazineId);
+                                manager.fetchOneMagazine(magazineId);
                                 break;
 
                             case 3:
@@ -159,7 +155,7 @@ public class Main {
                                     break;
                                 }
 
-                                manager.fetchOneUser(baseURL, gson, userId);
+                                manager.fetchOneUser(userId);
                                 break;
 
                             case 4:
@@ -171,7 +167,7 @@ public class Main {
                                     break;
                                 }
 
-                                manager.fetchOneSuspendedUser(baseURL, gson, suspendedId);
+                                manager.fetchOneSuspendedUser(suspendedId);
                                 break;
 
                             case 5:
@@ -386,7 +382,7 @@ public class Main {
                                     break;
                                 }
 
-                                manager.addBookToServer(baseURL, gson, postBookTitle, postBookAuthor, postBookGenre,
+                                manager.addBookToServer(postBookTitle, postBookAuthor, postBookGenre,
                                         postBookPages);
                                 break;
 
@@ -435,7 +431,7 @@ public class Main {
                                     break;
                                 }
 
-                                manager.addMagazineToServer(baseURL, gson, postMagazineTitle, postMagazineCategory,
+                                manager.addMagazineToServer(postMagazineTitle, postMagazineCategory,
                                         postIssueNumber, postPublishedYear);
                                 break;
 
@@ -457,7 +453,7 @@ public class Main {
                                     break;
                                 }
 
-                                manager.addUserToServer(baseURL, gson, userName, userEmail);
+                                manager.addUserToServer(userName, userEmail);
                                 break;
 
                             case 4:
@@ -486,7 +482,7 @@ public class Main {
                                     break;
                                 }
 
-                                manager.addSuspendedUserToServer(baseURL, gson, customerId);
+                                manager.addSuspendedUserToServer(customerId);
                                 break;
 
                             case 5:
@@ -539,7 +535,7 @@ public class Main {
                                     break;
                                 }
 
-                                manager.deleteBookByTitleFromServer(baseURL, titleToDelete);
+                                manager.deleteBookByTitleFromServer(titleToDelete);
                                 break;
 
                             case 2:
@@ -557,7 +553,7 @@ public class Main {
                                     break;
                                 }
 
-                                manager.deleteMagazineByTitleFromServer(baseURL, magazineTitleToDelete);
+                                manager.deleteMagazineByTitleFromServer(magazineTitleToDelete);
                                 break;
 
                             case 3:
@@ -575,7 +571,7 @@ public class Main {
                                     break;
                                 }
 
-                                manager.deleteUserByEmailFromServer(baseURL, emailToDelete);
+                                manager.deleteUserByEmailFromServer(emailToDelete);
                                 break;
 
                             case 4:
@@ -593,7 +589,7 @@ public class Main {
                                     break;
                                 }
 
-                                manager.deleteSuspendedUserByIdFromServer(baseURL, suspendedIdToDelete);
+                                manager.deleteSuspendedUserByIdFromServer(suspendedIdToDelete);
                                 break;
 
                             case 5:
