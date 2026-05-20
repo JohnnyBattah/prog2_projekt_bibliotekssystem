@@ -1,6 +1,5 @@
 package jk;
 
-
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -64,6 +63,9 @@ public class LibraryManager {
         return suspendedUsers;
     }
 
+    /**
+     * Hämtar alla böcker från servern och sparardem i listan
+     */
     public boolean fetchBooks(String baseURL, Gson gson) {
         HttpResponse<String> booksResponse;
         try {
@@ -88,6 +90,27 @@ public class LibraryManager {
         return true;
     }
 
+    public boolean fetchOneBook(String baseURL, Gson gson, String id) {
+        HttpResponse<String> response;
+
+        try {
+            response = Unirest.get(baseURL + "/books/" + id).asString();
+        } catch (UnirestException e) {
+            IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
+            return false;
+        }
+
+        if (response.getStatus() != 200) {
+            IO.println("Ingen bok hittades med det id:t. Statuskod: " + response.getStatus());
+            return false;
+        }
+
+        Book book = gson.fromJson(response.getBody(), Book.class);
+        IO.println("Bok hämtad från servern:");
+        IO.println(book.getInfo());
+        return true;
+    }
+
     public boolean fetchMagazines(String baseURL, Gson gson) {
         HttpResponse<String> magazinesResponse;
         try {
@@ -109,6 +132,27 @@ public class LibraryManager {
         this.magazines = gson.fromJson(magazinesBody, magazineListType);
 
         IO.println("Tidningar hämtade från servern. Antal: " + magazines.size());
+        return true;
+    }
+
+    public boolean fetchOneMagazine(String baseURL, Gson gson, String id) {
+        HttpResponse<String> response;
+
+        try {
+            response = Unirest.get(baseURL + "/magazines/" + id).asString();
+        } catch (UnirestException e) {
+            IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
+            return false;
+        }
+
+        if (response.getStatus() != 200) {
+            IO.println("Ingen tidning hittades med det id:t. Statuskod: " + response.getStatus());
+            return false;
+        }
+
+        Magazine magazine = gson.fromJson(response.getBody(), Magazine.class);
+        IO.println("Tidning hämtad från servern:");
+        IO.println(magazine.getInfo());
         return true;
     }
 
@@ -137,6 +181,27 @@ public class LibraryManager {
         return true;
     }
 
+    public boolean fetchOneUser(String baseURL, Gson gson, String id) {
+        HttpResponse<String> response;
+
+        try {
+            response = Unirest.get(baseURL + "/users/" + id).asString();
+        } catch (UnirestException e) {
+            IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
+            return false;
+        }
+
+        if (response.getStatus() != 200) {
+            IO.println("Ingen användare hittades med det id:t. Statuskod: " + response.getStatus());
+            return false;
+        }
+
+        User user = gson.fromJson(response.getBody(), User.class);
+        IO.println("Användare hämtad från servern:");
+        IO.println(user.getInfo());
+        return true;
+    }
+
     public boolean fetchSuspendedUsers(String baseURL, Gson gson) {
         HttpResponse<String> suspendedResponse;
         try {
@@ -158,6 +223,27 @@ public class LibraryManager {
         this.suspendedUsers = gson.fromJson(suspendedBody, suspendedListType);
 
         IO.println("Avstängda användare hämtade från servern. Antal: " + suspendedUsers.size());
+        return true;
+    }
+
+    public boolean fetchOneSuspendedUser(String baseURL, Gson gson, String id) {
+        HttpResponse<String> response;
+
+        try {
+            response = Unirest.get(baseURL + "/suspended/" + id).asString();
+        } catch (UnirestException e) {
+            IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
+            return false;
+        }
+
+        if (response.getStatus() != 200) {
+            IO.println("Ingen avstängd användare hittades med det id:t. Statuskod: " + response.getStatus());
+            return false;
+        }
+
+        SuspendedUser suspendedUser = gson.fromJson(response.getBody(), SuspendedUser.class);
+        IO.println("Avstängd användare hämtad från servern:");
+        IO.println(suspendedUser.getInfo());
         return true;
     }
 
@@ -297,6 +383,11 @@ public class LibraryManager {
         }
 
         int deleteUserStatus = deleteUserResponse.getStatus();
+        if (deleteUserStatus == 404) {
+            IO.println("Ingen användare hittades med det id:t.");
+            return false;
+        }
+
         if (deleteUserStatus != 200 && deleteUserStatus != 204) {
             IO.println("Fel vid borttagning av användare. Statuskod: " + deleteUserStatus);
             IO.println("Svar från servern: " + deleteUserResponse.getBody());
@@ -327,6 +418,12 @@ public class LibraryManager {
         }
 
         int deleteBookStatus = deleteBookResponse.getStatus();
+
+        if (deleteBookStatus == 404) {
+            IO.println("Ingen bok hittades med det id:t.");
+            return false;
+        }
+
         if (deleteBookStatus != 200 && deleteBookStatus != 204) {
             IO.println("Fel vid borttagning av bok. Statuskod: " + deleteBookStatus);
             IO.println("Svar från servern: " + deleteBookResponse.getBody());
@@ -359,6 +456,12 @@ public class LibraryManager {
 
         int deleteMagazineStatus = deleteMagazineResponse
                 .getStatus();
+        
+        if (deleteMagazineStatus == 404) {
+            IO.println("Ingen tidning hittades med det id:t.");
+            return false;
+        }
+
         if (deleteMagazineStatus != 200 && deleteMagazineStatus != 204) {
             IO.println("Fel vid borttagning av tidning. Statuskod: " + deleteMagazineStatus);
             IO.println("Svar från servern: " + deleteMagazineResponse.getBody());
@@ -381,6 +484,12 @@ public class LibraryManager {
 
         int deleteSuspendedStatus = deleteSuspendedResponse
                 .getStatus();
+
+        if (deleteSuspendedStatus == 404) {
+            IO.println("Ingen avstängd användare hittades med det id:t.");
+            return false;
+        }
+
         if (deleteSuspendedStatus != 200 && deleteSuspendedStatus != 204) {
             IO.println("Fel vid borttagning av avstängd användare. Statuskod: " + deleteSuspendedStatus);
             IO.println("Svar från servern: " + deleteSuspendedResponse.getBody());
@@ -396,7 +505,7 @@ public class LibraryManager {
     /**
      * Hittar en användare med hjälp av id.
      */
-    public User findUserById(String id){
+    public User findUserById(String id) {
         for (User user : users) {
             if (user.getId().equalsIgnoreCase(id)) {
                 return user;
@@ -408,8 +517,8 @@ public class LibraryManager {
     /**
      * Kontrollerar om e-postadressen redan finns bland användarna.
      */
-    public boolean emailExists(String email){
-        for (User user : users){
+    public boolean emailExists(String email) {
+        for (User user : users) {
             if (user.getEmail().equalsIgnoreCase(email)) {
                 return true;
             }
@@ -420,20 +529,20 @@ public class LibraryManager {
     /**
      * Kontrollerar om en användare redan finns i listan över avstängda användare.
      */
-    public boolean isUserAlreadySuspended(String customerId){
-        for (SuspendedUser suspendedUser : suspendedUsers){
+    public boolean isUserAlreadySuspended(String customerId) {
+        for (SuspendedUser suspendedUser : suspendedUsers) {
             if (suspendedUser.getCustomer_id().equalsIgnoreCase(customerId)) {
                 return true;
             }
         }
         return false;
     }
-    
+
     /**
      * Kontrollerar om en boktitel redan finns i samlingen.
      */
-    public boolean bookTitleExists(String title){
-        for (Book book : books){
+    public boolean bookTitleExists(String title) {
+        for (Book book : books) {
             if (book.getTitle().equalsIgnoreCase(title)) {
                 return true;
             }
@@ -444,8 +553,8 @@ public class LibraryManager {
     /**
      * Kontrollerar om en tidningstitel redan finns i samlingen.
      */
-    public boolean magazineTitleExists(String title){
-        for (Magazine magazine : magazines){
+    public boolean magazineTitleExists(String title) {
+        for (Magazine magazine : magazines) {
             if (magazine.getTitle().equalsIgnoreCase(title)) {
                 return true;
             }

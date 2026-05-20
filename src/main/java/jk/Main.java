@@ -26,15 +26,16 @@ public class Main {
             IO.println("""
 
                         === HUVUDMENY ===
-                        1. Hämta data
-                        2. Skriv ut data
-                        3. Sök och kontrollera
-                        4. Lägg till
-                        5. Ta bort
-                        6. Avsluta
+                        1. Hämta data (alla)
+                        2. Hämta data (en via id)
+                        3. Skriv ut data
+                        4. Sök och kontrollera
+                        5. Lägg till
+                        6. Ta bort
+                        7. Avsluta
                     """);
 
-            String input = IO.readln("Välj ett alternativ (1-6): ");
+            String input = IO.readln("Välj ett alternativ (1-7): ");
             int val;
 
             // Försöker omvandla användarens val till ett heltal
@@ -52,7 +53,7 @@ public class Main {
                     while (hämtaMeny) {
                         IO.println("""
 
-                                    === HÄMTA DATA ===
+                                    === HÄMTA DATA (ALLA) ===
                                     1. Hämta böcker
                                     2. Hämta tidningar
                                     3. Hämta användare
@@ -102,6 +103,88 @@ public class Main {
                     break;
 
                 case 2:
+                    boolean hämtaEnMeny = true;
+                    while (hämtaEnMeny) {
+                        IO.println("""
+
+                                    === HÄMTA DATA (EN VIA ID) ===
+                                    1. Hämta en bok
+                                    2. Hämta en tidning
+                                    3. Hämta en användare
+                                    4. Hämta en avstängd användare
+                                    5. Tillbaka
+                                """);
+
+                        String hämtaEnInput = IO.readln("Välj ett alternativ (1-5): ");
+                        int hämtaEnVal;
+
+                        try {
+                            hämtaEnVal = Integer.parseInt(hämtaEnInput);
+                        } catch (NumberFormatException e) {
+                            IO.println("Felaktig inmatning. Ange ett nummer från menyn.");
+                            continue;
+                        }
+
+                        switch (hämtaEnVal) {
+                            case 1:
+                                IO.println("Hämtar en bok...");
+                                String bookId = IO.readln("Ange bokens id: ");
+
+                                if (bookId.isBlank()) {
+                                    IO.println("Id får inte vara tomt.");
+                                    break;
+                                }
+
+                                manager.fetchOneBook(baseURL, gson, bookId);
+                                break;
+
+                            case 2:
+                                IO.println("Hämtar en tidning...");
+                                String magazineId = IO.readln("Ange tidningens id: ");
+
+                                if (magazineId.isBlank()) {
+                                    IO.println("Id får inte vara tomt.");
+                                    break;
+                                }
+
+                                manager.fetchOneMagazine(baseURL, gson, magazineId);
+                                break;
+
+                            case 3:
+                                IO.println("Hämtar en användare...");
+                                String userId = IO.readln("Ange användarens id: ");
+
+                                if (userId.isBlank()) {
+                                    IO.println("Id får inte vara tomt.");
+                                    break;
+                                }
+
+                                manager.fetchOneUser(baseURL, gson, userId);
+                                break;
+
+                            case 4:
+                                IO.println("Hämtar en avstängd användare...");
+                                String suspendedId = IO.readln("Ange avstängningens id: ");
+
+                                if (suspendedId.isBlank()) {
+                                    IO.println("Id får inte vara tomt.");
+                                    break;
+                                }
+
+                                manager.fetchOneSuspendedUser(baseURL, gson, suspendedId);
+                                break;
+
+                            case 5:
+                                hämtaEnMeny = false;
+                                break;
+
+                            default:
+                                IO.println("Ogiltigt val. Ange ett nummer från menyn.");
+                        }
+                    }
+                    break;
+
+                case 3:
                     boolean skrivUtMeny = true;
                     while (skrivUtMeny) {
                         IO.println("""
@@ -155,7 +238,7 @@ public class Main {
                     }
                     break;
 
-                case 3:
+                case 4:
                     boolean sökMeny = true;
 
                     while (sökMeny) {
@@ -239,7 +322,7 @@ public class Main {
                     }
                     break;
 
-                case 4:
+                case 5:
                     boolean läggTillMeny = true;
 
                     while (läggTillMeny) {
@@ -294,6 +377,11 @@ public class Main {
                                     break;
                                 }
 
+                                if (manager.bookTitleExists(postBookTitle)) {
+                                    IO.println("Det finns redan en bok med den titeln.");
+                                    break;
+                                }
+
                                 String postBookAuthor = IO.readln("Ange författare: ");
                                 if (postBookAuthor.isBlank()) {
                                     IO.println("Författare får inte vara tom.");
@@ -319,12 +407,8 @@ public class Main {
                                     break;
                                 }
 
-                                if (manager.bookTitleExists(postBookTitle)) {
-                                    IO.println("Det finns redan en bok med denna titel");
-                                    break;
-                                }
-
-                                manager.addBookToServer(baseURL, gson, postBookTitle, postBookAuthor, postBookGenre, postBookPages);
+                                manager.addBookToServer(baseURL, gson, postBookTitle, postBookAuthor, postBookGenre,
+                                        postBookPages);
                                 break;
 
                             case 3:
@@ -332,6 +416,11 @@ public class Main {
                                 String postMagazineTitle = IO.readln("Ange titel: ");
                                 if (postMagazineTitle.isBlank()) {
                                     IO.println("Titel får inte vara tom.");
+                                    break;
+                                }
+
+                                if (manager.magazineTitleExists(postMagazineTitle)) {
+                                    IO.println("Det finns redan en tidning med den titeln.");
                                     break;
                                 }
 
@@ -367,18 +456,13 @@ public class Main {
                                     break;
                                 }
 
-                                if (manager.magazineTitleExists(postMagazineTitle)) {
-                                    IO.println("Det finns redan en tidning med denna titel.");
-                                    break;
-                                }
-
                                 manager.addMagazineToServer(baseURL, gson, postMagazineTitle, postMagazineCategory,
                                         postIssueNumber, postPublishedYear);
                                 break;
 
                             case 4:
                                 IO.println("Lägger till en avstängd användare på servern...");
-                                
+
                                 if (manager.getUsers().isEmpty()) {
                                     IO.println("Inga användare är hämtade. Hämta användare först.");
                                     break;
@@ -421,7 +505,7 @@ public class Main {
                     }
                     break;
 
-                case 5:
+                case 6:
                     boolean taBortMeny = true;
 
                     while (taBortMeny) {
@@ -528,7 +612,7 @@ public class Main {
                     }
                     break;
 
-                case 6:
+                case 7:
                     kör = false;
                     IO.println("Programmet avslutas.");
                     break;
