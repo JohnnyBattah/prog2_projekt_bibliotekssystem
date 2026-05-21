@@ -366,41 +366,17 @@ public class LibraryManager {
      */
     public boolean addBook() {
         IO.println("Lägger till en bok på servern...");
-        String postBookTitle = IO.readln("Ange titel: ").trim();
-        if (postBookTitle.isBlank()) {
-            IO.println("Titel får inte vara tom.");
-            return false;
-        }
+        String postBookTitle = readRequiredText("Ange titel: ", "Titel");
 
         if (bookTitleExists(postBookTitle)) {
             IO.println("Det finns redan en bok med den titeln.");
             return false;
         }
 
-        String postBookAuthor = IO.readln("Ange författare: ").trim();
-        if (postBookAuthor.isBlank()) {
-            IO.println("Författare får inte vara tom.");
-            return false;
-        }
+        String postBookAuthor = readRequiredText("Ange författare: ", "Författare");
+        String postBookGenre = readRequiredText("Ange genre: ", "Genre");
 
-        String postBookGenre = IO.readln("Ange genre: ").trim();
-        if (postBookGenre.isBlank()) {
-            IO.println("Genre får inte vara tom.");
-            return false;
-        }
-
-        int postBookPages;
-        try {
-            postBookPages = Integer.parseInt(IO.readln("Ange antal sidor: ").trim());
-        } catch (NumberFormatException e) {
-            IO.println("Felaktigt antal sidor.");
-            return false;
-        }
-
-        if (postBookPages <= 0) {
-            IO.println("Antal sidor måste vara större än 0.");
-            return false;
-        }
+        int postBookPages = readPositiveInt("Ange antal sidor: ", "Antal sidor");
 
         return addBookToServer(postBookTitle, postBookAuthor, postBookGenre, postBookPages);
     }
@@ -443,48 +419,16 @@ public class LibraryManager {
      */
     public boolean addMagazine() {
         IO.println("Lägger till en tidning på servern...");
-        String postMagazineTitle = IO.readln("Ange titel: ").trim();
-        if (postMagazineTitle.isBlank()) {
-            IO.println("Titel får inte vara tom.");
-            return false;
-        }
+        String postMagazineTitle = readRequiredText("Ange titel: ", "Titel");
 
         if (magazineTitleExists(postMagazineTitle)) {
             IO.println("Det finns redan en tidning med den titeln.");
             return false;
         }
 
-        String postMagazineCategory = IO.readln("Ange kategori: ").trim();
-        if (postMagazineCategory.isBlank()) {
-            IO.println("Kategori får inte vara tom.");
-            return false;
-        }
-
-        int postIssueNumber;
-        try {
-            postIssueNumber = Integer.parseInt(IO.readln("Ange nummer: ").trim());
-        } catch (NumberFormatException e) {
-            IO.println("Felaktigt nummer.");
-            return false;
-        }
-
-        if (postIssueNumber <= 0) {
-            IO.println("Nummer måste vara större än 0.");
-            return false;
-        }
-
-        int postPublishedYear;
-        try {
-            postPublishedYear = Integer.parseInt(IO.readln("Ange publiceringsår: ").trim());
-        } catch (NumberFormatException e) {
-            IO.println("Felaktigt år.");
-            return false;
-        }
-
-        if (postPublishedYear <= 0) {
-            IO.println("Publiceringsår måste vara större än 0.");
-            return false;
-        }
+        String postMagazineCategory = readRequiredText("Ange kategori: ", "Kategori");
+        int postIssueNumber = readPositiveInt("Ange nummer: ", "Nummer");
+        int postPublishedYear = readPositiveInt("Ange publiceringsår: ", "Publiceringsår");
 
         return addMagazineToServer(postMagazineTitle, postMagazineCategory, postIssueNumber, postPublishedYear);
     }
@@ -527,16 +471,8 @@ public class LibraryManager {
      */
     public boolean addUser() {
         IO.println("Lägger till en användare på servern...");
-        String userName = IO.readln("Ange namn: ").trim();
-        if (userName.isBlank()) {
-            IO.println("Namn får inte vara tomt.");
-            return false;
-        }
-        String userEmail = IO.readln("Ange e-post: ").trim();
-        if (userEmail.isBlank()) {
-            IO.println("E-post får inte vara tom.");
-            return false;
-        }
+        String userName = readRequiredText("Ange namn: ", "Namn");
+        String userEmail = readRequiredText("Ange e-post: ", "E-post");
 
         if (emailExists(userEmail)) {
             IO.println("Det finns redan en användare med den e-postadressen.");
@@ -591,11 +527,7 @@ public class LibraryManager {
             return false;
         }
 
-        String customerId = IO.readln("Ange användarens id: ").trim();
-        if (customerId.isBlank()) {
-            IO.println("Användarens id får inte vara tomt.");
-            return false;
-        }
+        String customerId = readRequiredText("Ange användarens id: ", "Användarens id");
 
         User userToSuspend = findUserById(customerId);
 
@@ -662,13 +594,7 @@ public class LibraryManager {
             return false;
         }
 
-        String titleToDelete = IO.readln("Ange titel på boken som ska tas bort: ").trim();
-
-        if (titleToDelete.isBlank()) {
-            IO.println("Titel får inte vara tom.");
-            return false;
-        }
-
+        String titleToDelete = readRequiredText("Ange titel: ", "Titel");
         return deleteBookByTitleFromServer(titleToDelete);
     }
 
@@ -724,12 +650,7 @@ public class LibraryManager {
             return false;
         }
 
-        String magazineTitleToDelete = IO.readln("Ange titel på tidningen som ska tas bort: ").trim();
-
-        if (magazineTitleToDelete.isBlank()) {
-            IO.println("Titel får inte vara tom.");
-            return false;
-        }
+        String magazineTitleToDelete = readRequiredText("Ange titel: ", "Titel");
 
         return deleteMagazineByTitleFromServer(magazineTitleToDelete);
     }
@@ -784,12 +705,7 @@ public class LibraryManager {
             return false;
         }
 
-        String emailToDelete = IO.readln("Ange e-post för användare som ska tas bort: ").trim();
-
-        if (emailToDelete.isBlank()) {
-            IO.println("E-post får inte vara tom.");
-            return false;
-        }
+        String emailToDelete = readRequiredText("Ange e-post för användare som ska tas bort: ", "E-post");
 
         return deleteUserByEmailFromServer(emailToDelete);
     }
@@ -841,12 +757,7 @@ public class LibraryManager {
             return false;
         }
 
-        String suspendedIdToDelete = IO.readln("Ange id på avstängningen som ska tas bort: ").trim();
-
-        if (suspendedIdToDelete.isBlank()) {
-            IO.println("Id får inte vara tomt.");
-            return false;
-        }
+        String suspendedIdToDelete = readRequiredText("Ange id: ", "Id");
 
         return deleteSuspendedUserByIdFromServer(suspendedIdToDelete);
     }
@@ -1076,12 +987,7 @@ public class LibraryManager {
             return false;
         }
 
-        String email = IO.readln("Ange e-post: ").trim();
-
-        if (email.isBlank()) {
-            IO.println("E-post får inte vara tom.");
-            return false;
-        }
+        String email = readRequiredText("Ange e-post: ", "E-post");
 
         User foundUser = findUserByEmail(email);
 
@@ -1114,12 +1020,7 @@ public class LibraryManager {
             return false;
         }
 
-        String customerIdToCheck = IO.readln("Ange användarens id: ").trim();
-
-        if (customerIdToCheck.isBlank()) {
-            IO.println("Id får inte vara tomt.");
-            return false;
-        }
+        String customerIdToCheck = readRequiredText("Ange användarens id: ", "Användarens id");
 
         User userToCheck = findUserById(customerIdToCheck);
 
@@ -1135,6 +1036,41 @@ public class LibraryManager {
     }
 
     /**
-     * Kontrollerar
+     * Läser in text och fortsätter fråga tills användaren skrivit något som inte är
+     * tomt.
      */
+    private String readRequiredText(String prompt, String fieldName) {
+        while (true) {
+            String input = IO.readln(prompt).trim();
+
+            if (input.isBlank()) {
+                IO.println(fieldName + " får inte vara tomt.");
+            } else {
+                return input;
+            }
+        }
+    }
+
+    /**
+     * Läser in ett heltal och fortsätter fråga tills användaren skriver ett giltigt
+     * tal större än 0.
+     */
+    private int readPositiveInt(String prompt, String fieldName) {
+        while (true) {
+            String input = IO.readln(prompt).trim();
+
+            try {
+                int value = Integer.parseInt(input);
+
+                if (value <= 0) {
+                    IO.println(fieldName + " måste vara större än 0.");
+                } else {
+                    return value;
+                }
+            } catch (NumberFormatException e) {
+                IO.println(fieldName + " måste vara ett heltal.");
+            }
+        }
+    }
+
 }
