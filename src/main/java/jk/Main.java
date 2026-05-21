@@ -68,32 +68,12 @@ public class Main {
                         }
 
                         switch (hämtaVal) {
-                            case 1:
-                                IO.println("Hämtar alla böcker...");
-                                manager.fetchBooks();
-                                break;
-
-                            case 2:
-                                IO.println("Hämtar alla tidningar...");
-                                manager.fetchMagazines();
-                                break;
-
-                            case 3:
-                                IO.println("Hämtar alla användare...");
-                                manager.fetchUsers();
-                                break;
-
-                            case 4:
-                                IO.println("Hämtar alla avstängda användare...");
-                                manager.fetchSuspendedUsers();
-                                break;
-
-                            case 5:
-                                hämtaMeny = false;
-                                break;
-
-                            default:
-                                IO.println("Ogiltigt val. Ange ett nummer från menyn.");
+                            case 1 -> manager.fetchBooks();
+                            case 2 -> manager.fetchMagazines();
+                            case 3 -> manager.fetchUsers();
+                            case 4 -> manager.fetchSuspendedUsers();
+                            case 5 -> hämtaMeny = false;
+                            default -> IO.println("Ogiltigt val. Ange ett nummer från menyn.");
                         }
                     }
                     break;
@@ -122,60 +102,12 @@ public class Main {
                         }
 
                         switch (hämtaEnVal) {
-                            case 1:
-                                IO.println("Hämtar en bok...");
-                                String bookId = IO.readln("Ange bokens id: ");
-
-                                if (bookId.isBlank()) {
-                                    IO.println("Id får inte vara tomt.");
-                                    break;
-                                }
-
-                                manager.fetchOneBook(bookId);
-                                break;
-
-                            case 2:
-                                IO.println("Hämtar en tidning...");
-                                String magazineId = IO.readln("Ange tidningens id: ");
-
-                                if (magazineId.isBlank()) {
-                                    IO.println("Id får inte vara tomt.");
-                                    break;
-                                }
-
-                                manager.fetchOneMagazine(magazineId);
-                                break;
-
-                            case 3:
-                                IO.println("Hämtar en användare...");
-                                String userId = IO.readln("Ange användarens id: ");
-
-                                if (userId.isBlank()) {
-                                    IO.println("Id får inte vara tomt.");
-                                    break;
-                                }
-
-                                manager.fetchOneUser(userId);
-                                break;
-
-                            case 4:
-                                IO.println("Hämtar en avstängd användare...");
-                                String suspendedId = IO.readln("Ange avstängningens id: ");
-
-                                if (suspendedId.isBlank()) {
-                                    IO.println("Id får inte vara tomt.");
-                                    break;
-                                }
-
-                                manager.fetchOneSuspendedUser(suspendedId);
-                                break;
-
-                            case 5:
-                                hämtaEnMeny = false;
-                                break;
-
-                            default:
-                                IO.println("Ogiltigt val. Ange ett nummer från menyn.");
+                            case 1 -> manager.fetchOneBook();
+                            case 2 -> manager.fetchOneMagazine();
+                            case 3 -> manager.fetchOneUser();
+                            case 4 -> manager.fetchOneSuspendedUser();
+                            case 5 -> hämtaEnMeny = false;
+                            default -> IO.println("Ogiltigt val. Ange ett nummer från menyn.");
                         }
                     }
                     break;
@@ -204,32 +136,12 @@ public class Main {
                         }
 
                         switch (skrivUtVal) {
-                            case 1:
-                                IO.println("Skriver ut alla böcker...");
-                                manager.printBooksSorted();
-                                break;
-
-                            case 2:
-                                IO.println("Skriver ut alla tidningar...");
-                                manager.printMagazinesSorted();
-                                break;
-
-                            case 3:
-                                IO.println("Skriver ut alla användare...");
-                                manager.printUsersSorted();
-                                break;
-
-                            case 4:
-                                IO.println("Skriver ut alla avstängda användare...");
-                                manager.printSuspendedUsersSorted();
-                                break;
-
-                            case 5:
-                                skrivUtMeny = false;
-                                break;
-
-                            default:
-                                IO.println("Ogiltigt val. Ange ett nummer från menyn.");
+                            case 1 -> manager.printBooksSorted();
+                            case 2 -> manager.printMagazinesSorted();
+                            case 3 -> manager.printUsersSorted();
+                            case 4 -> manager.printSuspendedUsersSorted();
+                            case 5 -> skrivUtMeny = false;
+                            default -> IO.println("Ogiltigt val. Ange ett nummer från menyn.");
                         }
                     }
                     break;
@@ -257,63 +169,10 @@ public class Main {
                         }
 
                         switch (sökVal) {
-                            case 1:
-                                IO.println("Hitta användare via e-post...");
-
-                                if (manager.getUsers().isEmpty()) {
-                                    IO.println("Inga användare är hämtade. Hämta användare först.");
-                                    break;
-                                }
-
-                                String email = IO.readln("Ange e-post: ");
-
-                                if (email.isBlank()) {
-                                    IO.println("E-post får inte vara tom.");
-                                    break;
-                                }
-
-                                User foundUser = manager.findUserByEmail(email);
-
-                                if (foundUser == null) {
-                                    IO.println("Ingen användare hittades med den e-postadressen.");
-                                } else {
-                                    IO.println("Användaren hittades:");
-                                    IO.println(foundUser.getInfo());
-                                }
-                                break;
-
-                            case 2:
-                                IO.println("Kontrollerar om användare får låna...");
-
-                                if (manager.getUsers().isEmpty()) {
-                                    IO.println("Inga användare är hämtade. Hämta användare först.");
-                                    break;
-                                }
-
-                                String customerIdToCheck = IO.readln("Ange användarens id: ");
-
-                                if (customerIdToCheck.isBlank()) {
-                                    IO.println("Id får inte vara tomt.");
-                                    break;
-                                }
-
-                                User userToCheck = manager.findUserById(customerIdToCheck);
-
-                                if (userToCheck == null) {
-                                    IO.println("Ingen användare hittades med det id:t.");
-                                } else if (manager.canUserBorrow(customerIdToCheck)) {
-                                    IO.println("Användaren får låna.");
-                                } else {
-                                    IO.println("Användaren är avstängd och får inte låna.");
-                                }
-                                break;
-
-                            case 3:
-                                sökMeny = false;
-                                break;
-
-                            default:
-                                IO.println("Ogiltigt val. Ange ett nummer från menyn.");
+                            case 1 -> manager.findUserByEmailInteractive();
+                            case 2 -> manager.checkUserBorrow();
+                            case 3 -> sökMeny = false;
+                            default -> IO.println("Ogiltigt val. Ange ett nummer från menyn.");
                         }
                     }
                     break;
@@ -343,154 +202,12 @@ public class Main {
                         }
 
                         switch (läggTillVal) {
-                            case 1:
-                                IO.println("Lägger till en bok på servern...");
-
-                                String postBookTitle = IO.readln("Ange titel: ");
-                                if (postBookTitle.isBlank()) {
-                                    IO.println("Titel får inte vara tom.");
-                                    break;
-                                }
-
-                                if (manager.bookTitleExists(postBookTitle)) {
-                                    IO.println("Det finns redan en bok med den titeln.");
-                                    break;
-                                }
-
-                                String postBookAuthor = IO.readln("Ange författare: ");
-                                if (postBookAuthor.isBlank()) {
-                                    IO.println("Författare får inte vara tom.");
-                                    break;
-                                }
-
-                                String postBookGenre = IO.readln("Ange genre: ");
-                                if (postBookGenre.isBlank()) {
-                                    IO.println("Genre får inte vara tom.");
-                                    break;
-                                }
-
-                                int postBookPages;
-                                try {
-                                    postBookPages = Integer.parseInt(IO.readln("Ange antal sidor: "));
-                                } catch (NumberFormatException e) {
-                                    IO.println("Felaktigt antal sidor.");
-                                    break;
-                                }
-
-                                if (postBookPages <= 0) {
-                                    IO.println("Antal sidor måste vara större än 0.");
-                                    break;
-                                }
-
-                                manager.addBookToServer(postBookTitle, postBookAuthor, postBookGenre,
-                                        postBookPages);
-                                break;
-
-                            case 2:
-                                IO.println("Lägger till en tidning på servern...");
-                                String postMagazineTitle = IO.readln("Ange titel: ");
-                                if (postMagazineTitle.isBlank()) {
-                                    IO.println("Titel får inte vara tom.");
-                                    break;
-                                }
-
-                                if (manager.magazineTitleExists(postMagazineTitle)) {
-                                    IO.println("Det finns redan en tidning med den titeln.");
-                                    break;
-                                }
-
-                                String postMagazineCategory = IO.readln("Ange kategori: ");
-                                if (postMagazineCategory.isBlank()) {
-                                    IO.println("Kategori får inte vara tom.");
-                                    break;
-                                }
-
-                                int postIssueNumber;
-                                try {
-                                    postIssueNumber = Integer.parseInt(IO.readln("Ange nummer: "));
-                                } catch (NumberFormatException e) {
-                                    IO.println("Felaktigt nummer.");
-                                    break;
-                                }
-
-                                if (postIssueNumber <= 0) {
-                                    IO.println("Nummer måste vara större än 0.");
-                                    break;
-                                }
-
-                                int postPublishedYear;
-                                try {
-                                    postPublishedYear = Integer.parseInt(IO.readln("Ange publiceringsår: "));
-                                } catch (NumberFormatException e) {
-                                    IO.println("Felaktigt år.");
-                                    break;
-                                }
-
-                                if (postPublishedYear <= 0) {
-                                    IO.println("Publiceringsår måste vara större än 0.");
-                                    break;
-                                }
-
-                                manager.addMagazineToServer(postMagazineTitle, postMagazineCategory,
-                                        postIssueNumber, postPublishedYear);
-                                break;
-
-                            case 3:
-                                IO.println("Lägger till en användare på servern...");
-                                String userName = IO.readln("Ange namn: ");
-                                if (userName.isBlank()) {
-                                    IO.println("Namn får inte vara tomt.");
-                                    break;
-                                }
-                                String userEmail = IO.readln("Ange e-post: ");
-                                if (userEmail.isBlank()) {
-                                    IO.println("E-post får inte vara tom.");
-                                    break;
-                                }
-
-                                if (manager.emailExists(userEmail)) {
-                                    IO.println("Det finns redan en användare med den e-postadressen.");
-                                    break;
-                                }
-
-                                manager.addUserToServer(userName, userEmail);
-                                break;
-
-                            case 4:
-                                IO.println("Lägger till en avstängd användare på servern...");
-
-                                if (manager.getUsers().isEmpty()) {
-                                    IO.println("Inga användare är hämtade. Hämta användare först.");
-                                    break;
-                                }
-
-                                String customerId = IO.readln("Ange användarens id: ");
-                                if (customerId.isBlank()) {
-                                    IO.println("Användarens id får inte vara tomt.");
-                                    break;
-                                }
-
-                                User userToSuspend = manager.findUserById(customerId);
-
-                                if (userToSuspend == null) {
-                                    IO.println("Ingen användare hittades med det id:t.");
-                                    break;
-                                }
-
-                                if (manager.isUserAlreadySuspended(customerId)) {
-                                    IO.println("Användaren är redan avstängd.");
-                                    break;
-                                }
-
-                                manager.addSuspendedUserToServer(customerId);
-                                break;
-
-                            case 5:
-                                läggTillMeny = false;
-                                break;
-
-                            default:
-                                IO.println("Ogiltigt val. Ange ett nummer från menyn.");
+                            case 1 -> manager.addBook();
+                            case 2 -> manager.addMagazine();
+                            case 3 -> manager.addUser();
+                            case 4 -> manager.addSuspendedUser();
+                            case 5 -> läggTillMeny = false;
+                            default -> IO.println("Ogiltigt val. Ange ett nummer från menyn.");
                         }
                     }
                     break;
@@ -520,84 +237,12 @@ public class Main {
                         }
 
                         switch (taBortVal) {
-                            case 1:
-                                IO.println("Tar bort bok via titel...");
-
-                                if (manager.getBooks().isEmpty()) {
-                                    IO.println("Inga böcker är hämtade. Hämta böcker först.");
-                                    break;
-                                }
-
-                                String titleToDelete = IO.readln("Ange titel på boken som ska tas bort: ");
-
-                                if (titleToDelete.isBlank()) {
-                                    IO.println("Titel får inte vara tom.");
-                                    break;
-                                }
-
-                                manager.deleteBookByTitleFromServer(titleToDelete);
-                                break;
-
-                            case 2:
-                                IO.println("Tar bort tidning via titel...");
-
-                                if (manager.getMagazines().isEmpty()) {
-                                    IO.println("Inga tidningar är hämtade. Hämta tidningar först.");
-                                    break;
-                                }
-
-                                String magazineTitleToDelete = IO.readln("Ange titel på tidningen som ska tas bort: ");
-
-                                if (magazineTitleToDelete.isBlank()) {
-                                    IO.println("Titel får inte vara tom.");
-                                    break;
-                                }
-
-                                manager.deleteMagazineByTitleFromServer(magazineTitleToDelete);
-                                break;
-
-                            case 3:
-                                IO.println("Tar bort användare via e-post...");
-
-                                if (manager.getUsers().isEmpty()) {
-                                    IO.println("Inga användare är hämtade. Hämta användare först.");
-                                    break;
-                                }
-
-                                String emailToDelete = IO.readln("Ange e-post för användare som ska tas bort: ");
-
-                                if (emailToDelete.isBlank()) {
-                                    IO.println("E-post får inte vara tom.");
-                                    break;
-                                }
-
-                                manager.deleteUserByEmailFromServer(emailToDelete);
-                                break;
-
-                            case 4:
-                                IO.println("Tar bort avstängd användare via id...");
-
-                                if (manager.getSuspendedUsers().isEmpty()) {
-                                    IO.println("Inga avstängda användare är hämtade. Hämta avstängda användare först.");
-                                    break;
-                                }
-
-                                String suspendedIdToDelete = IO.readln("Ange id på avstängningen som ska tas bort: ");
-
-                                if (suspendedIdToDelete.isBlank()) {
-                                    IO.println("Id får inte vara tomt.");
-                                    break;
-                                }
-
-                                manager.deleteSuspendedUserByIdFromServer(suspendedIdToDelete);
-                                break;
-
-                            case 5:
-                                taBortMeny = false;
-                                break;
-
-                            default:
-                                IO.println("Ogiltigt val. Ange ett nummer från menyn.");
+                            case 1 -> manager.deleteBook();
+                            case 2 -> manager.deleteMagazine();
+                            case 3 -> manager.deleteUser();
+                            case 4 -> manager.deleteSuspendedUser();
+                            case 5 -> taBortMeny = false;
+                            default -> IO.println("Ogiltigt val. Ange ett nummer från menyn.");
                         }
                     }
                     break;

@@ -36,6 +36,8 @@ public class LibraryManager {
     private Gson gson;
 
     public LibraryManager() {
+        // skoladress: http://10.151.168.5:3137/
+        // hemadress: http://localhost:3000/
         baseURL = "http://localhost:3000/";
         gson = new Gson();
 
@@ -46,8 +48,6 @@ public class LibraryManager {
         userMap = new HashMap<>();
         suspendedIdSet = new HashSet<>();
     }
-
-    
 
     public void setBooks(ArrayList<Book> books) {
         this.books = books;
@@ -85,6 +85,8 @@ public class LibraryManager {
      * Hämtar alla böcker från servern och sparar dem i listan.
      */
     public boolean fetchBooks() {
+        IO.println("Hämtar alla böcker...");
+
         HttpResponse<String> booksResponse;
         try {
             booksResponse = Unirest.get(baseURL + "/books").asString();
@@ -111,11 +113,18 @@ public class LibraryManager {
     /**
      * Hämtar en bok från servern med hjälp av id.
      */
-    public boolean fetchOneBook(String id) {
+    public boolean fetchOneBook() {
+        String bookId = IO.readln("Ange bokens id: ").trim();
+
+        if (bookId.isBlank()) {
+            IO.println("Id får inte vara tomt.");
+            return false;
+        }
+
         HttpResponse<String> response;
 
         try {
-            response = Unirest.get(baseURL + "/books/" + id).asString();
+            response = Unirest.get(baseURL + "/books/" + bookId).asString();
         } catch (UnirestException e) {
             IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
             return false;
@@ -136,6 +145,7 @@ public class LibraryManager {
      * Hämtar alla tidningar från servern och sparar dem i listan.
      */
     public boolean fetchMagazines() {
+        IO.println("Hämtar alla tidningar...");
         HttpResponse<String> magazinesResponse;
         try {
             magazinesResponse = Unirest.get(baseURL + "/magazines").asString();
@@ -162,11 +172,18 @@ public class LibraryManager {
     /**
      * Hämtar en tidning från servern med hjälp av id.
      */
-    public boolean fetchOneMagazine(String id) {
+    public boolean fetchOneMagazine() {
+        String magazineId = IO.readln("Ange tidningens id: ").trim();
+
+        if (magazineId.isBlank()) {
+            IO.println("Id får inte vara tomt.");
+            return false;
+        }
+
         HttpResponse<String> response;
 
         try {
-            response = Unirest.get(baseURL + "/magazines/" + id).asString();
+            response = Unirest.get(baseURL + "/magazines/" + magazineId).asString();
         } catch (UnirestException e) {
             IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
             return false;
@@ -187,6 +204,7 @@ public class LibraryManager {
      * Hämtar alla användare från servern och sparar dem i listan.
      */
     public boolean fetchUsers() {
+        IO.println("Hämtar alla användare...");
         HttpResponse<String> usersResponse;
 
         try {
@@ -208,7 +226,7 @@ public class LibraryManager {
         this.users = gson.fromJson(usersBody, userListType);
 
         userMap.clear();
-        for (User user : users){
+        for (User user : users) {
             userMap.put(user.getEmail().toLowerCase(), user);
         }
 
@@ -219,11 +237,18 @@ public class LibraryManager {
     /**
      * Hämtar en användare från servern med hjälp av id.
      */
-    public boolean fetchOneUser(String id) {
+    public boolean fetchOneUser() {
+        String userId = IO.readln("Ange användarens id: ").trim();
+
+        if (userId.isBlank()) {
+            IO.println("Id får inte vara tomt.");
+            return false;
+        }
+
         HttpResponse<String> response;
 
         try {
-            response = Unirest.get(baseURL + "/users/" + id).asString();
+            response = Unirest.get(baseURL + "/users/" + userId).asString();
         } catch (UnirestException e) {
             IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
             return false;
@@ -244,6 +269,7 @@ public class LibraryManager {
      * Hämtar alla avstängda användare från servern och sparar dem i listan.
      */
     public boolean fetchSuspendedUsers() {
+        IO.println("Hämtar alla avstängda användare...");
         HttpResponse<String> suspendedResponse;
         try {
             suspendedResponse = Unirest.get(baseURL + "/suspended").asString();
@@ -264,7 +290,7 @@ public class LibraryManager {
         this.suspendedUsers = gson.fromJson(suspendedBody, suspendedListType);
 
         suspendedIdSet.clear();
-        for (SuspendedUser suspendedUser : suspendedUsers){
+        for (SuspendedUser suspendedUser : suspendedUsers) {
             suspendedIdSet.add(suspendedUser.getCustomer_id());
         }
 
@@ -275,11 +301,18 @@ public class LibraryManager {
     /**
      * Hämtar en avstängd användare från servern med hjälp av id.
      */
-    public boolean fetchOneSuspendedUser(String id) {
+    public boolean fetchOneSuspendedUser() {
+        String suspendedId = IO.readln("Ange avstängningens id: ").trim();
+
+        if (suspendedId.isBlank()) {
+            IO.println("Id får inte vara tomt.");
+            return false;
+        }
+
         HttpResponse<String> response;
 
         try {
-            response = Unirest.get(baseURL + "/suspended/" + id).asString();
+            response = Unirest.get(baseURL + "/suspended/" + suspendedId).asString();
         } catch (UnirestException e) {
             IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
             return false;
@@ -329,6 +362,50 @@ public class LibraryManager {
     }
 
     /**
+     * Läser in information om en bok och lägger till den på servern.
+     */
+    public boolean addBook() {
+        IO.println("Lägger till en bok på servern...");
+        String postBookTitle = IO.readln("Ange titel: ").trim();
+        if (postBookTitle.isBlank()) {
+            IO.println("Titel får inte vara tom.");
+            return false;
+        }
+
+        if (bookTitleExists(postBookTitle)) {
+            IO.println("Det finns redan en bok med den titeln.");
+            return false;
+        }
+
+        String postBookAuthor = IO.readln("Ange författare: ").trim();
+        if (postBookAuthor.isBlank()) {
+            IO.println("Författare får inte vara tom.");
+            return false;
+        }
+
+        String postBookGenre = IO.readln("Ange genre: ").trim();
+        if (postBookGenre.isBlank()) {
+            IO.println("Genre får inte vara tom.");
+            return false;
+        }
+
+        int postBookPages;
+        try {
+            postBookPages = Integer.parseInt(IO.readln("Ange antal sidor: ").trim());
+        } catch (NumberFormatException e) {
+            IO.println("Felaktigt antal sidor.");
+            return false;
+        }
+
+        if (postBookPages <= 0) {
+            IO.println("Antal sidor måste vara större än 0.");
+            return false;
+        }
+
+        return addBookToServer(postBookTitle, postBookAuthor, postBookGenre, postBookPages);
+    }
+
+    /**
      * Lägger till en ny tidning på servern och sparar den lokalt i listan.
      */
     public boolean addMagazineToServer(String title, String category, int issueNumber,
@@ -359,6 +436,57 @@ public class LibraryManager {
 
         IO.println("Tidningen lades till på servern och i den lokala samlingen.");
         return true;
+    }
+
+    /**
+     * Läser in information om en tidning och lägger till den på servern.
+     */
+    public boolean addMagazine() {
+        IO.println("Lägger till en tidning på servern...");
+        String postMagazineTitle = IO.readln("Ange titel: ").trim();
+        if (postMagazineTitle.isBlank()) {
+            IO.println("Titel får inte vara tom.");
+            return false;
+        }
+
+        if (magazineTitleExists(postMagazineTitle)) {
+            IO.println("Det finns redan en tidning med den titeln.");
+            return false;
+        }
+
+        String postMagazineCategory = IO.readln("Ange kategori: ").trim();
+        if (postMagazineCategory.isBlank()) {
+            IO.println("Kategori får inte vara tom.");
+            return false;
+        }
+
+        int postIssueNumber;
+        try {
+            postIssueNumber = Integer.parseInt(IO.readln("Ange nummer: ").trim());
+        } catch (NumberFormatException e) {
+            IO.println("Felaktigt nummer.");
+            return false;
+        }
+
+        if (postIssueNumber <= 0) {
+            IO.println("Nummer måste vara större än 0.");
+            return false;
+        }
+
+        int postPublishedYear;
+        try {
+            postPublishedYear = Integer.parseInt(IO.readln("Ange publiceringsår: ").trim());
+        } catch (NumberFormatException e) {
+            IO.println("Felaktigt år.");
+            return false;
+        }
+
+        if (postPublishedYear <= 0) {
+            IO.println("Publiceringsår måste vara större än 0.");
+            return false;
+        }
+
+        return addMagazineToServer(postMagazineTitle, postMagazineCategory, postIssueNumber, postPublishedYear);
     }
 
     /**
@@ -395,7 +523,32 @@ public class LibraryManager {
     }
 
     /**
-     * Lägger till en ny avstängd användare på servern och sparar den lokalt i listan.
+     * Läser in information om en användare och lägger till den på servern.
+     */
+    public boolean addUser() {
+        IO.println("Lägger till en användare på servern...");
+        String userName = IO.readln("Ange namn: ").trim();
+        if (userName.isBlank()) {
+            IO.println("Namn får inte vara tomt.");
+            return false;
+        }
+        String userEmail = IO.readln("Ange e-post: ").trim();
+        if (userEmail.isBlank()) {
+            IO.println("E-post får inte vara tom.");
+            return false;
+        }
+
+        if (emailExists(userEmail)) {
+            IO.println("Det finns redan en användare med den e-postadressen.");
+            return false;
+        }
+
+        return addUserToServer(userName, userEmail);
+    }
+
+    /**
+     * Lägger till en ny avstängd användare på servern och sparar den lokalt i
+     * listan.
      */
     public boolean addSuspendedUserToServer(String customerId) {
         SuspendedUser newSuspendedUser = new SuspendedUser(null, customerId);
@@ -425,6 +578,38 @@ public class LibraryManager {
 
         IO.println("Den avstängda användaren lades till på servern och i den lokala samlingen.");
         return true;
+    }
+
+    /**
+     * Läser in ett användar-id och lägger till en avstängd användare på servern.
+     */
+    public boolean addSuspendedUser() {
+        IO.println("Lägger till en avstängd användare på servern...");
+
+        if (users.isEmpty()) {
+            IO.println("Inga användare är hämtade. Hämta användare först.");
+            return false;
+        }
+
+        String customerId = IO.readln("Ange användarens id: ").trim();
+        if (customerId.isBlank()) {
+            IO.println("Användarens id får inte vara tomt.");
+            return false;
+        }
+
+        User userToSuspend = findUserById(customerId);
+
+        if (userToSuspend == null) {
+            IO.println("Ingen användare hittades med det id:t.");
+            return false;
+        }
+
+        if (isUserAlreadySuspended(customerId)) {
+            IO.println("Användaren är redan avstängd.");
+            return false;
+        }
+
+        return addSuspendedUserToServer(customerId);
     }
 
     /**
@@ -467,6 +652,27 @@ public class LibraryManager {
     }
 
     /**
+     * Läser in titel och tar bort en bok från servern.
+     */
+    public boolean deleteBook() {
+        IO.println("Tar bort bok via titel...");
+
+        if (getBooks().isEmpty()) {
+            IO.println("Inga böcker är hämtade. Hämta böcker först.");
+            return false;
+        }
+
+        String titleToDelete = IO.readln("Ange titel på boken som ska tas bort: ").trim();
+
+        if (titleToDelete.isBlank()) {
+            IO.println("Titel får inte vara tom.");
+            return false;
+        }
+
+        return deleteBookByTitleFromServer(titleToDelete);
+    }
+
+    /**
      * Tar bort en tidning från servern och lokalt med hjälp av titel.
      */
     public boolean deleteMagazineByTitleFromServer(String title) {
@@ -490,7 +696,7 @@ public class LibraryManager {
 
         int deleteMagazineStatus = deleteMagazineResponse
                 .getStatus();
-        
+
         if (deleteMagazineStatus == 404) {
             IO.println("Ingen tidning hittades med det id:t.");
             return false;
@@ -505,6 +711,27 @@ public class LibraryManager {
         magazines.remove(magazineToDelete);
         IO.println("Tidningen togs bort från servern och från den lokala samlingen.");
         return true;
+    }
+
+    /**
+     * Läser in titel och tar bort en tidning från servern.
+     */
+    public boolean deleteMagazine() {
+        IO.println("Tar bort tidning via titel...");
+
+        if (getMagazines().isEmpty()) {
+            IO.println("Inga tidningar är hämtade. Hämta tidningar först.");
+            return false;
+        }
+
+        String magazineTitleToDelete = IO.readln("Ange titel på tidningen som ska tas bort: ").trim();
+
+        if (magazineTitleToDelete.isBlank()) {
+            IO.println("Titel får inte vara tom.");
+            return false;
+        }
+
+        return deleteMagazineByTitleFromServer(magazineTitleToDelete);
     }
 
     /**
@@ -547,6 +774,27 @@ public class LibraryManager {
     }
 
     /**
+     * Läser in e-post och tar bort en användare från servern.
+     */
+    public boolean deleteUser() {
+        IO.println("Tar bort användare via e-post...");
+
+        if (users.isEmpty()) {
+            IO.println("Inga användare är hämtade. Hämta användare först.");
+            return false;
+        }
+
+        String emailToDelete = IO.readln("Ange e-post för användare som ska tas bort: ").trim();
+
+        if (emailToDelete.isBlank()) {
+            IO.println("E-post får inte vara tom.");
+            return false;
+        }
+
+        return deleteUserByEmailFromServer(emailToDelete);
+    }
+
+    /**
      * Tar bort en avstängd användare från servern och lokalt med hjälp av id.
      */
     public boolean deleteSuspendedUserByIdFromServer(String id) {
@@ -574,12 +822,33 @@ public class LibraryManager {
         removeSuspendedUserById(id);
 
         suspendedIdSet.clear();
-        for (SuspendedUser suspendedUser : suspendedUsers){
+        for (SuspendedUser suspendedUser : suspendedUsers) {
             suspendedIdSet.add(suspendedUser.getCustomer_id());
         }
         IO.println("Den avstängda användaren togs bort från servern och från den lokala samlingen.");
 
         return true;
+    }
+
+    /**
+     * Läser in ett id och tar bort en avstängd användare från servern.
+     */
+    public boolean deleteSuspendedUser() {
+        IO.println("Tar bort avstängd användare via id...");
+
+        if (getSuspendedUsers().isEmpty()) {
+            IO.println("Inga avstängda användare är hämtade. Hämta avstängda användare först.");
+            return false;
+        }
+
+        String suspendedIdToDelete = IO.readln("Ange id på avstängningen som ska tas bort: ").trim();
+
+        if (suspendedIdToDelete.isBlank()) {
+            IO.println("Id får inte vara tomt.");
+            return false;
+        }
+
+        return deleteSuspendedUserByIdFromServer(suspendedIdToDelete);
     }
 
     /**
@@ -685,6 +954,7 @@ public class LibraryManager {
      * Skriver ut böcker sorterade på titel.
      */
     public void printBooksSorted() {
+        IO.println("Skriver ut alla böcker...");
         ArrayList<Book> sortedBooks = new ArrayList<>(books);
         Collections.sort(sortedBooks);
 
@@ -702,6 +972,7 @@ public class LibraryManager {
      * Skriver ut tidningar sorterade på titel.
      */
     public void printMagazinesSorted() {
+        IO.println("Skriver ut alla tidningar...");
         ArrayList<Magazine> sortedMagazines = new ArrayList<>(magazines);
         Collections.sort(sortedMagazines);
 
@@ -719,6 +990,7 @@ public class LibraryManager {
      * Skriver ut användare sorterade på namn.
      */
     public void printUsersSorted() {
+        IO.println("Skriver ut alla användare...");
         ArrayList<User> sortedUsers = new ArrayList<>(users);
         Collections.sort(sortedUsers);
 
@@ -736,6 +1008,7 @@ public class LibraryManager {
      * Skriver ut avstängda användare sorterade på id.
      */
     public void printSuspendedUsersSorted() {
+        IO.println("Skriver ut alla avstängda användare...");
         ArrayList<SuspendedUser> sortedSuspendedUsers = new ArrayList<>(suspendedUsers);
         Collections.sort(sortedSuspendedUsers);
 
@@ -793,10 +1066,75 @@ public class LibraryManager {
     }
 
     /**
+     * Läser in e-post och söker efter en användare.
+     */
+    public boolean findUserByEmailInteractive() {
+        IO.println("Hitta användare via e-post...");
+
+        if (users.isEmpty()) {
+            IO.println("Inga användare är hämtade. Hämta användare först.");
+            return false;
+        }
+
+        String email = IO.readln("Ange e-post: ").trim();
+
+        if (email.isBlank()) {
+            IO.println("E-post får inte vara tom.");
+            return false;
+        }
+
+        User foundUser = findUserByEmail(email);
+
+        if (foundUser == null) {
+            IO.println("Ingen användare hittades med den e-postadressen.");
+            return false;
+        } else {
+            IO.println("Användaren hittades:");
+            IO.println(foundUser.getInfo());
+        }
+        return true;
+    }
+
+    /**
      * Avgör om en användare får låna eller inte.
      * Returnerar false om användarens id finns bland de avstängda användarna.
      */
     public boolean canUserBorrow(String customerId) {
         return !suspendedIdSet.contains(customerId);
     }
+
+    /**
+     * Läser in användar-id och kontrollerar om användaren får låna.
+     */
+    public boolean checkUserBorrow() {
+        IO.println("Kontrollerar om användare får låna...");
+
+        if (users.isEmpty()) {
+            IO.println("Inga användare är hämtade. Hämta användare först.");
+            return false;
+        }
+
+        String customerIdToCheck = IO.readln("Ange användarens id: ").trim();
+
+        if (customerIdToCheck.isBlank()) {
+            IO.println("Id får inte vara tomt.");
+            return false;
+        }
+
+        User userToCheck = findUserById(customerIdToCheck);
+
+        if (userToCheck == null) {
+            IO.println("Ingen användare hittades med det id:t.");
+            return false;
+        } else if (canUserBorrow(customerIdToCheck)) {
+            IO.println("Användaren får låna.");
+        } else {
+            IO.println("Användaren är avstängd och får inte låna.");
+        }
+        return true;
+    }
+
+    /**
+     * Kontrollerar
+     */
 }
