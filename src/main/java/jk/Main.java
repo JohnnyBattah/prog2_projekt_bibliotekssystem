@@ -2,9 +2,13 @@ package jk;
 
 /**
  * Författare: Johnny Battah
- * Programmet är ett bibliotekssystem som hämtar, visar, skapar och tar bort
- * böcker, tidningar, användare och avstängda användare via en JSON-server. 
- * Programmet kan också söka användare via e-post och kontrollera om en användare får låna.
+ * Programmet är ett bibliotekssystem som kommunicerar med en JSON-server.
+ * Användaren kan via menyer hämta, skriva ut, skapa, söka och ta bort
+ * böcker, tidningar, användare och avstängda användare.
+ * Programmet kan också söka böcker och tidningar via titel, söka användare
+ * via e-post och kontrollera om en användare får låna eller inte.
+ * Main ansvarar för menyerna och skickar vidare användarens val till
+ * LibraryManager där själva logiken finns.
  */
 
 import kong.unirest.Unirest;

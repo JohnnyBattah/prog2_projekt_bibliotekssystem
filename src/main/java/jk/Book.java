@@ -2,7 +2,12 @@ package jk;
 
 /**
  * Författare: Johnny Battah
- * Klassen Book representerar en bok i bibliotekssystemet
+ * Klassen Book representerar en bok i bibliotekssystemet.
+ * Den ärver från LibraryItem och innehåller därför gemensamma egenskaper
+ * som id, titel och tillgänglighet, men har också egna egenskaper som
+ * författare, genre och antal sidor.
+ * Klassen implementerar Comparable<Book> så att böcker kan sorteras
+ * alfabetiskt efter titel vid utskrift i programmet.
  */
 
 public class Book extends LibraryItem implements Comparable<Book> {

@@ -1,8 +1,12 @@
 package jk;
 
 /**
- * Författare Johnny Battah
- * Klassen LibraryItem är basklassen för saker som finns i biblioteket
+ * Författare: Johnny Battah
+ * Klassen LibraryItem är en basklass för bibliotekets medier.
+ * Den innehåller gemensam information för objekt som kan finnas i biblioteket,
+ * till exempel id, titel och om objektet är tillgängligt eller inte.
+ * Klassen används som superklass för Book och Magazine för att undvika
+ * duplicerad kod och samla gemensamma egenskaper på ett ställe.
  */
 
 public class LibraryItem {

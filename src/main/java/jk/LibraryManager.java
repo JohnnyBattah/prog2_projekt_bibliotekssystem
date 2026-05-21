@@ -18,9 +18,14 @@ import java.util.Set;
 
 /**
  * Författare: Johnny Battah
- * Klassen LibraryManager ansvarar för att lagra och hantera böcker,
- * tidningar, användare och avstängda användare i bibliotekssystemet.
- * Klassen används för sökning, sortering och kontroll av lånerätt.
+ * Klassen LibraryManager ansvarar för logiken i bibliotekssystemet. 
+ * Den hanterar hämtning, skapande, sökning och borttagning av 
+ * böcker, tidningar, användare och avstängda användare via JSON-servern.
+ * Klassen lagrar också data lokalt i samlingar och använder Map och Set
+ * för att effektivt kunna hitta användare via e-post och kontrollera om
+ * en användare är avstängd.
+ * LibraryManager används av Main, som skickar vidare användarens menyval
+ * till rätt metod i denna klass.
  */
 
 public class LibraryManager {
@@ -36,8 +41,6 @@ public class LibraryManager {
     private Gson gson;
 
     public LibraryManager() {
-        // skoladress: http://10.151.168.5:3137/
-        // hemadress: http://localhost:3000/
         baseURL = "http://localhost:3000/";
         gson = new Gson();
 

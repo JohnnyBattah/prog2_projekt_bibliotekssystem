@@ -3,7 +3,11 @@ package jk;
 /**
  * Författare: Johnny Battah
  * Klassen User representerar en användare i bibliotekssystemet.
- * Den innehåller: id, namn och email för en kund.
+ * Den innehåller information om en kund i form av id, namn och e-postadress.
+ * User-objekt används bland annat när programmet hämtar, skapar, söker 
+ * och tar bort användare från servern. 
+ * Klassen implementerar Comparable<User> så att användare kan sorteras
+ * alfabetiskt efter namn vid utskrift i programmet.
  */
 
 public class User implements Comparable<User> {
