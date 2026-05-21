@@ -49,38 +49,6 @@ public class LibraryManager {
         suspendedIdSet = new HashSet<>();
     }
 
-    public void setBooks(ArrayList<Book> books) {
-        this.books = books;
-    }
-
-    public void setMagazines(ArrayList<Magazine> magazines) {
-        this.magazines = magazines;
-    }
-
-    public void setUsers(ArrayList<User> users) {
-        this.users = users;
-    }
-
-    public void setSuspendedUsers(ArrayList<SuspendedUser> suspendedUsers) {
-        this.suspendedUsers = suspendedUsers;
-    }
-
-    public ArrayList<Book> getBooks() {
-        return books;
-    }
-
-    public ArrayList<Magazine> getMagazines() {
-        return magazines;
-    }
-
-    public ArrayList<User> getUsers() {
-        return users;
-    }
-
-    public ArrayList<SuspendedUser> getSuspendedUsers() {
-        return suspendedUsers;
-    }
-
     /**
      * Hämtar alla böcker från servern och sparar dem i listan.
      */
@@ -589,7 +557,7 @@ public class LibraryManager {
     public boolean deleteBook() {
         IO.println("Tar bort bok via titel...");
 
-        if (getBooks().isEmpty()) {
+        if (books.isEmpty()) {
             IO.println("Inga böcker är hämtade. Hämta böcker först.");
             return false;
         }
@@ -645,7 +613,7 @@ public class LibraryManager {
     public boolean deleteMagazine() {
         IO.println("Tar bort tidning via titel...");
 
-        if (getMagazines().isEmpty()) {
+        if (magazines.isEmpty()) {
             IO.println("Inga tidningar är hämtade. Hämta tidningar först.");
             return false;
         }
@@ -657,6 +625,8 @@ public class LibraryManager {
 
     /**
      * Tar bort en användare från servern och lokalt med hjälp av e-post.
+     * Om användaren också finns bland avstängda användare tas den posten bort
+     * först.
      */
     public boolean deleteUserByEmailFromServer(String email) {
         User userToDelete = findUserByEmail(email);
@@ -667,6 +637,22 @@ public class LibraryManager {
         }
 
         String userIdToDelete = userToDelete.getId();
+
+        String suspendedIdToDelete = null;
+
+        for (SuspendedUser suspendedUser : suspendedUsers) {
+            if (suspendedUser.getCustomer_id().equalsIgnoreCase(userIdToDelete)) {
+                suspendedIdToDelete = suspendedUser.getId();
+                break;
+            }
+        }
+
+        if (suspendedIdToDelete != null) {
+            if (!deleteSuspendedUserByIdFromServer(suspendedIdToDelete)) {
+                IO.println("Kunde inte ta bort användarens avstängning.");
+                return false;
+            }
+        }
 
         HttpResponse<String> deleteUserResponse;
         try {
@@ -752,7 +738,7 @@ public class LibraryManager {
     public boolean deleteSuspendedUser() {
         IO.println("Tar bort avstängd användare via id...");
 
-        if (getSuspendedUsers().isEmpty()) {
+        if (suspendedUsers.isEmpty()) {
             IO.println("Inga avstängda användare är hämtade. Hämta avstängda användare först.");
             return false;
         }
@@ -798,55 +784,6 @@ public class LibraryManager {
      */
     public boolean isUserAlreadySuspended(String customerId) {
         return suspendedIdSet.contains(customerId);
-    }
-
-    /**
-     * Lägger till en bok i samlingen.
-     */
-    public void addBook(Book book) {
-        books.add(book);
-    }
-
-    /**
-     * Lägger till en tidning i samlingen.
-     */
-    public void addMagazine(Magazine magazine) {
-        magazines.add(magazine);
-    }
-
-    /**
-     * Lägger till en användare i samlingen.
-     */
-    public void addUser(User user) {
-        users.add(user);
-    }
-
-    /**
-     * Lägger till en avstängd användare i samlingen.
-     */
-    public void addSuspendedUser(SuspendedUser suspendedUser) {
-        suspendedUsers.add(suspendedUser);
-    }
-
-    /**
-     * Tar bort en bok ur den lokala listan.
-     */
-    public void removeBook(Book book) {
-        books.remove(book);
-    }
-
-    /**
-     * Tar bort en tidning ur den lokala listan.
-     */
-    public void removeMagazine(Magazine magazine) {
-        magazines.remove(magazine);
-    }
-
-    /**
-     * Tar bort en användare ur den lokala listan.
-     */
-    public void removeUser(User user) {
-        users.remove(user);
     }
 
     /**
@@ -946,6 +883,31 @@ public class LibraryManager {
     }
 
     /**
+     * Läser in titel och söker efter en bok.
+     */
+    public boolean findBookByTitleInteractive() {
+        IO.println("Hitta bok via titel...");
+
+        if (books.isEmpty()) {
+            IO.println("Inga böcker är hämtade. Hämta böcker först.");
+            return false;
+        }
+
+        String title = readRequiredText("Ange titel: ", "Titel");
+
+        Book foundBook = findBookByTitle(title);
+
+        if (foundBook == null) {
+            IO.println("Ingen bok hittades med den titeln.");
+            return false;
+        } else {
+            IO.println("Boken hittades:");
+            IO.println(foundBook.getInfo());
+        }
+        return true;
+    }
+
+    /**
      * Hittar en tidning med hjälp av titel.
      */
     public Magazine findMagazineByTitle(String title) {
@@ -955,6 +917,31 @@ public class LibraryManager {
             }
         }
         return null;
+    }
+
+    /**
+     * Läser in titel och söker efter en tidning.
+     */
+    public boolean findMagazineByTitleInteractive() {
+        IO.println("Hitta tidning via titel...");
+
+        if (magazines.isEmpty()) {
+            IO.println("Inga tidningar är hämtade. Hämta tidningar först.");
+            return false;
+        }
+
+        String title = readRequiredText("Ange titel: ", "Titel");
+
+        Magazine foundMagazine = findMagazineByTitle(title);
+
+        if (foundMagazine == null) {
+            IO.println("Ingen tidning hittades med den titeln.");
+            return false;
+        } else {
+            IO.println("Tidningen hittades:");
+            IO.println(foundMagazine.getInfo());
+        }
+        return true;
     }
 
     /**
@@ -1072,5 +1059,4 @@ public class LibraryManager {
             }
         }
     }
-
 }

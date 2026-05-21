@@ -153,12 +153,14 @@ public class Main {
                         IO.println("""
 
                                     === SÖK OCH KONTROLLERA ===
-                                    1. Hitta användare via e-post
-                                    2. Kontrollera om användare får låna
-                                    3. Tillbaka
+                                    1. Hitta bok via titel
+                                    2. Hitta tidning via titel
+                                    3. Hitta användare via e-post
+                                    4. Kontrollera om användare får låna
+                                    5. Tillbaka
                                 """);
 
-                        String sökInput = IO.readln("Välj ett alternativ (1-3): ");
+                        String sökInput = IO.readln("Välj ett alternativ (1-5): ");
                         int sökVal;
 
                         try {
@@ -169,9 +171,11 @@ public class Main {
                         }
 
                         switch (sökVal) {
-                            case 1 -> manager.findUserByEmailInteractive();
-                            case 2 -> manager.checkUserBorrow();
-                            case 3 -> sökMeny = false;
+                            case 1 -> manager.findBookByTitleInteractive();
+                            case 2 -> manager.findMagazineByTitleInteractive();
+                            case 3 -> manager.findUserByEmailInteractive();
+                            case 4 -> manager.checkUserBorrow();
+                            case 5 -> sökMeny = false;
                             default -> IO.println("Ogiltigt val. Ange ett nummer från menyn.");
                         }
                     }
