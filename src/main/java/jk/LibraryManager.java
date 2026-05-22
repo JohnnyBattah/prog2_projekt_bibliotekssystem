@@ -1119,7 +1119,58 @@ public class LibraryManager {
         return true;
     }
 
-    
+    public boolean borrowMedia() {
+        IO.println("Låna media...");
+
+        if (users.isEmpty()) {
+            IO.println("Inga användare är hämtade. Hämta användare först.");
+            return false;
+        }
+
+        if (mediaItems.isEmpty()) {
+            IO.println("Ingen media är hämtad. Hämta media först.");
+            return false;
+        }
+
+        String userId = readRequiredText("Ange användarens id: ", "Användarens id");
+        User userToBorrow = findUserById(userId);
+
+        if (userToBorrow == null) {
+            IO.println("Ingen användare hittades med det id:t.");
+            return false;
+        }
+
+        if (!canUserBorrow(userId)) {
+            IO.println("Användaren är avstängd och får inte låna.");
+            return false;
+        }
+
+        String mediaTitle = readRequiredText("Ange mediets titel: ", "Titel");
+        Media mediaToBorrow = findMediaByTitle(mediaTitle);
+
+        if (mediaToBorrow == null) {
+            IO.println("Ingen media hittades med den titeln.");
+            return false;
+        }
+
+        if (!mediaToBorrow.getIsAvailable()) {
+            IO.println("Medier är inte tillgängligt.");
+            return false;
+        }
+
+        if (isItemLoaned(mediaToBorrow.getId())) {
+            IO.println("Medier är redan utlånat.");
+            return false;
+        }
+
+        Loan newLoan = new Loan(userId, mediaToBorrow.getId(), "media");
+        loans.add(newLoan);
+        mediaToBorrow.setIsAvailable(false);
+
+        IO.println("Mediet lånades ut.");
+        IO.println(newLoan.getInfo());
+        return true;
+    }
 
     public boolean borrowBook() {
         IO.println("Låna bok...");
