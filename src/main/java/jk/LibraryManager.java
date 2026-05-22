@@ -1486,28 +1486,6 @@ public class LibraryManager {
         return null;
     }
 
-    public boolean titleExistsInSearchableItems(String title) {
-        for (Book book : books) {
-            if (book.matchesTitle(title)) {
-                return true;
-            }
-        }
-
-        for (Magazine magazine : magazines) {
-            if (magazine.matchesTitle(title)) {
-                return true;
-            }
-        }
-
-        for (Media media : mediaItems) {
-            if (media.matchesTitle(title)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     public long countAvailableBooksStream() {
         return books.stream()
                 .filter(Book::getIsAvailable)
@@ -1525,7 +1503,6 @@ public class LibraryManager {
                 .filter(Magazine::getIsAvailable)
                 .count();
     }
-    
 
     public ArrayList<String> getMediaTitlesStream() {
         return new ArrayList<>(
@@ -1581,4 +1558,41 @@ public class LibraryManager {
         borrowedBooks.forEach(book -> IO.println(book.getInfo()));
     }
 
+    public void printAvailableMediaStream() {
+        IO.println("Skriver ut tillgänglig media...");
+
+        ArrayList<Media> availableMedia = getAvailableMediaStream();
+
+        if (availableMedia.isEmpty()) {
+            IO.println("Det finns ingen tillgänglig media.");
+            return;
+        }
+
+        availableMedia.forEach(media -> IO.println(media.getInfo()));
+    }
+
+    public void printMediaTitlesStream() {
+        IO.println("Skriver ut alla mediatitlar...");
+
+        ArrayList<String> titles = getMediaTitlesStream();
+
+        if (titles.isEmpty()) {
+            IO.println("Det finns ingen media.");
+            return;
+        }
+
+        titles.forEach(title -> IO.println(title));
+    }
+
+    public void checkTitleExistsStreamInteractive() {
+        IO.println("Kontrollerar om titel finns...");
+
+        String title = readRequiredText("Ange titel: ", "Titel");
+
+        if (titleExistsStream(title)) {
+            IO.println("Titeln finns i systemet.");
+        } else {
+            IO.println("Titeln finns inte i systemet.");
+        }
+    }
 }

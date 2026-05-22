@@ -32,10 +32,12 @@ public class Main {
                         4. Sök och kontrollera
                         5. Lägg till
                         6. Ta bort
-                        7. Avsluta
+                        7. Lån och återlämning
+                        8. Streams och statistik
+                        9. Avsluta
                     """);
 
-            String input = IO.readln("Välj ett alternativ (1-7): ");
+            String input = IO.readln("Välj ett alternativ (1-9): ");
             int val;
 
             // Försöker omvandla användarens val till ett heltal
@@ -58,10 +60,11 @@ public class Main {
                                     2. Hämta tidningar
                                     3. Hämta användare
                                     4. Hämta avstängda användare
-                                    5. Tillbaka
+                                    5. Hämta media
+                                    6. Tillbaka
                                 """);
 
-                        String hämtaInput = IO.readln("Välj ett alternativ (1-5): ");
+                        String hämtaInput = IO.readln("Välj ett alternativ (1-6): ");
                         int hämtaVal;
 
                         try {
@@ -76,7 +79,8 @@ public class Main {
                             case 2 -> manager.fetchMagazines();
                             case 3 -> manager.fetchUsers();
                             case 4 -> manager.fetchSuspendedUsers();
-                            case 5 -> hämtaMeny = false;
+                            case 5 -> manager.fetchMedia();
+                            case 6 -> hämtaMeny = false;
                             default -> IO.println("Ogiltigt val. Ange ett nummer från menyn.");
                         }
                     }
@@ -126,10 +130,12 @@ public class Main {
                                     2. Skriv ut tidningar
                                     3. Skriv ut användare
                                     4. Skriv ut avstängda användare
-                                    5. Tillbaka
+                                    5. Skriv ut media
+                                    6. Skriv ut lån
+                                    7. Tillbaka
                                 """);
 
-                        String skrivUtInput = IO.readln("Välj ett alternativ (1-5): ");
+                        String skrivUtInput = IO.readln("Välj ett alternativ (1-7): ");
                         int skrivUtVal;
 
                         try {
@@ -144,7 +150,9 @@ public class Main {
                             case 2 -> manager.printMagazinesSorted();
                             case 3 -> manager.printUsersSorted();
                             case 4 -> manager.printSuspendedUsersSorted();
-                            case 5 -> skrivUtMeny = false;
+                            case 5 -> manager.printMedia();
+                            case 6 -> manager.printLoans();
+                            case 7 -> skrivUtMeny = false;
                             default -> IO.println("Ogiltigt val. Ange ett nummer från menyn.");
                         }
                     }
@@ -160,11 +168,12 @@ public class Main {
                                     1. Hitta bok via titel
                                     2. Hitta tidning via titel
                                     3. Hitta användare via e-post
-                                    4. Kontrollera om användare får låna
-                                    5. Tillbaka
+                                    4. Hitta media via titel
+                                    5. Kontrollera om användare får låna
+                                    6. Tillbaka
                                 """);
 
-                        String sökInput = IO.readln("Välj ett alternativ (1-5): ");
+                        String sökInput = IO.readln("Välj ett alternativ (1-6): ");
                         int sökVal;
 
                         try {
@@ -178,8 +187,9 @@ public class Main {
                             case 1 -> manager.findBookByTitleInteractive();
                             case 2 -> manager.findMagazineByTitleInteractive();
                             case 3 -> manager.findUserByEmailInteractive();
-                            case 4 -> manager.checkUserBorrow();
-                            case 5 -> sökMeny = false;
+                            case 4 -> manager.findMediaByTitleInteractive();
+                            case 5 -> manager.checkUserBorrow();
+                            case 6 -> sökMeny = false;
                             default -> IO.println("Ogiltigt val. Ange ett nummer från menyn.");
                         }
                     }
@@ -256,6 +266,90 @@ public class Main {
                     break;
 
                 case 7:
+                    boolean lånMeny = true;
+
+                    while (lånMeny) {
+                        IO.println("""
+
+                                    === LÅN OCH ÅTERLÄMNING ===
+                                    1. Låna bok
+                                    2. Lämna tillbaka bok
+                                    3. Låna tidning
+                                    4. Lämna tillbaka tidning
+                                    5. Låna media
+                                    6. Lämna tillbaka media
+                                    7. Tillbaka
+                                """);
+
+                        String lånInput = IO.readln("Välj ett alternativ (1-7): ");
+                        int lånVal;
+
+                        try {
+                            lånVal = Integer.parseInt(lånInput);
+                        } catch (NumberFormatException e) {
+                            IO.println("Felaktig inmatning. Ange ett nummer från menyn.");
+                            continue;
+                        }
+
+                        switch (lånVal) {
+                            case 1 -> manager.borrowBook();
+                            case 2 -> manager.returnBook();
+                            case 3 -> manager.borrowMagazine();
+                            case 4 -> manager.returnMagazine();
+                            case 5 -> manager.borrowMedia();
+                            case 6 -> manager.returnMedia();
+                            case 7 -> lånMeny = false;
+                            default -> IO.println("Ogiltigt val. Ange ett nummer från menyn.");
+                        }
+                    }
+                    break;
+
+                case 8:
+                    boolean streamMeny = true;
+
+                    while (streamMeny) {
+                        IO.println("""
+
+                                    === STREAMS OCH STATISTIK ===
+                                    1. Räkna tillgängliga böcker
+                                    2. Räkna tillgängliga tidningar
+                                    3. Räkna tillgängliga media
+                                    4. Visa mediatitlar
+                                    5. Kontrollera om titel finns
+                                    6. Skriv ut media sorterad
+                                    7. Visa utlånade böcker
+                                    8. Visa tillgänglig media
+                                    9. Visa totalt antal sidor i böcker
+                                    10. Tillbaka
+                                """);
+
+                        String streamInput = IO.readln("Välj ett alternativ (1-10): ");
+                        int streamVal;
+
+                        try {
+                            streamVal = Integer.parseInt(streamInput);
+                        } catch (NumberFormatException e) {
+                            IO.println("Felaktig inmatning. Ange ett nummer från menyn.");
+                            continue;
+                        }
+
+                        switch (streamVal) {
+                            case 1 -> IO.println("Tillgängliga böcker: " + manager.countAvailableBooksStream());
+                            case 2 -> IO.println("Tillgängliga tidningar: " + manager.countAvailableMagazinesStream());
+                            case 3 -> IO.println("Tillgänglig media: " + manager.countAvailableMediaStream());
+                            case 4 -> manager.printMediaTitlesStream();
+                            case 5 -> manager.checkTitleExistsStreamInteractive();
+                            case 6 -> manager.printMediaSortedStream();
+                            case 7 -> manager.printBorrowedBooksStream();
+                            case 8 -> manager.printAvailableMediaStream();
+                            case 9 -> IO.println("Totalt antal sidor: " + manager.getTotalPagesStream());
+                            case 10 -> streamMeny = false;
+                            default -> IO.println("Ogiltigt val. Ange ett nummer från menyn.");
+                        }
+                    }
+                    break;
+
+                case 9:
                     kör = false;
                     IO.println("Programmet avslutas.");
                     break;
