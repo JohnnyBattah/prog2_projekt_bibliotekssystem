@@ -1115,6 +1115,94 @@ public class LibraryManager {
         return true;
     }
 
+    public boolean borrowMagazine() {
+        IO.println("Låna tidning...");  
+
+        if (users.isEmpty()) {
+            IO.println("Inga användare är hämtade. Hämta användare först.");
+            return false;
+        }
+
+        if (magazines.isEmpty()) {
+            IO.println("Inga tidningar är hämtade. Hämta tidningar först.");
+            return false;
+        }
+
+        String userId = readRequiredText("Ange användarens id: ", "Användarens id");
+        User userToBorrow = findUserById(userId);
+
+        if (userToBorrow == null) {
+            IO.println("Ingen användare hittades med det id:t.");
+            return false;
+        }
+
+        if (!canUserBorrow(userId)) {
+            IO.println("Användaren är avstängd och får inte låna.");
+            return false;
+        }
+
+        String magazineTitle = readRequiredText("Ange tidningens titel: ", "Titel");
+        Magazine magazineToBorrow = findMagazineByTitle(magazineTitle);
+
+        if (magazineToBorrow == null) {
+            IO.println("Ingen tidning hittades med den titeln.");
+            return false;
+        }
+
+        if (!magazineToBorrow.getIsAvailable()) {
+            IO.println("Tidningen är inte tillgänglig.");
+            return false;
+        }
+
+        if (isItemLoaned(magazineToBorrow.getId())) {
+            IO.println("Tidningen är redan utlånad.");
+            return false;
+        }
+
+        Loan newLoan = new Loan(userId, magazineToBorrow.getId(), "magazine");
+        loans.add(newLoan);
+        magazineToBorrow.setIsAvailable(false);
+
+        IO.println("Tidningen lånades ut.");
+        IO.println(newLoan.getInfo());
+        return true;
+    }
+
+    public boolean returnMagazine() {
+        IO.println("Lämna tillbaka tidning...");
+
+        if (magazines.isEmpty()) {
+            IO.println("Inga tidningar är hämtade. Hämta tidningar först.");
+            return false;
+        }
+
+        if (loans.isEmpty()) {
+            IO.println("Det finns inga registrerade lån.");
+            return false;
+        }
+
+        String magazineTitle = readRequiredText("Ange tidningens titel: ", "Titel");
+        Magazine magazineToReturn = findMagazineByTitle(magazineTitle);
+
+        if (magazineToReturn == null) {
+            IO.println("Ingen tidning hittades med den titeln.");
+            return false;
+        }
+
+        Loan loanToRemove = findLoanByItemId(magazineToReturn.getId());
+
+        if (loanToRemove == null) {
+            IO.println("Tidningen är inte utlånad.");
+            return false;
+        }
+
+        loans.remove(loanToRemove);
+        magazineToReturn.setIsAvailable(true);
+
+        IO.println("Tidningen har lämnats tillbaka.");
+        return true;
+    }
+
     /**
      * Läser in text och fortsätter fråga tills användaren skrivit något som inte är
      * tomt.
