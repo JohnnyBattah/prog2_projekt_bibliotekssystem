@@ -20,7 +20,14 @@ public class Movie extends Media {
 
     @Override
     public String getInfo() {
-        return "ID: " + id + ", Typ: " + type + ", Titel: " + title + ", Genre: " + genre + ", Minuter: " + minutes
-                + ", Tillgänglig: " + isAvailable;
+        return """
+                --- Film ---
+                ID: %s
+                Typ: %s
+                Titel: %s
+                Genre: %s
+                Minuter: %d
+                Tillgänglig: %b
+                """.formatted(id, type, title, genre, minutes, isAvailable);
     }
 }

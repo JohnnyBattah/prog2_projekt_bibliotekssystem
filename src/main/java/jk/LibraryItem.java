@@ -9,7 +9,7 @@ package jk;
  * duplicerad kod och samla gemensamma egenskaper på ett ställe.
  */
 
-public class LibraryItem implements Searchable {
+public abstract class LibraryItem implements Searchable {
     protected String id;
     protected String title;
     protected boolean isAvailable;
@@ -40,9 +40,7 @@ public class LibraryItem implements Searchable {
         this.title = title;
     }
 
-    public String getInfo() {
-        return "ID: " + id + ", Titel: " + title + ", Tillgänglig: " + isAvailable;
-    }
+    public abstract String getInfo();
 
     @Override
     public boolean matchesTitle(String title) {

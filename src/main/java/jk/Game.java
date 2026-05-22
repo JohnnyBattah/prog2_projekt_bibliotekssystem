@@ -20,8 +20,15 @@ public class Game extends Media {
 
     @Override
     public String getInfo() {
-        return "ID: " + id + ", Typ: " + type + ", Titel: " + title + ", Genre: " + genre + ", Ålder: " + age
-                + ", Tillgänglig: " + isAvailable;
+        return """
+                --- Spel ---
+                ID: %s
+                Typ: %s
+                Titel: %s
+                Genre: %s
+                Ålder: %d
+                Tillgänglig: %b
+                """.formatted(id, type, title, genre, age, isAvailable);
     }
 
 }

@@ -41,8 +41,15 @@ public class Book extends LibraryItem implements Comparable<Book> {
 
     @Override
     public String getInfo() {
-        return "ID: " + id + ", Titel: " + title + ", Författare: " + author + ", Genre: " + genre + ", Sidor: " + pages
-                + ", Tillgänglig: " + isAvailable;
+        return """
+                --- Bok ---
+                ID: %s
+                Titel: %s
+                Författare: %s
+                Genre: %s
+                Sidor: %d
+                Tillgänglig: %b
+                """.formatted(id, title, author, genre, pages, isAvailable);
     }
 
 }

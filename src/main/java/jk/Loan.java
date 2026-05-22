@@ -36,6 +36,11 @@ public class Loan {
     }
 
     public String getInfo() {
-        return "User ID: " + userId + ", Item ID: " + itemId + ", Item Type: " + itemType;
+        return """
+                --- Lån ---
+                User ID: %s
+                Item ID: %s
+                Item Type: %s
+                """.formatted(userId, itemId, itemType);
     }
 }

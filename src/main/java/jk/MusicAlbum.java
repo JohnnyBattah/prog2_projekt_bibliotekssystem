@@ -14,7 +14,13 @@ public class MusicAlbum extends Media {
 
     @Override
     public String getInfo() {
-        return "ID: " + id + ", Typ: " + type + ", Titel: " + title + ", Artist: " + artist
-                + ", Tillgänglig: " + isAvailable;
+        return """
+                --- Musikalbum ---
+                ID: %s
+                Typ: %s
+                Titel: %s
+                Artist: %s
+                Tillgänglig: %b
+                """.formatted(id, type, title, artist, isAvailable);
     }
 }
