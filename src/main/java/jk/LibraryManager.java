@@ -1485,4 +1485,27 @@ public class LibraryManager {
         }
         return null;
     }
+
+    public boolean titleExistsInSearchableItems(String title) {
+        for (Book book : books) {
+            if (book.matchesTitle(title)) {
+                return true;
+            }
+        }
+
+        for (Magazine magazine : magazines) {
+            if (magazine.matchesTitle(title)) {
+                return true;
+            }
+        }
+
+        for (Media media : mediaItems) {
+            if (media.matchesTitle(title)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 }
