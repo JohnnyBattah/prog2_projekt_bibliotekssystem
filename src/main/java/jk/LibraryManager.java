@@ -1595,4 +1595,27 @@ public class LibraryManager {
             IO.println("Titeln finns inte i systemet.");
         }
     }
+
+    public void printBooksByAuthorStreamInteractive() {
+        IO.println("Filtrerar böcker efter författare...");
+
+        if (books.isEmpty()) {
+            IO.println("Inga böcker är hämtade.");
+            return;
+        }
+
+        String author = readRequiredText("Ange författare: ", "Författare");
+
+        ArrayList<Book> filteredBooks = new ArrayList<>(
+                books.stream()
+                    .filter(book -> book.getAuthor().equalsIgnoreCase(author))
+                    .toList());
+
+        if (filteredBooks.isEmpty()) {
+            IO.println("Inga böcker hittades av den författaren.");
+            return;
+        }
+
+        filteredBooks.forEach(book -> IO.println(book.getInfo()));
+    }
 }
