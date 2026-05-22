@@ -1508,4 +1508,37 @@ public class LibraryManager {
         return false;
     }
 
+    public long countAvailableBooksStream() {
+        return books.stream()
+                .filter(Book::getIsAvailable)
+                .count();
+    }
+
+    public long countAvailableMediaStream() {
+        return mediaItems.stream()
+                .filter(Media::getIsAvailable)
+                .count();
+    }
+
+    public ArrayList<String> getMediaTitlesStream() {
+        return new ArrayList<>(
+                mediaItems.stream()
+                        .map(Media::getTitle)
+                        .toList());
+    }
+
+    public boolean titleExistsStream(String title) {
+        return books.stream().anyMatch(book -> book.matchesTitle(title))
+                || magazines.stream().anyMatch(magazine -> magazine.matchesTitle(title))
+                || mediaItems.stream().anyMatch(media -> media.matchesTitle(title));
+    }
+
+    public void printMediaSortedStream() {
+        IO.println("Skriver ut media sorterad på titel...");
+
+        mediaItems.stream()
+                .sorted((m1, m2) -> m1.getTitle().compareToIgnoreCase(m2.getTitle()))
+                .forEach(media -> IO.println(media.getInfo()));
+    }
+
 }
