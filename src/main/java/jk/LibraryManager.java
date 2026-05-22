@@ -1099,10 +1099,10 @@ public class LibraryManager {
     }
 
     public boolean findMediaByTitleInteractive() {
-        IO.println("Hittar media via titel...");
+        IO.println("Hitta media via titel...");
 
         if (mediaItems.isEmpty()) {
-            IO.println("Ingen mediaär hämtad. Hämtamedia först.");
+            IO.println("Ingen media är hämtad. Hämta media först.");
             return false;
         }
 
@@ -1154,12 +1154,12 @@ public class LibraryManager {
         }
 
         if (!mediaToBorrow.getIsAvailable()) {
-            IO.println("Medier är inte tillgängligt.");
+            IO.println("Mediet är inte tillgängligt.");
             return false;
         }
 
         if (isItemLoaned(mediaToBorrow.getId())) {
-            IO.println("Medier är redan utlånat.");
+            IO.println("Mediet är redan utlånat.");
             return false;
         }
 
@@ -1222,6 +1222,41 @@ public class LibraryManager {
 
         IO.println("Boken lånades ut.");
         IO.println(newLoan.getInfo());
+        return true;
+    }
+
+    public boolean returnMedia() {
+        IO.println("Lämna tillbaka media...");
+
+        if (mediaItems.isEmpty()) {
+            IO.println("Ingen media är hämtad. Hämta media först.");
+            return false;
+        }
+
+        if (loans.isEmpty()) {
+            IO.println("Det finns inga registrerade lån.");
+            return false;
+        }
+
+        String mediaTitle = readRequiredText("Ange mediets titel: ", "Titel");
+        Media mediaToReturn = findMediaByTitle(mediaTitle);
+
+        if (mediaToReturn == null) {
+            IO.println("Ingen media hittades med den titeln.");
+            return false;
+        }
+
+        Loan loanToRemove = findLoanByItemId(mediaToReturn.getId());
+
+        if (loanToRemove == null) {
+            IO.println("Mediet är inte utlånat.");
+            return false;
+        }
+
+        loans.remove(loanToRemove);
+        mediaToReturn.setIsAvailable(true);
+
+        IO.println("Mediet har lämnats tillbaka.");
         return true;
     }
 
