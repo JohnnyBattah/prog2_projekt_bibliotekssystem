@@ -18,8 +18,8 @@ import java.util.Set;
 
 /**
  * Författare: Johnny Battah
- * Klassen LibraryManager ansvarar för logiken i bibliotekssystemet. 
- * Den hanterar hämtning, skapande, sökning och borttagning av 
+ * Klassen LibraryManager ansvarar för logiken i bibliotekssystemet.
+ * Den hanterar hämtning, skapande, sökning och borttagning av
  * böcker, tidningar, användare och avstängda användare via JSON-servern.
  * Klassen lagrar också data lokalt i samlingar och använder Map och Set
  * för att effektivt kunna hitta användare via e-post och kontrollera om
@@ -33,6 +33,7 @@ public class LibraryManager {
     private ArrayList<Magazine> magazines;
     private ArrayList<User> users;
     private ArrayList<SuspendedUser> suspendedUsers;
+    private ArrayList<Loan> loans;
 
     private Map<String, User> userMap;
     private Set<String> suspendedIdSet;
@@ -48,6 +49,7 @@ public class LibraryManager {
         magazines = new ArrayList<>();
         users = new ArrayList<>();
         suspendedUsers = new ArrayList<>();
+        loans = new ArrayList<>();
         userMap = new HashMap<>();
         suspendedIdSet = new HashSet<>();
     }
@@ -1025,6 +1027,94 @@ public class LibraryManager {
         return true;
     }
 
+    public boolean borrowBook() {
+        IO.println("Låna bok...");  
+
+        if (users.isEmpty()) {
+            IO.println("Inga användare är hämtade. Hämta användare först.");
+            return false;
+        }
+
+        if (books.isEmpty()) {
+            IO.println("Inga böcker är hämtade. Hämta böcker först.");
+            return false;
+        }
+
+        String userId = readRequiredText("Ange användarens id: ", "Användarens id");
+        User userToBorrow = findUserById(userId);
+
+        if (userToBorrow == null) {
+            IO.println("Ingen användare hittades med det id:t.");
+            return false;
+        }
+
+        if (!canUserBorrow(userId)) {
+            IO.println("Användaren är avstängd och får inte låna.");
+            return false;
+        }
+
+        String bookTitle = readRequiredText("Ange bokens titel: ", "Titel");
+        Book bookToBorrow = findBookByTitle(bookTitle);
+
+        if (bookToBorrow == null) {
+            IO.println("Ingen bok hittades med den titeln.");
+            return false;
+        }
+
+        if (!bookToBorrow.getIsAvailable()) {
+            IO.println("Boken är inte tillgänglig.");
+            return false;
+        }
+
+        if (isItemLoaned(bookToBorrow.getId())) {
+            IO.println("Boken är redan utlånad.");
+            return false;
+        }
+
+        Loan newLoan = new Loan(userId, bookToBorrow.getId(), "book");
+        loans.add(newLoan);
+        bookToBorrow.setIsAvailable(false);
+
+        IO.println("Boken lånades ut.");
+        IO.println(newLoan.getInfo());
+        return true;
+    }
+
+    public boolean returnBook() {
+        IO.println("Lämna tillbaka bok...");
+
+        if (books.isEmpty()) {
+            IO.println("Inga böcker är hämtade. Hämta böcker först.");
+            return false;
+        }
+
+        if (loans.isEmpty()) {
+            IO.println("Det finns inga registrerade lån.");
+            return false;
+        }
+
+        String bookTitle = readRequiredText("Ange bokens titel: ", "Titel");
+        Book bookToReturn = findBookByTitle(bookTitle);
+
+        if (bookToReturn == null) {
+            IO.println("Ingen bok hittades med den titeln.");
+            return false;
+        }
+
+        Loan loanToRemove = findLoanByItemId(bookToReturn.getId());
+
+        if (loanToRemove == null) {
+            IO.println("Boken är inte utlånad.");
+            return false;
+        }
+
+        loans.remove(loanToRemove);
+        bookToReturn.setIsAvailable(true);
+
+        IO.println("Boken har lämnats tillbaka.");
+        return true;
+    }
+
     /**
      * Läser in text och fortsätter fråga tills användaren skrivit något som inte är
      * tomt.
@@ -1061,5 +1151,23 @@ public class LibraryManager {
                 IO.println(fieldName + " måste vara ett heltal.");
             }
         }
+    }
+
+    public boolean isItemLoaned(String itemId) {
+        for (Loan loan : loans) {
+            if (loan.getItemId().equalsIgnoreCase(itemId)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Loan findLoanByItemId(String itemId) {
+        for (Loan loan : loans) {
+            if (loan.getItemId().equalsIgnoreCase(itemId)) {
+                return loan;
+            }
+        }
+        return null;
     }
 }
