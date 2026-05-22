@@ -311,17 +311,13 @@ public class Main {
                         IO.println("""
 
                                     === STREAMS ===
-                                    1. Filtrera böcker efter författare
-                                    2. Filtrerar böcker efter genre
-                                    3. Sorterar böcker efter författare
-                                    4. Sorterar böcker efter genre
-                                    5. Räknar antal böcker av en författare
-                                    6. Visa alla boktitlar
-                                    7. Visa alla bokförfattare
-                                    8. Tillbaka
+                                    1. Filtrering
+                                    2. Sortering
+                                    3. Statistik och map
+                                    4. Tillbaka
                                 """);
 
-                        String streamInput = IO.readln("Välj ett alternativ (1-8): ");
+                        String streamInput = IO.readln("Välj ett alternativ (1-4): ");
                         int streamVal;
 
                         try {
@@ -332,15 +328,119 @@ public class Main {
                         }
 
                         switch (streamVal) {
-                            case 1 -> manager.printBooksByAuthorStreamInteractive();
-                            case 2 -> manager.printBooksByGenreStreamInteractive();
-                            case 3 -> manager.printBooksSortedByAuthorStream();
-                            case 4 -> manager.printBooksSortedByGenreStream();
-                            case 5 -> manager.countBooksByAuthorStreamInteractive();
-                            case 6 -> manager.printBookTitlesStream();
-                            case 7 -> manager.printBookAuthorsStream();
-                            case 8 -> streamMeny = false;
-                            default -> IO.println("Ogiltigt val. Ange ett nummer från menyn.");
+                            case 1:
+                                boolean filterMeny = true;
+
+                                while (filterMeny) {
+                                    IO.println("""
+
+                                                === STREAMS - FILTRERING ===
+                                                1. Filtrera böcker efter författare
+                                                2. Filtrera böcker efter genre
+                                                3. Visa utlånade böcker
+                                                4. Visa tillgänglig media
+                                                5. Tillbaka
+                                            """);
+
+                                    String filterInput = IO.readln("Välj ett alternativ (1-5): ");
+                                    int filterVal;
+
+                                    try {
+                                        filterVal = Integer.parseInt(filterInput);
+                                    } catch (NumberFormatException e) {
+                                        IO.println("Felaktig inmatning. Ange ett nummer från menyn.");
+                                        continue;
+                                    }
+
+                                    switch (filterVal) {
+                                        case 1 -> manager.printBooksByAuthorStreamInteractive();
+                                        case 2 -> manager.printBooksByGenreStreamInteractive();
+                                        case 3 -> manager.printBorrowedBooksStream();
+                                        case 4 -> manager.printAvailableMediaStream();
+                                        case 5 -> filterMeny = false;
+                                        default -> IO.println("Ogiltigt val. Ange ett nummer från menyn.");
+                                    }
+                                }
+                                break;
+
+                            case 2:
+                                boolean sorteringsMeny = true;
+
+                                while (sorteringsMeny) {
+                                    IO.println("""
+
+                                                === STREAMS - SORTERING ===
+                                                1. Sortera böcker efter författare
+                                                2. Sortera böcker efter genre
+                                                3. Sortera media efter titel
+                                                4. Tillbaka
+                                            """);
+
+                                    String sorteringInput = IO.readln("Välj ett alternativ (1-4): ");
+                                    int sorteringVal;
+
+                                    try {
+                                        sorteringVal = Integer.parseInt(sorteringInput);
+                                    } catch (NumberFormatException e) {
+                                        IO.println("Felaktig inmatning. Ange ett nummer från menyn.");
+                                        continue;
+                                    }
+
+                                    switch (sorteringVal) {
+                                        case 1 -> manager.printBooksSortedByAuthorStream();
+                                        case 2 -> manager.printBooksSortedByGenreStream();
+                                        case 3 -> manager.printMediaSortedStream();
+                                        case 4 -> sorteringsMeny = false;
+                                        default -> IO.println("Ogiltigt val. Ange ett nummer från menyn.");
+                                    }
+                                }
+                                break;
+
+                            case 3:
+                                boolean statistikMeny = true;
+
+                                while (statistikMeny) {
+                                    IO.println("""
+
+                                                === STREAMS - STATISTIK OCH MAP ===
+                                                1. Räkna antal böcker av en författare
+                                                2. Visa alla boktitlar
+                                                3. Visa alla bokförfattare
+                                                4. Visa alla mediatitlar
+                                                5. Kontrollera om en titel finns
+                                                6. Visa totalt antal sidor i böcker
+                                                7. Tillbaka
+                                            """);
+
+                                    String statistikInput = IO.readln("Välj ett alternativ (1-7): ");
+                                    int statistikVal;
+
+                                    try {
+                                        statistikVal = Integer.parseInt(statistikInput);
+                                    } catch (NumberFormatException e) {
+                                        IO.println("Felaktig inmatning. Ange ett nummer från menyn.");
+                                        continue;
+                                    }
+
+                                    switch (statistikVal) {
+                                        case 1 -> manager.countBooksByAuthorStreamInteractive();
+                                        case 2 -> manager.printBookTitlesStream();
+                                        case 3 -> manager.printBookAuthorsStream();
+                                        case 4 -> manager.printMediaTitlesStream();
+                                        case 5 -> manager.checkTitleExistsStreamInteractive();
+                                        case 6 -> IO.println("Totalt antal sidor: " + manager.getTotalPagesStream());
+                                        case 7 -> statistikMeny = false;
+                                        default -> IO.println("Ogiltigt val. Ange ett nummer från menyn.");
+                                    }
+                                }
+                                break;
+
+                            case 4:
+                                streamMeny = false;
+                                break;
+
+                            default:
+                                IO.println("Ogiltigt val. Ange ett nummer från menyn.");
                         }
                     }
                     break;

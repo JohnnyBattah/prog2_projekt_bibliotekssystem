@@ -1711,5 +1711,46 @@ public class LibraryManager {
                 .forEach(author -> IO.println(author));
     }
 
+    public void printAvailableBooksStream() {
+        IO.println("Skriver ut tillgängliga böcker...");
+
+        if (books.isEmpty()) {
+            IO.println("Inga böcker är hämtade.");
+            return;
+        }
+
+        books.stream()
+                .filter(Book::getIsAvailable)
+                .forEach(book -> IO.println(book.getInfo()));
+    }
+
+    public void printBooksSortedByTitleStream() {
+        IO.println("Skriver ut böcker sorterade efter titel...");
+
+        if (books.isEmpty()) {
+            IO.println("Inga böcker är hämtade.");
+            return;
+        }
+
+        books.stream()
+                .sorted((b1, b2) -> b1.getTitle().compareToIgnoreCase(b2.getTitle()))
+                .forEach(book -> IO.println(book.getInfo()));
+    }
+
+    public void printTotalPagesStream() {
+        IO.println("Räknar totalt antal sidor i alla böcker...");
+
+        if (books.isEmpty()) {
+            IO.println("Inga böcker är hämtade.");
+            return;
+        }
+
+        int totalPages = books.stream()
+                    .mapToInt(Book::getPages)
+                    .sum();
+
+        IO.println("Totalt antal sidor: " + totalPages);
+    }
+
     
 }
