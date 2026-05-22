@@ -1520,6 +1520,13 @@ public class LibraryManager {
                 .count();
     }
 
+    public long countAvailableMagazinesStream() {
+        return magazines.stream()
+                .filter(Magazine::getIsAvailable)
+                .count();
+    }
+    
+
     public ArrayList<String> getMediaTitlesStream() {
         return new ArrayList<>(
                 mediaItems.stream()
@@ -1553,6 +1560,25 @@ public class LibraryManager {
                 mediaItems.stream()
                         .filter(Media::getIsAvailable)
                         .toList());
+    }
+
+    public int getTotalPagesStream() {
+        return books.stream()
+                .mapToInt(Book::getPages)
+                .sum();
+    }
+
+    public void printBorrowedBooksStream() {
+        IO.println("Skriver ut utlånade böcker...");
+
+        ArrayList<Book> borrowedBooks = getBorrowedBooksStream();
+
+        if (borrowedBooks.isEmpty()) {
+            IO.println("Det finns inga utlånade böcker.");
+            return;
+        }
+
+        borrowedBooks.forEach(book -> IO.println(book.getInfo()));
     }
 
 }
