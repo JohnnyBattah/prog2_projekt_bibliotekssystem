@@ -29,6 +29,10 @@ public abstract class Media {
         return isAvailable;
     }
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
     public void setIsAvailable(boolean isAvailable) {
         this.isAvailable = isAvailable;
     }
