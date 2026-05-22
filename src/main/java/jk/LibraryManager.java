@@ -16,6 +16,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 /**
  * Författare: Johnny Battah
  * Klassen LibraryManager ansvarar för logiken i bibliotekssystemet.
@@ -33,6 +38,7 @@ public class LibraryManager {
     private ArrayList<Magazine> magazines;
     private ArrayList<User> users;
     private ArrayList<SuspendedUser> suspendedUsers;
+    private ArrayList<Media> mediaItems;
     private ArrayList<Loan> loans;
 
     private Map<String, User> userMap;
@@ -49,9 +55,65 @@ public class LibraryManager {
         magazines = new ArrayList<>();
         users = new ArrayList<>();
         suspendedUsers = new ArrayList<>();
+        mediaItems = new ArrayList<>();
         loans = new ArrayList<>();
         userMap = new HashMap<>();
         suspendedIdSet = new HashSet<>();
+    }
+
+    public boolean fetchMedia() {
+        IO.println("Hämtar all media...");
+
+        HttpResponse<String> mediaResponse;
+        try {
+            mediaResponse = Unirest.get(baseURL + "/media").asString();
+        } catch (UnirestException e) {
+            IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
+            return false;
+        }
+
+        int mediaStatus = mediaResponse.getStatus();
+        if (mediaStatus != 200) {
+            IO.println("Fel från servern vid hämtning av media. Statuskod: " + mediaStatus);
+            return false;
+        }
+
+        String mediaBody = mediaResponse.getBody();
+        JsonArray jsonArray = JsonParser.parseString(mediaBody).getAsJsonArray();
+
+        mediaItems.clear();
+
+        for (JsonElement element : jsonArray) {
+            JsonObject obj = element.getAsJsonObject();
+            String type = obj.get("type").getAsString();
+
+            if (type.equalsIgnoreCase("game")) {
+                Game game = gson.fromJson(obj, Game.class);
+                mediaItems.add(game);
+            } else if (type.equalsIgnoreCase("movie")) {
+                Movie movie = gson.fromJson(obj, Movie.class);
+                mediaItems.add(movie);
+            } else if (type.equalsIgnoreCase("music_album")) {
+                MusicAlbum musicAlbum = gson.fromJson(obj, MusicAlbum.class);
+                mediaItems.add(musicAlbum);
+            }
+        }
+
+        IO.println("Media hämtad från servern. Antal: " + mediaItems.size());
+        return true;
+    }
+
+    public void printMedia() {
+        IO.println("Skriver ut all media...");
+
+        if (mediaItems.isEmpty()) {
+            IO.println("Ingen media finns.");
+            return;
+        }
+
+        for (Media media : mediaItems) {
+            IO.println(media.getInfo());
+        }
     }
 
     /**
@@ -1027,8 +1089,40 @@ public class LibraryManager {
         return true;
     }
 
+    public Media findMediaByTitle(String title) {
+        for (Media media : mediaItems) {
+            if (media.getTitle().equalsIgnoreCase(title)) {
+                return media;
+            }
+        }
+        return null;
+    }
+
+    public boolean findMediaByTitleInteractive() {
+        IO.println("Hittar media via titel...");
+
+        if (mediaItems.isEmpty()) {
+            IO.println("Ingen mediaär hämtad. Hämtamedia först.");
+            return false;
+        }
+
+        String title = readRequiredText("Ange titel: ", "Titel");
+        Media foundMedia = findMediaByTitle(title);
+
+        if (foundMedia == null) {
+            IO.println("Ingen media hittades med den titeln.");
+            return false;
+        }
+
+        IO.println("Media hittades:");
+        IO.println(foundMedia.getInfo());
+        return true;
+    }
+
+    
+
     public boolean borrowBook() {
-        IO.println("Låna bok...");  
+        IO.println("Låna bok...");
 
         if (users.isEmpty()) {
             IO.println("Inga användare är hämtade. Hämta användare först.");
@@ -1116,7 +1210,7 @@ public class LibraryManager {
     }
 
     public boolean borrowMagazine() {
-        IO.println("Låna tidning...");  
+        IO.println("Låna tidning...");
 
         if (users.isEmpty()) {
             IO.println("Inga användare är hämtade. Hämta användare först.");
