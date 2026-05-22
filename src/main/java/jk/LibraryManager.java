@@ -1541,4 +1541,18 @@ public class LibraryManager {
                 .forEach(media -> IO.println(media.getInfo()));
     }
 
+    public ArrayList<Book> getBorrowedBooksStream() {
+        return new ArrayList<>(
+                books.stream()
+                        .filter(book -> !book.getIsAvailable())
+                        .toList());
+    }
+
+    public ArrayList<Media> getAvailableMediaStream() {
+        return new ArrayList<>(
+                mediaItems.stream()
+                        .filter(Media::getIsAvailable)
+                        .toList());
+    }
+
 }
