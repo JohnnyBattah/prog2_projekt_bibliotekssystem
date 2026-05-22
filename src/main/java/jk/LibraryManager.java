@@ -1608,8 +1608,8 @@ public class LibraryManager {
 
         ArrayList<Book> filteredBooks = new ArrayList<>(
                 books.stream()
-                    .filter(book -> book.getAuthor().equalsIgnoreCase(author))
-                    .toList());
+                        .filter(book -> book.getAuthor().equalsIgnoreCase(author))
+                        .toList());
 
         if (filteredBooks.isEmpty()) {
             IO.println("Inga böcker hittades av den författaren.");
@@ -1618,7 +1618,7 @@ public class LibraryManager {
 
         filteredBooks.forEach(book -> IO.println(book.getInfo()));
     }
-    
+
     public void printBooksByGenreStreamInteractive() {
         IO.println("Filtrerar böcker efter genre...");
 
@@ -1631,8 +1631,8 @@ public class LibraryManager {
 
         ArrayList<Book> filteredBooks = new ArrayList<>(
                 books.stream()
-                    .filter(book -> book.getGenre().equalsIgnoreCase(genre))
-                    .toList());
+                        .filter(book -> book.getGenre().equalsIgnoreCase(genre))
+                        .toList());
 
         if (filteredBooks.isEmpty()) {
             IO.println("Inga böcker hittades i den genren.");
@@ -1641,7 +1641,7 @@ public class LibraryManager {
 
         filteredBooks.forEach(book -> IO.println(book.getInfo()));
     }
-    
+
     public void printBooksSortedByAuthorStream() {
         IO.println("Skriver ut böcker sorterade efter författaren...");
 
@@ -1668,4 +1668,48 @@ public class LibraryManager {
                 .forEach(book -> IO.println(book.getInfo()));
     }
 
+    public void countBooksByAuthorStreamInteractive() {
+        IO.println("Räknar böcker av en författare...");
+
+        if (books.isEmpty()) {
+            IO.println("Inga böcker är hämtade.");
+            return;
+        }
+
+        String author = readRequiredText("Ange författaren: ", "Författare");
+
+        long count = books.stream()
+                .filter(book -> book.getAuthor().equalsIgnoreCase(author))
+                .count();
+
+        IO.println("Antal böcker av " + author + ": " + count);
+    }
+
+    public void printBookTitlesStream() {
+        IO.println("Skriver ut alla boktitlar...");
+
+        if (books.isEmpty()) {
+            IO.println("Inga böcker är hämtade.");
+            return;
+        }
+
+        books.stream()
+                .map(Book::getTitle)
+                .forEach(title -> IO.println(title));
+    }
+
+    public void printBookAuthorsStream() {
+        IO.println("Skriver ut alla bokförfattare...");
+
+        if (books.isEmpty()) {
+            IO.println("Inga böcker är hämtade.");
+            return;
+        }
+
+        books.stream()
+                .map(Book::getAuthor)
+                .forEach(author -> IO.println(author));
+    }
+
+    
 }
