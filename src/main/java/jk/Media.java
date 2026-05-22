@@ -1,6 +1,6 @@
 package jk;
 
-public abstract class Media {
+public abstract class Media implements Searchable {
     protected String id;
     protected String type;
     protected String title;
@@ -38,4 +38,9 @@ public abstract class Media {
     }
 
     public abstract String getInfo();
+
+    @Override
+    public boolean matchesTitle(String title) {
+        return this.title.equalsIgnoreCase(title);
+    }
 }
