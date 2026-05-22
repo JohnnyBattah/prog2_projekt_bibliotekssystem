@@ -865,6 +865,29 @@ public class LibraryManager {
         }
     }
 
+    public void printLoans() {
+        IO.println("Skriver ut alla lån...");
+
+        if (loans.isEmpty()) {
+            IO.println("Det finns inga registrerade lån.");
+            return;
+        }
+
+        for (Loan loan : loans) {
+            User user = findUserById(loan.getUserId());
+            String userName;
+            if (user != null) {
+                userName = user.getName();
+            } else {
+                userName = "Okänd användare";
+            }
+
+            String itemTitle = findItemTitleByLoan(loan);
+
+            IO.println("Användare: " + userName + ", Titel: " + itemTitle + ", Typ: " + loan.getItemType());
+        }
+    }
+
     /**
      * Skriver ut böcker sorterade på titel.
      */
@@ -935,6 +958,30 @@ public class LibraryManager {
                 IO.println(suspendedUser.getInfo());
             }
         }
+    }
+
+    public String findItemTitleByLoan(Loan loan) {
+        if (loan.getItemType().equalsIgnoreCase("book")) {
+            for (Book book : books) {
+                if (book.getId().equalsIgnoreCase(loan.getItemId())) {
+                    return book.getTitle();
+                }
+            }
+        } else if (loan.getItemType().equalsIgnoreCase("magazine")) {
+            for (Magazine magazine : magazines) {
+                if (magazine.getId().equalsIgnoreCase(loan.getItemId())) {
+                    return magazine.getTitle();
+                }
+            }
+        } else if (loan.getItemType().equalsIgnoreCase("media")) {
+            for (Media media : mediaItems) {
+                if (media.getId().equalsIgnoreCase(loan.getItemId())) {
+                    return media.getTitle();
+                }
+            }
+        }
+
+        return "Okänd titel";
     }
 
     /**
