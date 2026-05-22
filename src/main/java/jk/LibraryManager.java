@@ -1618,4 +1618,54 @@ public class LibraryManager {
 
         filteredBooks.forEach(book -> IO.println(book.getInfo()));
     }
+    
+    public void printBooksByGenreStreamInteractive() {
+        IO.println("Filtrerar böcker efter genre...");
+
+        if (books.isEmpty()) {
+            IO.println("Inga böcker är hämtade.");
+            return;
+        }
+
+        String genre = readRequiredText("Ange genre: ", "Genre");
+
+        ArrayList<Book> filteredBooks = new ArrayList<>(
+                books.stream()
+                    .filter(book -> book.getGenre().equalsIgnoreCase(genre))
+                    .toList());
+
+        if (filteredBooks.isEmpty()) {
+            IO.println("Inga böcker hittades i den genren.");
+            return;
+        }
+
+        filteredBooks.forEach(book -> IO.println(book.getInfo()));
+    }
+    
+    public void printBooksSortedByAuthorStream() {
+        IO.println("Skriver ut böcker sorterade efter författaren...");
+
+        if (books.isEmpty()) {
+            IO.println("Inga böcker är hämtade.");
+            return;
+        }
+
+        books.stream()
+                .sorted((b1, b2) -> b1.getAuthor().compareToIgnoreCase(b2.getAuthor()))
+                .forEach(book -> IO.println(book.getInfo()));
+    }
+
+    public void printBooksSortedByGenreStream() {
+        IO.println("Skriver ut böcker sorterade efter genre...");
+
+        if (books.isEmpty()) {
+            IO.println("Inga böcker är hämtade.");
+            return;
+        }
+
+        books.stream()
+                .sorted((b1, b2) -> b1.getGenre().compareToIgnoreCase(b2.getGenre()))
+                .forEach(book -> IO.println(book.getInfo()));
+    }
+
 }
