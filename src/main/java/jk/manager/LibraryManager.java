@@ -1123,6 +1123,7 @@ public class LibraryManager {
 
         IO.println("Boken lånades ut.");
         IO.println(newLoan.getInfo());
+        saveLoansToFile();
         return true;
     }
 
@@ -1158,6 +1159,7 @@ public class LibraryManager {
         bookToReturn.setIsAvailable(true);
 
         IO.println("Boken har lämnats tillbaka.");
+        saveLoansToFile();
         return true;
     }
 
@@ -1211,6 +1213,7 @@ public class LibraryManager {
 
         IO.println("Tidningen lånades ut.");
         IO.println(newLoan.getInfo());
+        saveLoansToFile();
         return true;
     }
 
@@ -1246,6 +1249,7 @@ public class LibraryManager {
         magazineToReturn.setIsAvailable(true);
 
         IO.println("Tidningen har lämnats tillbaka.");
+        saveLoansToFile();
         return true;
     }
 
@@ -1299,6 +1303,7 @@ public class LibraryManager {
 
         IO.println("Mediet lånades ut.");
         IO.println(newLoan.getInfo());
+        saveLoansToFile();
         return true;
     }
 
@@ -1334,6 +1339,7 @@ public class LibraryManager {
         mediaToReturn.setIsAvailable(true);
 
         IO.println("Mediet har lämnats tillbaka.");
+        saveLoansToFile();
         return true;
     }
 
@@ -1744,6 +1750,10 @@ public class LibraryManager {
         }
     }
 
+    /************************
+     * Filhantering för lån *
+     ***********************/
+
     public void saveLoansToFile() {
         try {
             Gson gsonPretty = new GsonBuilder().setPrettyPrinting().create();
@@ -1752,7 +1762,7 @@ public class LibraryManager {
             Files.writeString(filePath, json);
             IO.println("Lån sparade till fil.");
         } catch (IOException e) {
-            IO.println("Fel vidskrivande till fil: " + e.getMessage());
+            IO.println("Fel vid skrivande till fil: " + e.getMessage());
         }
     }
 
@@ -1772,7 +1782,8 @@ public class LibraryManager {
                 return;
             }
 
-            Type loanListType = new TypeToken<ArrayList<Loan>>() {}.getType();
+            Type loanListType = new TypeToken<ArrayList<Loan>>() {
+            }.getType();
             ArrayList<Loan> loadedLoans = gson.fromJson(jsonData, loanListType);
 
             if (loadedLoans != null) {
@@ -1795,8 +1806,8 @@ public class LibraryManager {
                     if (media != null) {
                         media.setIsAvailable(false);
                     }
+                }
             }
-
             IO.println("Lån inlästa från fil. Antal: " + loans.size());
         } catch (IOException e) {
             IO.println("Fel vid filinläsning: " + e.getMessage());
@@ -1824,10 +1835,12 @@ public class LibraryManager {
     public Media findMediaById(String id) {
         for (Media media : mediaItems) {
             if (media.getId().equalsIgnoreCase(id)) {
-              Media  return media;
+                return media;
             }
         }
         return null;
     }
+
+    
 
 }
