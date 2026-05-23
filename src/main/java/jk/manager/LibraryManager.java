@@ -38,16 +38,16 @@ import com.google.gson.GsonBuilder;
  * Klassen LibraryManager ansvarar för logiken i bibliotekssystemet.
  * Den hanterar hämtning, skapande, sökning och borttagning,
  * utlåning och filhantering för bibliotekets objekt.
- * klassen används av Main, som skickar vidare användarens menyval
+ * Klassen används av Main, som skickar vidare användarens menyval
  * till rätt metod i denna klass.
  * 
  * @author Johnny Battah
  * @version 1.0
- * @since 2016
+ * @since 2026
  */
 
 public class LibraryManager {
-    /** Lista som lagrar alla hämtade böcker */
+    /** Lista som lagrar alla hämtade böcker. */
     private ArrayList<Book> books;
 
     /** Lista som lagrar alla hämtade tidningar. */
@@ -77,12 +77,17 @@ public class LibraryManager {
     /** Filnamn för lafring av media-arvshierarki på fil. */
     private final String mediaFileName = "media.json";
 
-    /** Objektsom hanterar kommunikation med JSON-server */
+    /** Objektsom hanterar kommunikation med JSON-servern. */
     private LibraryApiClient apiClient;
 
     /** Gson-objekt som används för att omvandla Java-objekt till och från JSON. */
     private Gson gson;
 
+    /**
+     * Skapar ett nytt LibraryManager-objekt och initierar programmets 
+     * samlingar, hjälpsamlingar och objekt för JSON-hantering och
+     * serverkommunikation.
+     */
     public LibraryManager() {
         gson = new Gson();
         apiClient = new LibraryApiClient();
@@ -102,7 +107,9 @@ public class LibraryManager {
      *****************/
 
     /**
-     * Hämtar alla böcker från servern och sparar dem i listan.
+     * Hämtar alla böcker från servern och sparar dem i listan books.
+     * 
+     * @return true om böckerna hämtades korrekt, annars false
      */
     public boolean fetchBooks() {
         IO.println("Hämtar alla böcker...");
@@ -123,7 +130,9 @@ public class LibraryManager {
     }
 
     /**
-     * Hämtar en bok från servern med hjälp av id.
+     * Hämtar en bok från servern med hjälp av id som användaren matar in.
+     * 
+     * @return true om boken hämtades korrekt, annars false
      */
     public boolean fetchOneBook() {
         String bookId = IO.readln("Ange bokens id: ").trim();
@@ -368,7 +377,14 @@ public class LibraryManager {
      *****************/
 
     /**
-     * Lägger till en ny bok på servern och sparar den lokalt i listan.
+     * Skapar en ny bok och skickar in den till servern.
+     * Om serveranropet lyckas sparas boken också i den lokala samlingen.
+     * 
+     * @param title bokens titel
+     * @param author bokens författare
+     * @param genre bokens genre
+     * @param pages antal sidor i boken
+     * @return true om boken sparas korrekt, annars false
      */
     public boolean addBookToServer(String title, String author, String genre, int pages) {
         Book newBook = new Book(null, title, true, author, genre, pages);
@@ -890,7 +906,10 @@ public class LibraryManager {
     }
 
     /**
-     * Hittar en användare med hjälp av e-post via HashMap.
+     * Söker efter användare med hjälp av e-postadress
+     * 
+     * @param email e-postadressen som ska sökas efter
+     * @return användare om det finns, annars null
      */
     public User findUserByEmail(String email) {
         return userMap.get(email.toLowerCase());
@@ -953,7 +972,9 @@ public class LibraryManager {
 
     /**
      * Avgör om en användare får låna eller inte.
-     * Returnerar false om användarens id finns bland de avstängda användarna.
+     * 
+     * @param customerId användarens användar id
+     * @return true om användaren inte är avstängd, annars false
      */
     public boolean canUserBorrow(String customerId) {
         return !suspendedIdSet.contains(customerId);
@@ -1682,6 +1703,9 @@ public class LibraryManager {
      * Filhantering för lån *
      ***********************/
 
+    /**
+     * Sparar alla registrerade lån till en JSON-fil.
+     */
     public void saveLoansToFile() {
         try {
             Gson gsonPretty = new GsonBuilder().setPrettyPrinting().create();
@@ -1694,6 +1718,9 @@ public class LibraryManager {
         }
     }
 
+    /**
+     * Läser in lån från fil och uppdateringar tillgängligheten på utlånade objekt.
+     */
     public void loadLoansFromFile() {
         try {
             Path filePath = Paths.get(loansFileName);
