@@ -18,9 +18,6 @@ import jk.model.User;
 
 import java.lang.reflect.Type;
 
-import kong.unirest.UnirestException;
-import kong.unirest.HttpResponse;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -120,7 +117,7 @@ public class LibraryManager {
         String body = apiClient.fetchOne("/books", bookId);
 
         if (body == null) {
-            IO.println("Fel vid hämtning av bok.");
+            IO.println("Ingen bok hittades med det id:t.");
             return false;
         }
 
@@ -215,7 +212,7 @@ public class LibraryManager {
         String body = apiClient.fetchOne("/users", userId);
 
         if (body == null) {
-            IO.println("Fel vid hämtning av användare.");
+            IO.println("Ingen användare hittades med det id:t.");
             return false;
         }
 
@@ -230,7 +227,7 @@ public class LibraryManager {
      */
     public boolean fetchSuspendedUsers() {
         IO.println("Hämtar alla avstängda användare...");
-        
+
         String suspendedBody = apiClient.fetchAll("/suspended");
 
         if (suspendedBody == null) {
@@ -265,7 +262,7 @@ public class LibraryManager {
         String body = apiClient.fetchOne("/suspended", suspendedId);
 
         if (body == null) {
-            IO.println("Ingen avstängda användare hittades med det id:t.");
+            IO.println("Ingen avstängd användare hittades med det id:t.");
             return false;
         }
 
@@ -537,26 +534,10 @@ public class LibraryManager {
             return false;
         }
 
-        String bookIdToDelete = bookToDelete.getId();
+        boolean success = apiClient.delete("books/" + bookToDelete.getId());
 
-        HttpResponse<String> deleteBookResponse;
-        try {
-            deleteBookResponse = apiClient.delete("books/" + bookIdToDelete);
-        } catch (UnirestException e) {
-            IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
-            return false;
-        }
-
-        int deleteBookStatus = deleteBookResponse.getStatus();
-
-        if (deleteBookStatus == 404) {
-            IO.println("Ingen bok hittades med det id:t.");
-            return false;
-        }
-
-        if (deleteBookStatus != 200 && deleteBookStatus != 204) {
-            IO.println("Fel vid borttagning av bok. Statuskod: " + deleteBookStatus);
-            IO.println("Svar från servern: " + deleteBookResponse.getBody());
+        if (!success) {
+            IO.println("Fel vid borttagning av bok.");
             return false;
         }
 
@@ -591,27 +572,10 @@ public class LibraryManager {
             return false;
         }
 
-        String magazineIdToDelete = magazineToDelete.getId();
+        boolean success = apiClient.delete("magazines/" + magazineToDelete.getId());
 
-        HttpResponse<String> deleteMagazineResponse;
-        try {
-            deleteMagazineResponse = apiClient.delete("magazines/" + magazineIdToDelete);
-        } catch (UnirestException e) {
-            IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
-            return false;
-        }
-
-        int deleteMagazineStatus = deleteMagazineResponse
-                .getStatus();
-
-        if (deleteMagazineStatus == 404) {
-            IO.println("Ingen tidning hittades med det id:t.");
-            return false;
-        }
-
-        if (deleteMagazineStatus != 200 && deleteMagazineStatus != 204) {
-            IO.println("Fel vid borttagning av tidning. Statuskod: " + deleteMagazineStatus);
-            IO.println("Svar från servern: " + deleteMagazineResponse.getBody());
+        if (!success) {
+            IO.println("Fel vid borttagning av tidning.");
             return false;
         }
 
@@ -650,7 +614,6 @@ public class LibraryManager {
         }
 
         String userIdToDelete = userToDelete.getId();
-
         String suspendedIdToDelete = null;
 
         for (SuspendedUser suspendedUser : suspendedUsers) {
@@ -667,23 +630,10 @@ public class LibraryManager {
             }
         }
 
-        HttpResponse<String> deleteUserResponse;
-        try {
-            deleteUserResponse = apiClient.delete("users/" + userIdToDelete);
-        } catch (UnirestException e) {
-            IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
-            return false;
-        }
+        boolean deleted = apiClient.delete("users/" + userToDelete.getId());
 
-        int deleteUserStatus = deleteUserResponse.getStatus();
-        if (deleteUserStatus == 404) {
-            IO.println("Ingen användare hittades med det id:t.");
-            return false;
-        }
-
-        if (deleteUserStatus != 200 && deleteUserStatus != 204) {
-            IO.println("Fel vid borttagning av användare. Statuskod: " + deleteUserStatus);
-            IO.println("Svar från servern: " + deleteUserResponse.getBody());
+        if (!deleted) {
+            IO.println("Fel vid borttagning av användare.");
             return false;
         }
 
@@ -713,24 +663,10 @@ public class LibraryManager {
      * Tar bort en avstängd användare från servern och lokalt med hjälp av id.
      */
     public boolean deleteSuspendedUserByIdFromServer(String id) {
-        HttpResponse<String> deleteSuspendedResponse;
-        try {
-            deleteSuspendedResponse = apiClient.delete("suspended/" + id);
-        } catch (UnirestException e) {
-            IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
-            return false;
-        }
+        boolean deleted = apiClient.delete("suspended/" + id);
 
-        int deleteSuspendedStatus = deleteSuspendedResponse
-                .getStatus();
-
-        if (deleteSuspendedStatus == 404) {
-            IO.println("Ingen avstängd användare hittades med det id:t.");
-            return false;
-        }
-
-        if (deleteSuspendedStatus != 200 && deleteSuspendedStatus != 204) {
-            IO.println("Fel vid borttagning av avstängd användare. Statuskod: " + deleteSuspendedStatus);
+        if (!deleted) {
+            IO.println("Fel vid borttagning av avstängd användare.");
             return false;
         }
 
@@ -781,27 +717,10 @@ public class LibraryManager {
             return false;
         }
 
-        String mediaIdToDelete = mediaToDelete.getId();
+        boolean deleted = apiClient.delete("media/" + mediaToDelete.getId());
 
-        HttpResponse<String> deleteMediaResponse;
-        try {
-            deleteMediaResponse = apiClient.delete("media/" + mediaIdToDelete);
-        } catch (UnirestException e) {
-            IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
-            return false;
-        }
-
-        int deleteMediaStatus = deleteMediaResponse
-                .getStatus();
-
-        if (deleteMediaStatus == 404) {
-            IO.println("Ingen media hittades med det id:t.");
-            return false;
-        }
-
-        if (deleteMediaStatus != 200 && deleteMediaStatus != 204) {
-            IO.println("Fel vid borttagning av media. Statuskod: " + deleteMediaStatus);
-            IO.println("Svar från servern: " + deleteMediaResponse.getBody());
+        if (!deleted) {
+            IO.println("Fel vid borttagning av media.");
             return false;
         }
 
@@ -1850,21 +1769,13 @@ public class LibraryManager {
                 book.getPages());
 
         String jsonBody = gson.toJson(updatedBook);
-        HttpResponse<String> response;
+        String responseBody = apiClient.put("books/" + book.getId(), jsonBody);
 
-        try {
-            response = apiClient.putJson("books/" + book.getId(), jsonBody);
-        } catch (UnirestException e) {
-            IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
+        if (responseBody == null) {
+            IO.println("Fel vid uppdatering av bok.");
             return false;
         }
 
-        int status = response.getStatus();
-        if (status != 200 && status != 204) {
-            IO.println("Fel vid uppdatering av bok. Statuskod: " + status);
-            IO.println("Svar från servern: " + response.getBody());
-            return false;
-        }
         return true;
     }
 
@@ -1878,21 +1789,13 @@ public class LibraryManager {
                 magazine.getPublishedYear());
 
         String jsonBody = gson.toJson(updatedMagazine);
-        HttpResponse<String> response;
+        String responseBody = apiClient.put("magazines/" + magazine.getId(), jsonBody);
 
-        try {
-            response = apiClient.putJson("magazines/" + magazine.getId(), jsonBody);
-        } catch (UnirestException e) {
-            IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
+        if (responseBody == null) {
+            IO.println("Fel vid uppdatering av tidning.");
             return false;
         }
 
-        int status = response.getStatus();
-        if (status != 200 && status != 204) {
-            IO.println("Fel vid uppdatering av tidning. Statuskod: " + status);
-            IO.println("Svar från servern: " + response.getBody());
-            return false;
-        }
         return true;
     }
 
@@ -1927,21 +1830,13 @@ public class LibraryManager {
         }
 
         String jsonBody = gson.toJson(updatedMedia);
-        HttpResponse<String> response;
+        String responseBody = apiClient.put("media/" + media.getId(), jsonBody);
 
-        try {
-            response = apiClient.putJson("media/" + media.getId(), jsonBody);
-        } catch (UnirestException e) {
-            IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
+        if (responseBody == null) {
+            IO.println("Fel vid uppdatering av media.");
             return false;
         }
 
-        int status = response.getStatus();
-        if (status != 200 && status != 204) {
-            IO.println("Fel vid uppdatering av media. Statuskod: " + status);
-            IO.println("Svar från servern: " + response.getBody());
-            return false;
-        }
         return true;
     }
 
