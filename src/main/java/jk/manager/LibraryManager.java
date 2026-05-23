@@ -18,7 +18,6 @@ import jk.model.User;
 
 import java.lang.reflect.Type;
 
-import kong.unirest.Unirest;
 import kong.unirest.UnirestException;
 import kong.unirest.HttpResponse;
 
@@ -64,12 +63,15 @@ public class LibraryManager {
     private final String loansFileName = "loans.json";
     private final String mediaFileName = "media.json";
 
+    private LibraryApiClient apiClient;
+
     private String baseURL;
     private Gson gson;
 
     public LibraryManager() {
         baseURL = "http://localhost:3000/";
         gson = new Gson();
+        apiClient = new LibraryApiClient(baseURL);
 
         books = new ArrayList<>();
         magazines = new ArrayList<>();
@@ -93,7 +95,7 @@ public class LibraryManager {
 
         HttpResponse<String> booksResponse;
         try {
-            booksResponse = Unirest.get(baseURL + "/books").asString();
+            booksResponse = apiClient.get("/books");
         } catch (UnirestException e) {
             IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
             return false;
@@ -128,7 +130,7 @@ public class LibraryManager {
         HttpResponse<String> response;
 
         try {
-            response = Unirest.get(baseURL + "/books/" + bookId).asString();
+            response = apiClient.get("/books/" + bookId);
         } catch (UnirestException e) {
             IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
             return false;
@@ -152,7 +154,7 @@ public class LibraryManager {
         IO.println("Hämtar alla tidningar...");
         HttpResponse<String> magazinesResponse;
         try {
-            magazinesResponse = Unirest.get(baseURL + "/magazines").asString();
+            magazinesResponse = apiClient.get("/magazines");
         } catch (UnirestException e) {
             IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
             return false;
@@ -187,7 +189,7 @@ public class LibraryManager {
         HttpResponse<String> response;
 
         try {
-            response = Unirest.get(baseURL + "/magazines/" + magazineId).asString();
+            response = apiClient.get("/magazines/" + magazineId);
         } catch (UnirestException e) {
             IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
             return false;
@@ -212,7 +214,7 @@ public class LibraryManager {
         HttpResponse<String> usersResponse;
 
         try {
-            usersResponse = Unirest.get(baseURL + "/users").asString();
+            usersResponse = apiClient.get("/users");
         } catch (UnirestException e) {
             IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
             return false;
@@ -252,7 +254,7 @@ public class LibraryManager {
         HttpResponse<String> response;
 
         try {
-            response = Unirest.get(baseURL + "/users/" + userId).asString();
+            response = apiClient.get("/users/" + userId);
         } catch (UnirestException e) {
             IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
             return false;
@@ -276,7 +278,7 @@ public class LibraryManager {
         IO.println("Hämtar alla avstängda användare...");
         HttpResponse<String> suspendedResponse;
         try {
-            suspendedResponse = Unirest.get(baseURL + "/suspended").asString();
+            suspendedResponse = apiClient.get("/suspended");
         } catch (UnirestException e) {
             IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
             return false;
@@ -316,7 +318,7 @@ public class LibraryManager {
         HttpResponse<String> response;
 
         try {
-            response = Unirest.get(baseURL + "/suspended/" + suspendedId).asString();
+            response = apiClient.get("/suspended/" + suspendedId);
         } catch (UnirestException e) {
             IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
             return false;
@@ -338,7 +340,7 @@ public class LibraryManager {
 
         HttpResponse<String> mediaResponse;
         try {
-            mediaResponse = Unirest.get(baseURL + "/media").asString();
+            mediaResponse = apiClient.get("/media");
         } catch (UnirestException e) {
             IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
             return false;
@@ -386,7 +388,7 @@ public class LibraryManager {
         HttpResponse<String> response;
 
         try {
-            response = Unirest.get(baseURL + "/media/" + mediaId).asString();
+            response = apiClient.get("/media/" + mediaId);
         } catch (UnirestException e) {
             IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
             return false;
@@ -433,10 +435,7 @@ public class LibraryManager {
 
         HttpResponse<String> postBookResponse;
         try {
-            postBookResponse = Unirest.post(baseURL + "books")
-                    .header("Content-Type", "application/json")
-                    .body(bookJson)
-                    .asString();
+            postBookResponse = apiClient.postJson("books", bookJson);
         } catch (UnirestException e) {
             IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
             return false;
@@ -486,10 +485,7 @@ public class LibraryManager {
 
         HttpResponse<String> postMagazineResponse;
         try {
-            postMagazineResponse = Unirest.post(baseURL + "magazines")
-                    .header("Content-Type", "application/json")
-                    .body(magazineJson)
-                    .asString();
+            postMagazineResponse = apiClient.postJson("magazines", magazineJson);
         } catch (UnirestException e) {
             IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
             return false;
@@ -537,10 +533,7 @@ public class LibraryManager {
 
         HttpResponse<String> postUserResponse;
         try {
-            postUserResponse = Unirest.post(baseURL + "users")
-                    .header("Content-Type", "application/json")
-                    .body(userJson)
-                    .asString();
+            postUserResponse = apiClient.postJson("users", userJson);
         } catch (UnirestException e) {
             IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
             return false;
@@ -587,10 +580,7 @@ public class LibraryManager {
 
         HttpResponse<String> postSuspendedResponse;
         try {
-            postSuspendedResponse = Unirest.post(baseURL + "suspended")
-                    .header("Content-Type", "application/json")
-                    .body(suspendedJson)
-                    .asString();
+            postSuspendedResponse = apiClient.postJson("suspended", suspendedJson);
         } catch (UnirestException e) {
             IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
             return false;
@@ -658,7 +648,7 @@ public class LibraryManager {
 
         HttpResponse<String> deleteBookResponse;
         try {
-            deleteBookResponse = Unirest.delete(baseURL + "books/" + bookIdToDelete).asString();
+            deleteBookResponse = apiClient.delete("books/" + bookIdToDelete);
         } catch (UnirestException e) {
             IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
             return false;
@@ -712,8 +702,7 @@ public class LibraryManager {
 
         HttpResponse<String> deleteMagazineResponse;
         try {
-            deleteMagazineResponse = Unirest.delete(baseURL + "magazines/" + magazineIdToDelete)
-                    .asString();
+            deleteMagazineResponse = apiClient.delete("magazines/" + magazineIdToDelete);
         } catch (UnirestException e) {
             IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
             return false;
@@ -787,7 +776,7 @@ public class LibraryManager {
 
         HttpResponse<String> deleteUserResponse;
         try {
-            deleteUserResponse = Unirest.delete(baseURL + "users/" + userIdToDelete).asString();
+            deleteUserResponse = apiClient.delete("users/" + userIdToDelete);
         } catch (UnirestException e) {
             IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
             return false;
@@ -833,7 +822,7 @@ public class LibraryManager {
     public boolean deleteSuspendedUserByIdFromServer(String id) {
         HttpResponse<String> deleteSuspendedResponse;
         try {
-            deleteSuspendedResponse = Unirest.delete(baseURL + "suspended/" + id).asString();
+            deleteSuspendedResponse = apiClient.delete("suspended/" + id);
         } catch (UnirestException e) {
             IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
             return false;
@@ -903,8 +892,7 @@ public class LibraryManager {
 
         HttpResponse<String> deleteMediaResponse;
         try {
-            deleteMediaResponse = Unirest.delete(baseURL + "media/" + mediaIdToDelete)
-                    .asString();
+            deleteMediaResponse = apiClient.delete("media/" + mediaIdToDelete);
         } catch (UnirestException e) {
             IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
             return false;
@@ -1337,7 +1325,7 @@ public class LibraryManager {
     public boolean borrowMedia() {
         IO.println("Låna media...");
 
-        if (!checkCollectionLoaded(mediaItems.isEmpty(), "Ingen media är hämtade. Hämta media först.")) {
+        if (!checkCollectionLoaded(mediaItems.isEmpty(), "Ingen media är hämtad. Hämta media först.")) {
             return false;
         }
 
@@ -1972,10 +1960,7 @@ public class LibraryManager {
         HttpResponse<String> response;
 
         try {
-            response = Unirest.put(baseURL + "books/" + book.getId())
-                    .header("Content-Type", "application/json")
-                    .body(jsonBody)
-                    .asString();
+            response = apiClient.putJson("books/" + book.getId(), jsonBody);
         } catch (UnirestException e) {
             IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
             return false;
@@ -2003,10 +1988,7 @@ public class LibraryManager {
         HttpResponse<String> response;
 
         try {
-            response = Unirest.put(baseURL + "magazines/" + magazine.getId())
-                    .header("Content-Type", "application/json")
-                    .body(jsonBody)
-                    .asString();
+            response = apiClient.putJson("magazines/" + magazine.getId(), jsonBody);
         } catch (UnirestException e) {
             IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
             return false;
@@ -2055,10 +2037,7 @@ public class LibraryManager {
         HttpResponse<String> response;
 
         try {
-            response = Unirest.put(baseURL + "media/" + media.getId())
-                    .header("Content-Type", "application/json")
-                    .body(jsonBody)
-                    .asString();
+            response = apiClient.putJson("media/" + media.getId(), jsonBody);
         } catch (UnirestException e) {
             IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
             return false;
