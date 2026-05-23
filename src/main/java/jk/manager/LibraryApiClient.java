@@ -4,9 +4,26 @@ import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import kong.unirest.UnirestException;
 
+/**
+ * Klassen LibraryAppClient ansvarar för kommunikationen med JSON-servern.
+ * Den skickar HTTP-anrop för att hämta, skapa, uppdatera, och ta bort data.
+ * Klassen används av LibraryManager för att separera nätverkslogik från
+ * programmets övriga funktionalitet.
+ * 
+ * @author Johnny Battah
+ * @version 1.0
+ * @since 2026
+ */
 public class LibraryApiClient {
+    /**Basadressen till JSON-server som programmet kommunicerar med */
     private final String baseURL = "http://localhost:3000/";
 
+    /**
+     * Hämtar alla objekt från angiven endpoint (url) på servern
+     * 
+     * @param endpoint serverns endpoint, till exempel "/books" eller "/users"
+     * @return JSON-svarsom text om anropet lyckas, annars null
+     */
     public String fetchAll(String endpoint) {
         try {
             HttpResponse<String> response = Unirest.get(baseURL + endpoint).asString();
@@ -62,6 +79,13 @@ public class LibraryApiClient {
 
     }
 
+    /**
+     * Uppdaterar ett objekt på servern med hjälp av JSON-data.
+     * 
+     * @param endpoint endpoint inklusive objektets id
+     * @param jsonBody jsonBody JSON-representation av objektet som ska uppdateras
+     * @return serverns svar som text om uppdateringen lyckas, annars null.
+     */
     public String put(String endpoint, String jsonBody) {
         try {
             HttpResponse<String> response = Unirest.put(baseURL + endpoint)

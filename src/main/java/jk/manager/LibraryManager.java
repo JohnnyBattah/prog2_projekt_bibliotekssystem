@@ -35,33 +35,52 @@ import java.io.IOException;
 import com.google.gson.GsonBuilder;
 
 /**
- * Författare: Johnny Battah
  * Klassen LibraryManager ansvarar för logiken i bibliotekssystemet.
- * Den hanterar hämtning, skapande, sökning och borttagning av
- * böcker, tidningar, användare och avstängda användare via JSON-servern.
- * Klassen lagrar också data lokalt i samlingar och använder Map och Set
- * för att effektivt kunna hitta användare via e-post och kontrollera om
- * en användare är avstängd.
- * LibraryManager används av Main, som skickar vidare användarens menyval
+ * Den hanterar hämtning, skapande, sökning och borttagning,
+ * utlåning och filhantering för bibliotekets objekt.
+ * klassen används av Main, som skickar vidare användarens menyval
  * till rätt metod i denna klass.
+ * 
+ * @author Johnny Battah
+ * @version 1.0
+ * @since 2016
  */
 
 public class LibraryManager {
+    /** Lista som lagrar alla hämtade böcker */
     private ArrayList<Book> books;
+
+    /** Lista som lagrar alla hämtade tidningar. */
     private ArrayList<Magazine> magazines;
+
+    /** Lista som lagrar alla hämtade användare. */
     private ArrayList<User> users;
+
+    /** Lista som lagrar alla hämtade avstängda användare. */
     private ArrayList<SuspendedUser> suspendedUsers;
+
+    /** Lista som lagrar all hämtade media, inklusive spel, filmer och musikalbum. */
     private ArrayList<Media> mediaItems;
+
+    /** Lista som lagrar registrerade lån i programmet */
     private ArrayList<Loan> loans;
 
+    /** HashMap som används för snabb sökning av användare via e-postadressen. */
     private Map<String, User> userMap;
+
+    /** Set som innehåller id för användare som är avstängda från utlåning. */
     private Set<String> suspendedIdSet;
 
+    /** Filnamn för lafring av lån på fil. */
     private final String loansFileName = "loans.json";
+
+    /** Filnamn för lafring av media-arvshierarki på fil. */
     private final String mediaFileName = "media.json";
 
+    /** Objektsom hanterar kommunikation med JSON-server */
     private LibraryApiClient apiClient;
 
+    /** Gson-objekt som används för att omvandla Java-objekt till och från JSON. */
     private Gson gson;
 
     public LibraryManager() {
