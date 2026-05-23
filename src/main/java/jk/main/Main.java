@@ -14,8 +14,6 @@ import kong.unirest.Unirest;
  * LibraryManager där själva logiken finns.
  */
 
-
-
 public class Main {
     public static void main(String[] args) {
         LibraryManager manager = new LibraryManager();
@@ -35,19 +33,11 @@ public class Main {
                         6. Ta bort
                         7. Lån och återlämning
                         8. Streams och statistik
-                        9. Avsluta
+                        9. Filhantering media
+                        10. Avsluta
                     """);
 
-            String input = IO.readln("Välj ett alternativ (1-9): ");
-            int val;
-
-            // Försöker omvandla användarens val till ett heltal
-            try {
-                val = Integer.parseInt(input);
-            } catch (NumberFormatException e) {
-                IO.println("Felaktig inmatning. Ange ett nummer från menyn.");
-                continue;
-            }
+            int val = readMenuChoice("Välj ett alternativ (1-10): ");
 
             switch (val) {
                 case 1:
@@ -65,15 +55,7 @@ public class Main {
                                     6. Tillbaka
                                 """);
 
-                        String hämtaInput = IO.readln("Välj ett alternativ (1-6): ");
-                        int hämtaVal;
-
-                        try {
-                            hämtaVal = Integer.parseInt(hämtaInput);
-                        } catch (NumberFormatException e) {
-                            IO.println("Felaktig inmatning. Ange ett nummer från menyn.");
-                            continue;
-                        }
+                        int hämtaVal = readMenuChoice("Välj ett alternativ (1-6): ");
 
                         switch (hämtaVal) {
                             case 1 -> manager.fetchBooks();
@@ -101,15 +83,7 @@ public class Main {
                                     6. Tillbaka
                                 """);
 
-                        String hämtaEnInput = IO.readln("Välj ett alternativ (1-6): ");
-                        int hämtaEnVal;
-
-                        try {
-                            hämtaEnVal = Integer.parseInt(hämtaEnInput);
-                        } catch (NumberFormatException e) {
-                            IO.println("Felaktig inmatning. Ange ett nummer från menyn.");
-                            continue;
-                        }
+                        int hämtaEnVal = readMenuChoice("Välj ett alternativ (1-6): ");
 
                         switch (hämtaEnVal) {
                             case 1 -> manager.fetchOneBook();
@@ -138,15 +112,7 @@ public class Main {
                                     7. Tillbaka
                                 """);
 
-                        String skrivUtInput = IO.readln("Välj ett alternativ (1-7): ");
-                        int skrivUtVal;
-
-                        try {
-                            skrivUtVal = Integer.parseInt(skrivUtInput);
-                        } catch (NumberFormatException e) {
-                            IO.println("Felaktig inmatning. Ange ett nummer från menyn.");
-                            continue;
-                        }
+                        int skrivUtVal = readMenuChoice("Välj ett alternativ (1-7): ");
 
                         switch (skrivUtVal) {
                             case 1 -> manager.printBooksSorted();
@@ -176,15 +142,7 @@ public class Main {
                                     6. Tillbaka
                                 """);
 
-                        String sökInput = IO.readln("Välj ett alternativ (1-6): ");
-                        int sökVal;
-
-                        try {
-                            sökVal = Integer.parseInt(sökInput);
-                        } catch (NumberFormatException e) {
-                            IO.println("Felaktig inmatning. Ange ett nummer från menyn.");
-                            continue;
-                        }
+                        int sökVal = readMenuChoice("Välj ett alternativ (1-6): ");
 
                         switch (sökVal) {
                             case 1 -> manager.findBookByTitleInteractive();
@@ -212,15 +170,7 @@ public class Main {
                                     5. Tillbaka
                                 """);
 
-                        String läggTillInput = IO.readln("Välj ett alternativ (1-5): ");
-                        int läggTillVal;
-
-                        try {
-                            läggTillVal = Integer.parseInt(läggTillInput);
-                        } catch (NumberFormatException e) {
-                            IO.println("Felaktig inmatning. Ange ett nummer från menyn.");
-                            continue;
-                        }
+                        int läggTillVal = readMenuChoice("Välj ett alternativ (1-5): ");
 
                         switch (läggTillVal) {
                             case 1 -> manager.addBook();
@@ -248,15 +198,7 @@ public class Main {
                                     6. Tillbaka
                                 """);
 
-                        String taBortInput = IO.readln("Välj ett alternativ (1-6): ");
-                        int taBortVal;
-
-                        try {
-                            taBortVal = Integer.parseInt(taBortInput);
-                        } catch (NumberFormatException e) {
-                            IO.println("Felaktig inmatning. Ange ett nummer från menyn.");
-                            continue;
-                        }
+                        int taBortVal = readMenuChoice("Välj ett alternativ (1-6): ");
 
                         switch (taBortVal) {
                             case 1 -> manager.deleteBook();
@@ -286,15 +228,7 @@ public class Main {
                                     7. Tillbaka
                                 """);
 
-                        String lånInput = IO.readln("Välj ett alternativ (1-7): ");
-                        int lånVal;
-
-                        try {
-                            lånVal = Integer.parseInt(lånInput);
-                        } catch (NumberFormatException e) {
-                            IO.println("Felaktig inmatning. Ange ett nummer från menyn.");
-                            continue;
-                        }
+                        int lånVal = readMenuChoice("Välj ett alternativ (1-7): ");
 
                         switch (lånVal) {
                             case 1 -> manager.borrowBook();
@@ -322,15 +256,7 @@ public class Main {
                                     4. Tillbaka
                                 """);
 
-                        String streamInput = IO.readln("Välj ett alternativ (1-4): ");
-                        int streamVal;
-
-                        try {
-                            streamVal = Integer.parseInt(streamInput);
-                        } catch (NumberFormatException e) {
-                            IO.println("Felaktig inmatning. Ange ett nummer från menyn.");
-                            continue;
-                        }
+                        int streamVal = readMenuChoice("Välj ett alternativ (1-4): ");
 
                         switch (streamVal) {
                             case 1:
@@ -347,15 +273,7 @@ public class Main {
                                                 5. Tillbaka
                                             """);
 
-                                    String filterInput = IO.readln("Välj ett alternativ (1-5): ");
-                                    int filterVal;
-
-                                    try {
-                                        filterVal = Integer.parseInt(filterInput);
-                                    } catch (NumberFormatException e) {
-                                        IO.println("Felaktig inmatning. Ange ett nummer från menyn.");
-                                        continue;
-                                    }
+                                    int filterVal = readMenuChoice("Välj ett alternativ (1-5): ");
 
                                     switch (filterVal) {
                                         case 1 -> manager.printBooksByAuthorStreamInteractive();
@@ -381,15 +299,7 @@ public class Main {
                                                 4. Tillbaka
                                             """);
 
-                                    String sorteringInput = IO.readln("Välj ett alternativ (1-4): ");
-                                    int sorteringVal;
-
-                                    try {
-                                        sorteringVal = Integer.parseInt(sorteringInput);
-                                    } catch (NumberFormatException e) {
-                                        IO.println("Felaktig inmatning. Ange ett nummer från menyn.");
-                                        continue;
-                                    }
+                                    int sorteringVal = readMenuChoice("Välj ett alternativ (1-4): ");
 
                                     switch (sorteringVal) {
                                         case 1 -> manager.printBooksSortedByAuthorStream();
@@ -417,15 +327,7 @@ public class Main {
                                                 7. Tillbaka
                                             """);
 
-                                    String statistikInput = IO.readln("Välj ett alternativ (1-7): ");
-                                    int statistikVal;
-
-                                    try {
-                                        statistikVal = Integer.parseInt(statistikInput);
-                                    } catch (NumberFormatException e) {
-                                        IO.println("Felaktig inmatning. Ange ett nummer från menyn.");
-                                        continue;
-                                    }
+                                    int statistikVal = readMenuChoice("Välj ett alternativ (1-7): ");
 
                                     switch (statistikVal) {
                                         case 1 -> manager.countBooksByAuthorStreamInteractive();
@@ -451,6 +353,29 @@ public class Main {
                     break;
 
                 case 9:
+                    boolean mediaFilMeny = true;
+
+                    while (mediaFilMeny) {
+                        IO.println("""
+
+                                    === FILHANTERING MENY ===
+                                    1. Spara media till fil
+                                    2. Läs media från fil
+                                    3. Tillbaka
+                                """);
+
+                        int mediaFilVal = readMenuChoice("Välj ett alternativ (1-3): ");
+
+                        switch (mediaFilVal) {
+                            case 1 -> manager.saveMediaToFile();
+                            case 2 -> manager.loadMediaFromFile();
+                            case 3 -> mediaFilMeny = false;
+                            default -> IO.println("Ogiltigt val. Ange ett nummer från menyn.");
+                        }
+                    }
+                    break;
+
+                case 10:
                     kör = false;
                     IO.println("Programmet avslutas.");
                     break;
@@ -460,5 +385,16 @@ public class Main {
             }
         }
         Unirest.shutDown(); // Stänger Unirest när programmet är klart
+    }
+
+    private static int readMenuChoice(String prompt) {
+        while (true) {
+            String input = IO.readln(prompt);
+            try {
+                return Integer.parseInt(input);
+            } catch (NumberFormatException e) {
+                IO.println("Felaktig inmatning. Ange ett nummer från menyn.");
+            }
+        }
     }
 }

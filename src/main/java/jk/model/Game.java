@@ -21,6 +21,16 @@ public class Game extends Media {
         return age;
     }
 
+    public void setGenre(String genre) {
+        if (genre == null || genre.isBlank()) { throw new IllegalArgumentException("Genre får inte vara tom.");}
+        this.genre = genre;
+    }
+
+    public void setAge(int age) {
+        if (age < 0) { throw new IllegalArgumentException("Ålder får inte vara negativ.");}
+        this.age = age;
+    }
+
     @Override
     public String getInfo() {
         return """

@@ -1,0 +1,25 @@
+[
+  {
+    "genre": "Action",
+    "age": 15,
+    "id": "1",
+    "type": "game",
+    "title": "Shooting Star",
+    "isAvailable": true
+  },
+  {
+    "artist": "Leo van Hal",
+    "id": "2",
+    "type": "music_album",
+    "title": "Guitar heros",
+    "isAvailable": true
+  },
+  {
+    "genre": "comedy",
+    "minutes": 117,
+    "id": "3",
+    "type": "movie",
+    "title": "Learn Python",
+    "isAvailable": true
+  }
+]

@@ -21,6 +21,16 @@ public class Movie extends Media {
         return minutes;
     }
 
+    public void setGenre(String genre) {
+        if (genre == null || genre.isBlank()) { throw new IllegalArgumentException("Genre får inte vara tom.");}
+        this.genre = genre;
+    }
+
+    public void setMinutes(int minutes) {
+        if (minutes <= 0) { throw new IllegalArgumentException("Antal minuter måste vara större än 0.");}
+        this.minutes = minutes;
+    }
+
     @Override
     public String getInfo() {
         return """

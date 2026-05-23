@@ -32,6 +32,11 @@ public class SuspendedUser implements Comparable<SuspendedUser> {
         return customer_id;
     }
 
+    public void setCustomer_id(String customer_id) {
+        if (customer_id == null || customer_id.isBlank()) { throw new IllegalArgumentException("Användar id får inte vara tomt.");}
+        this.customer_id = customer_id;
+    }
+
     public String getInfo() {
         return """
                 --- Avstängd användare ---

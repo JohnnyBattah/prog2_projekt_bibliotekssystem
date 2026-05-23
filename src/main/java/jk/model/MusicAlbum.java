@@ -14,6 +14,11 @@ public class MusicAlbum extends Media {
         return artist;
     }
 
+    public void setArtist(String artist) {
+        if (artist == null || artist.isBlank()) { throw new IllegalArgumentException("Artist får inte vara tom.");}
+        this.artist = artist;
+    }
+
     @Override
     public String getInfo() {
         return """

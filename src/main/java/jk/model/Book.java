@@ -38,6 +38,21 @@ public class Book extends LibraryItem implements Comparable<Book> {
         return pages;
     }
 
+    public void setAuthor(String author) {
+        if (author == null || author.isBlank()) { throw new IllegalArgumentException("Författare får inte vara tom.");}
+        this.author = author;
+    }
+
+    public void setGenre(String genre) {
+        if (genre == null || genre.isBlank()) { throw new IllegalArgumentException("Genre får inte vara tom.");}
+        this.genre = genre;
+    }
+
+    public void setPages(int pages) {
+        if (pages <= 0) { throw new IllegalArgumentException("Antal sidor måste vara större än 0.");}
+        this.pages = pages;
+    }
+
     @Override
     public int compareTo(Book other) {
         return this.title.compareToIgnoreCase(other.title);

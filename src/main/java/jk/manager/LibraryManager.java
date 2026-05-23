@@ -1173,26 +1173,12 @@ public class LibraryManager {
     public boolean borrowBook() {
         IO.println("Låna bok...");
 
-        if (users.isEmpty()) {
-            IO.println("Inga användare är hämtade. Hämta användare först.");
+        if (!checkCollectionLoaded(books.isEmpty(), "Inga böcker är hämtade. Hämta böcker först.")) {
             return false;
         }
 
-        if (books.isEmpty()) {
-            IO.println("Inga böcker är hämtade. Hämta böcker först.");
-            return false;
-        }
-
-        String userId = readRequiredText("Ange användarens id: ", "Användarens id");
-        User userToBorrow = findUserById(userId);
-
+        User userToBorrow = getValidBorrowUser();
         if (userToBorrow == null) {
-            IO.println("Ingen användare hittades med det id:t.");
-            return false;
-        }
-
-        if (!canUserBorrow(userId)) {
-            IO.println("Användaren är avstängd och får inte låna.");
             return false;
         }
 
@@ -1219,13 +1205,9 @@ public class LibraryManager {
             return false;
         }
 
-        Loan newLoan = new Loan(userId, bookToBorrow.getId(), "book");
-        loans.add(newLoan);
         bookToBorrow.setIsAvailable(false);
-
         IO.println("Boken lånades ut.");
-        IO.println(newLoan.getInfo());
-        saveLoansToFile();
+        createAndSaveLoan(userToBorrow.getId(), bookToBorrow.getId(), "book");
         return true;
     }
 
@@ -1273,26 +1255,12 @@ public class LibraryManager {
     public boolean borrowMagazine() {
         IO.println("Låna tidning...");
 
-        if (users.isEmpty()) {
-            IO.println("Inga användare är hämtade. Hämta användare först.");
+        if (!checkCollectionLoaded(magazines.isEmpty(), "Inga tidningar är hämtade. Hämta tidningar först.")) {
             return false;
         }
 
-        if (magazines.isEmpty()) {
-            IO.println("Inga tidningar är hämtade. Hämta tidningar först.");
-            return false;
-        }
-
-        String userId = readRequiredText("Ange användarens id: ", "Användarens id");
-        User userToBorrow = findUserById(userId);
-
+        User userToBorrow = getValidBorrowUser();
         if (userToBorrow == null) {
-            IO.println("Ingen användare hittades med det id:t.");
-            return false;
-        }
-
-        if (!canUserBorrow(userId)) {
-            IO.println("Användaren är avstängd och får inte låna.");
             return false;
         }
 
@@ -1319,13 +1287,9 @@ public class LibraryManager {
             return false;
         }
 
-        Loan newLoan = new Loan(userId, magazineToBorrow.getId(), "magazine");
-        loans.add(newLoan);
         magazineToBorrow.setIsAvailable(false);
-
         IO.println("Tidningen lånades ut.");
-        IO.println(newLoan.getInfo());
-        saveLoansToFile();
+        createAndSaveLoan(userToBorrow.getId(), magazineToBorrow.getId(), "magazine");
         return true;
     }
 
@@ -1373,26 +1337,12 @@ public class LibraryManager {
     public boolean borrowMedia() {
         IO.println("Låna media...");
 
-        if (users.isEmpty()) {
-            IO.println("Inga användare är hämtade. Hämta användare först.");
+        if (!checkCollectionLoaded(mediaItems.isEmpty(), "Ingen media är hämtade. Hämta media först.")) {
             return false;
         }
 
-        if (mediaItems.isEmpty()) {
-            IO.println("Ingen media är hämtad. Hämta media först.");
-            return false;
-        }
-
-        String userId = readRequiredText("Ange användarens id: ", "Användarens id");
-        User userToBorrow = findUserById(userId);
-
+        User userToBorrow = getValidBorrowUser();
         if (userToBorrow == null) {
-            IO.println("Ingen användare hittades med det id:t.");
-            return false;
-        }
-
-        if (!canUserBorrow(userId)) {
-            IO.println("Användaren är avstängd och får inte låna.");
             return false;
         }
 
@@ -1419,13 +1369,9 @@ public class LibraryManager {
             return false;
         }
 
-        Loan newLoan = new Loan(userId, mediaToBorrow.getId(), "media");
-        loans.add(newLoan);
         mediaToBorrow.setIsAvailable(false);
-
         IO.println("Mediet lånades ut.");
-        IO.println(newLoan.getInfo());
-        saveLoansToFile();
+        createAndSaveLoan(userToBorrow.getId(), mediaToBorrow.getId(), "media");
         return true;
     }
 
@@ -1875,6 +1821,42 @@ public class LibraryManager {
                 IO.println(fieldName + " måste vara ett heltal.");
             }
         }
+    }
+
+    private User getValidBorrowUser() {
+        if (users.isEmpty()) {
+            IO.println("Inga användare är hämtade. Hämta användare först.");
+            return null;
+        }
+
+        String userId = readRequiredText("Ange användarens id: ", "Användarens id");
+        User user = findUserById(userId);
+
+        if (user == null) {
+            IO.println("Ingen användare hittades med det id:t.");
+            return null;
+        }
+
+        if (!canUserBorrow(userId)) {
+            IO.println("Användaren är avstängd och får inte låna.");
+            return null;
+        }
+        return user;
+    }
+
+    private boolean checkCollectionLoaded(boolean isEmpty, String message) {
+        if (isEmpty) {
+            IO.println(message);
+            return false;
+        }
+        return true;
+    }
+
+    private void createAndSaveLoan(String userId, String itemId, String itemType) {
+        Loan newLoan = new Loan(userId, itemId, itemType);
+        loans.add(newLoan);
+        IO.println(newLoan.getInfo());
+        saveLoansToFile();
     }
 
     /************************
