@@ -106,7 +106,7 @@ public class Magazine extends LibraryItem implements Comparable<Magazine> {
     }
 
     /**
-     * Anger ett nytt publiceringår för tidningen.
+     * Anger ett nytt publiceringsår för tidningen.
      * 
      * @param publishedYear tidningens nya publiceringsår
      * @throws IllegalArgumentException om publiceringsåret är mindre än eller lika

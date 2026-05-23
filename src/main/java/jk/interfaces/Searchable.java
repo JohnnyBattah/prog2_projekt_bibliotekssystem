@@ -10,7 +10,6 @@ package jk.interfaces;
  * @since 2026
  */
 public interface Searchable {
-    
     /**
      * Kontrollerar om objektets titel matchar en given titel.
      *

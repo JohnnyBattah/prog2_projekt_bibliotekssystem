@@ -79,7 +79,7 @@ public class User implements Comparable<User> {
     /**
      * Anger ett nytt namn för användaren.
      * 
-     * @param name använadrens nya namn
+     * @param name användarens nya namn
      * @throws IllegalArgumentException om namnet är tomt
      */
     public void setName(String name) {

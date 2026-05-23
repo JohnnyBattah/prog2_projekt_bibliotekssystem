@@ -395,7 +395,7 @@ public class Main {
     }
 
     /**
-     * Läser in ett menyval från användaren och fortsätter fråga tills en giltigt
+     * Läser in ett menyval från användaren och fortsätter fråga tills ett giltigt
      * heltal anges.
      * 
      * @param prompt texten som visas för användaren
