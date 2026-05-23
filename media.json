@@ -12,7 +12,7 @@
     "id": "2",
     "type": "music_album",
     "title": "Guitar heros",
-    "isAvailable": true
+    "isAvailable": false
   },
   {
     "genre": "comedy",

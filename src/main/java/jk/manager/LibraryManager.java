@@ -624,7 +624,7 @@ public class LibraryManager {
             return false;
         }
 
-        boolean success = apiClient.delete("books/" + bookToDelete.getId());
+        boolean success = apiClient.delete("/books/" + bookToDelete.getId());
 
         if (!success) {
             IO.println("Fel vid borttagning av bok.");
@@ -668,7 +668,7 @@ public class LibraryManager {
             return false;
         }
 
-        boolean success = apiClient.delete("magazines/" + magazineToDelete.getId());
+        boolean success = apiClient.delete("/magazines/" + magazineToDelete.getId());
 
         if (!success) {
             IO.println("Fel vid borttagning av tidning.");
@@ -732,7 +732,7 @@ public class LibraryManager {
             }
         }
 
-        boolean deleted = apiClient.delete("users/" + userToDelete.getId());
+        boolean deleted = apiClient.delete("/users/" + userToDelete.getId());
 
         if (!deleted) {
             IO.println("Fel vid borttagning av användare.");
@@ -771,7 +771,7 @@ public class LibraryManager {
      * @return true om den avstängda användaren togs bort korrekt, annars false
      */
     public boolean deleteSuspendedUserByIdFromServer(String id) {
-        boolean deleted = apiClient.delete("suspended/" + id);
+        boolean deleted = apiClient.delete("/suspended/" + id);
 
         if (!deleted) {
             IO.println("Fel vid borttagning av avstängd användare.");
@@ -837,7 +837,7 @@ public class LibraryManager {
             return false;
         }
 
-        boolean deleted = apiClient.delete("media/" + mediaToDelete.getId());
+        boolean deleted = apiClient.delete("/media/" + mediaToDelete.getId());
 
         if (!deleted) {
             IO.println("Fel vid borttagning av media.");
@@ -2130,7 +2130,7 @@ public class LibraryManager {
                 book.getPages());
 
         String jsonBody = gson.toJson(updatedBook);
-        String responseBody = apiClient.put("books/" + book.getId(), jsonBody);
+        String responseBody = apiClient.put("/books/" + book.getId(), jsonBody);
 
         if (responseBody == null) {
             IO.println("Fel vid uppdatering av bok.");
@@ -2157,7 +2157,7 @@ public class LibraryManager {
                 magazine.getPublishedYear());
 
         String jsonBody = gson.toJson(updatedMagazine);
-        String responseBody = apiClient.put("magazines/" + magazine.getId(), jsonBody);
+        String responseBody = apiClient.put("/magazines/" + magazine.getId(), jsonBody);
 
         if (responseBody == null) {
             IO.println("Fel vid uppdatering av tidning.");
@@ -2207,7 +2207,7 @@ public class LibraryManager {
         }
 
         String jsonBody = gson.toJson(updatedMedia);
-        String responseBody = apiClient.put("media/" + media.getId(), jsonBody);
+        String responseBody = apiClient.put("/media/" + media.getId(), jsonBody);
 
         if (responseBody == null) {
             IO.println("Fel vid uppdatering av media.");

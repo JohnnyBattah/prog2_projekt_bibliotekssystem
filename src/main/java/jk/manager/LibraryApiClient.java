@@ -16,7 +16,7 @@ import kong.unirest.UnirestException;
  */
 public class LibraryApiClient {
     /** Basadressen till JSON-servern som programmet kommunicerar med. */
-    private final String baseURL = "http://localhost:3000/";
+    private final String baseURL = "http://localhost:3000";
 
     /**
      * Hämtar alla objekt från angiven endpoint (url) på servern.
