@@ -59,32 +59,32 @@ public class LibraryManager {
     /** Lista som lagrar alla hämtade avstängda användare. */
     private ArrayList<SuspendedUser> suspendedUsers;
 
-    /** Lista som lagrar all hämtade media, inklusive spel, filmer och musikalbum. */
+    /** Lista som lagrar all hämtad media, inklusive spel, filmer och musikalbum. */
     private ArrayList<Media> mediaItems;
 
-    /** Lista som lagrar registrerade lån i programmet */
+    /** Lista som lagrar registrerade lån i programmet. */
     private ArrayList<Loan> loans;
 
-    /** HashMap som används för snabb sökning av användare via e-postadressen. */
+    /** HashMap som används för snabb sökning av användare via e-postadress. */
     private Map<String, User> userMap;
 
     /** Set som innehåller id för användare som är avstängda från utlåning. */
     private Set<String> suspendedIdSet;
 
-    /** Filnamn för lafring av lån på fil. */
+    /** Filnamn för lagring av lån på fil. */
     private final String loansFileName = "loans.json";
 
-    /** Filnamn för lafring av media-arvshierarki på fil. */
+    /** Filnamn för lagring av media-arvshierarki på fil. */
     private final String mediaFileName = "media.json";
 
-    /** Objektsom hanterar kommunikation med JSON-servern. */
+    /** Objekt som hanterar kommunikation med JSON-servern. */
     private LibraryApiClient apiClient;
 
     /** Gson-objekt som används för att omvandla Java-objekt till och från JSON. */
     private Gson gson;
 
     /**
-     * Skapar ett nytt LibraryManager-objekt och initierar programmets 
+     * Skapar ett nytt LibraryManager-objekt och initierar programmets
      * samlingar, hjälpsamlingar och objekt för JSON-hantering och
      * serverkommunikation.
      */
@@ -156,7 +156,9 @@ public class LibraryManager {
     }
 
     /**
-     * Hämtar alla tidningar från servern och sparar dem i listan.
+     * Hämtar alla tidningar från servern och sparar dem i listan magazines.
+     * 
+     * @return true om tidningarna hämtades korrekt, annars false
      */
     public boolean fetchMagazines() {
         IO.println("Hämtar alla tidningar...");
@@ -177,7 +179,9 @@ public class LibraryManager {
     }
 
     /**
-     * Hämtar en tidning från servern med hjälp av id.
+     * Hämtar en tidning från servern med hjälp av id som användaren matar in.
+     * 
+     * @return true om tidningen hämtades korrekt, annars false
      */
     public boolean fetchOneMagazine() {
         String magazineId = IO.readln("Ange tidningens id: ").trim();
@@ -201,7 +205,10 @@ public class LibraryManager {
     }
 
     /**
-     * Hämtar alla användare från servern och sparar dem i listan.
+     * Hämtar alla användare från servern och sparar dem i listan users.
+     * Metoden uppdaterar också userMap för snabb sökning via e-postadress.
+     * 
+     * @return true om användarna hämtades korrekt, annars false
      */
     public boolean fetchUsers() {
         IO.println("Hämtar alla användare...");
@@ -227,7 +234,9 @@ public class LibraryManager {
     }
 
     /**
-     * Hämtar en användare från servern med hjälp av id.
+     * Hämtar en användare från servern med hjälp av id som användaren matar in.
+     * 
+     * @return true om användaren hämtades korrekt, annars false
      */
     public boolean fetchOneUser() {
         String userId = IO.readln("Ange användarens id: ").trim();
@@ -251,7 +260,12 @@ public class LibraryManager {
     }
 
     /**
-     * Hämtar alla avstängda användare från servern och sparar dem i listan.
+     * Hämtar alla avstängda användare från servern och sparar dem i listan
+     * suspendedUsers.
+     * Metoden uppdaterar också suspendedIdSet för snabb kontroll av avstängda
+     * användare.
+     * 
+     * @return true om de avstängda användarna hämtades korrekt, annars false
      */
     public boolean fetchSuspendedUsers() {
         IO.println("Hämtar alla avstängda användare...");
@@ -277,7 +291,10 @@ public class LibraryManager {
     }
 
     /**
-     * Hämtar en avstängd användare från servern med hjälp av id.
+     * Hämtar en avstängd användare från servern med hjälp av id som användaren
+     * matar in.
+     * 
+     * @return true om den avstängda användaren hämtades korrekt, annars false
      */
     public boolean fetchOneSuspendedUser() {
         String suspendedId = IO.readln("Ange avstängningens id: ").trim();
@@ -300,6 +317,12 @@ public class LibraryManager {
         return true;
     }
 
+    /**
+     * Hämtar all media från servern och omvandlar JSON-data till rätt subklasser
+     * i media-arvshierarkin, till exempel Game, Movie och MusicAlbum.
+     * 
+     * @return true om media hämtades korrekt, annars false
+     */
     public boolean fetchMedia() {
         IO.println("Hämtar all media...");
 
@@ -334,6 +357,12 @@ public class LibraryManager {
         return true;
     }
 
+    /**
+     * Hämtar ett mediaobjekt från servern med hjälp av id som användaren matar in.
+     * Metoden avgör sedan rätt subklass utifrån objektets type-fält.
+     * 
+     * @return true om mediaobjektet hämtades korrekt, annars false
+     */
     public boolean fetchOneMedia() {
         String mediaId = IO.readln("Ange mediets id: ").trim();
 
@@ -380,11 +409,11 @@ public class LibraryManager {
      * Skapar en ny bok och skickar in den till servern.
      * Om serveranropet lyckas sparas boken också i den lokala samlingen.
      * 
-     * @param title bokens titel
+     * @param title  bokens titel
      * @param author bokens författare
-     * @param genre bokens genre
-     * @param pages antal sidor i boken
-     * @return true om boken sparas korrekt, annars false
+     * @param genre  bokens genre
+     * @param pages  antal sidor i boken
+     * @return true om boken sparades korrekt, annars false
      */
     public boolean addBookToServer(String title, String author, String genre, int pages) {
         Book newBook = new Book(null, title, true, author, genre, pages);
@@ -425,7 +454,14 @@ public class LibraryManager {
     }
 
     /**
-     * Lägger till en ny tidning på servern och sparar den lokalt i listan.
+     * Skapar en ny tidning och skickar den till servern.
+     * Om serveranropet lyckas sparas tidningen också i den lokala samlingen.
+     * 
+     * @param title         tidningens titel
+     * @param category      tidningens kategori
+     * @param issueNumber   tidningens nummer
+     * @param publishedYear tidningens publiceringsår
+     * @return true om tidningen sparades korrekt, annars false
      */
     public boolean addMagazineToServer(String title, String category, int issueNumber,
             int publishedYear) {
@@ -447,7 +483,10 @@ public class LibraryManager {
     }
 
     /**
-     * Läser in information om en tidning och lägger till den på servern.
+     * Läser in information om en tidning från användaren och lägger till den på
+     * servern.
+     * 
+     * @return true om tidningen lades till korrekt, annars false
      */
     public boolean addMagazine() {
         IO.println("Lägger till en tidning på servern...");
@@ -466,7 +505,12 @@ public class LibraryManager {
     }
 
     /**
-     * Lägger till en ny användare på servern och sparar den lokalt i listan.
+     * Skapar en ny användare och skickar den till servern.
+     * Om serveranropet lyckas sparas användaren också i den lokala samlingen.
+     * 
+     * @param name  användarens namn
+     * @param email användarens e-postadress
+     * @return true om användaren sparades korrekt, annars false
      */
     public boolean addUserToServer(String name, String email) {
         User newUser = new User(null, name, email);
@@ -488,7 +532,10 @@ public class LibraryManager {
     }
 
     /**
-     * Läser in information om en användare och lägger till den på servern.
+     * Läser in information om en användare från användaren och lägger till den på
+     * servern.
+     * 
+     * @return true om användaren lades till korrekt, annars false
      */
     public boolean addUser() {
         IO.println("Lägger till en användare på servern...");
@@ -504,8 +551,11 @@ public class LibraryManager {
     }
 
     /**
-     * Lägger till en ny avstängd användare på servern och sparar den lokalt i
-     * listan.
+     * Skapar en ny avstängd användare och skickar den till servern.
+     * Om serveranropet lyckas sparas posten också i den lokala samlingen.
+     * 
+     * @param customerId id för användaren som ska stängas av
+     * @return true om den avstängda användaren sparades korrekt, annars false
      */
     public boolean addSuspendedUserToServer(String customerId) {
         SuspendedUser newSuspendedUser = new SuspendedUser(null, customerId);
@@ -528,6 +578,8 @@ public class LibraryManager {
 
     /**
      * Läser in ett användar-id och lägger till en avstängd användare på servern.
+     * 
+     * @return true om avstängningen skapades korrekt, annars false
      */
     public boolean addSuspendedUser() {
         IO.println("Lägger till en avstängd användare på servern...");
@@ -559,7 +611,10 @@ public class LibraryManager {
      *****************/
 
     /**
-     * Tar bort en bok från servern och lokalt med hjälp av titel.
+     * Tar bort en bok från servern och den lokala samlingen med hjälp av titel.
+     * 
+     * @param title titeln på boken som ska tas bort
+     * @return true om boken togs bort korrekt, annars false
      */
     public boolean deleteBookByTitleFromServer(String title) {
         Book bookToDelete = findBookByTitle(title);
@@ -582,7 +637,9 @@ public class LibraryManager {
     }
 
     /**
-     * Läser in titel och tar bort en bok från servern.
+     * Läser in titel från användaren och tar bort en bok från servern.
+     * 
+     * @return true om boken togs bort korrekt, annars false
      */
     public boolean deleteBook() {
         IO.println("Tar bort bok via titel...");
@@ -597,7 +654,11 @@ public class LibraryManager {
     }
 
     /**
-     * Tar bort en tidning från servern och lokalt med hjälp av titel.
+     * Tar bort en tidning från servern och från den lokala samlingen med hjälp av
+     * titel.
+     * 
+     * @param title titeln på tidningen som ska tas bort
+     * @return true om tidningen togs bort korrekt, annars false
      */
     public boolean deleteMagazineByTitleFromServer(String title) {
         Magazine magazineToDelete = findMagazineByTitle(title);
@@ -620,7 +681,9 @@ public class LibraryManager {
     }
 
     /**
-     * Läser in titel och tar bort en tidning från servern.
+     * Läser in titel från användaren och tar bort en tidning från servern.
+     * 
+     * @return true om tidningen togs bort korrekt, annars false
      */
     public boolean deleteMagazine() {
         IO.println("Tar bort tidning via titel...");
@@ -636,9 +699,13 @@ public class LibraryManager {
     }
 
     /**
-     * Tar bort en användare från servern och lokalt med hjälp av e-post.
+     * Tar bort en användare från servern och från den lokala samlingen med hjälp av
+     * e-post.
      * Om användaren också finns bland avstängda användare tas den posten bort
      * först.
+     * 
+     * @param email e-postadressen för användaren som ska tas bort
+     * @return true om användaren togs bort korrekt, annars false
      */
     public boolean deleteUserByEmailFromServer(String email) {
         User userToDelete = findUserByEmail(email);
@@ -679,7 +746,9 @@ public class LibraryManager {
     }
 
     /**
-     * Läser in e-post och tar bort en användare från servern.
+     * Läser in e-post från användaren och tar bort en användare från servern.
+     * 
+     * @return true om användaren togs bort korrekt, annars false
      */
     public boolean deleteUser() {
         IO.println("Tar bort användare via e-post...");
@@ -695,7 +764,11 @@ public class LibraryManager {
     }
 
     /**
-     * Tar bort en avstängd användare från servern och lokalt med hjälp av id.
+     * Tar bort en avstängd användare från servern och från den lokala listan med
+     * hjälp av id.
+     * 
+     * @param id id för avstängningsposten som ska tas bort
+     * @return true om den avstängda användaren togs bort korrekt, annars false
      */
     public boolean deleteSuspendedUserByIdFromServer(String id) {
         boolean deleted = apiClient.delete("suspended/" + id);
@@ -717,7 +790,10 @@ public class LibraryManager {
     }
 
     /**
-     * Läser in ett id och tar bort en avstängd användare från servern.
+     * Läser in ett id från användaren och tar bort en avstängd användare från
+     * servern.
+     * 
+     * @return true om den avstängda användaren togs bort korrekt, annars false
      */
     public boolean deleteSuspendedUser() {
         IO.println("Tar bort avstängd användare via id...");
@@ -734,6 +810,8 @@ public class LibraryManager {
 
     /**
      * Tar bort en avstängd användare ur den lokala listan med hjälp av id.
+     * 
+     * @param id id för avstängningsposten som ska tas bort
      */
     public void removeSuspendedUserById(String id) {
         for (int i = 0; i < suspendedUsers.size(); i++) {
@@ -744,6 +822,13 @@ public class LibraryManager {
         }
     }
 
+    /**
+     * Tar bort ett mediaobjekt från servern och från den lokala samlingen med hjälp
+     * av titel.
+     * 
+     * @param title titeln på mediaobjektet som ska tas bort
+     * @return true om mediaobjektet togs bort korrekt, annars false
+     */
     public boolean deleteMediaByTitleFromServer(String title) {
         Media mediaToDelete = findMediaByTitle(title);
 
@@ -764,6 +849,11 @@ public class LibraryManager {
         return true;
     }
 
+    /**
+     * Läser in titel från användaren och tar bort ett mediaobjekt från servern.
+     * 
+     * @return true om mediaobjektet togs bort korrekt, annars false
+     */
     public boolean deleteMedia() {
         IO.println("Tar bort media via titel...");
 
@@ -783,6 +873,9 @@ public class LibraryManager {
 
     /**
      * Kontrollerar om en boktitel redan finns i samlingen.
+     * 
+     * @param title titeln som ska kontrolleras
+     * @return true om titeln redan finns, annars false
      */
     public boolean bookTitleExists(String title) {
         for (Book book : books) {
@@ -795,6 +888,9 @@ public class LibraryManager {
 
     /**
      * Kontrollerar om en tidningstitel redan finns i samlingen.
+     * 
+     * @param title titeln som ska kontrolleras
+     * @return true om titeln redan finns, annars false
      */
     public boolean magazineTitleExists(String title) {
         for (Magazine magazine : magazines) {
@@ -806,7 +902,10 @@ public class LibraryManager {
     }
 
     /**
-     * Kontrollerar om e-postadressen redan finns bland användarna via HashMap.
+     * Kontrollerar om e-postadressen redan finns bland användarna.
+     * 
+     * @param email e-postadressen som ska kontrolleras
+     * @return true om e-postadressen redan finns, annars false
      */
     public boolean emailExists(String email) {
         return userMap.containsKey(email.toLowerCase());
@@ -814,13 +913,19 @@ public class LibraryManager {
 
     /**
      * Kontrollerar om en användares id redan finns bland de avstängda användarna.
+     * 
+     * @param customerId användarens id
+     * @return true om användaren redan är avstängd, annars false
      */
     public boolean isUserAlreadySuspended(String customerId) {
         return suspendedIdSet.contains(customerId);
     }
 
     /**
-     * Hittar en bok med hjälp av titel.
+     * Söker efter en bok med hjälp av titel.
+     * 
+     * @param title titeln som ska sökas efter
+     * @return boken om den hittas, annars null
      */
     public Book findBookByTitle(String title) {
         for (Book book : books) {
@@ -832,7 +937,9 @@ public class LibraryManager {
     }
 
     /**
-     * Läser in titel och söker efter en bok.
+     * Läser in en titel från användaren och söker efter en bok.
+     * 
+     * @return true om boken hittades, annars false
      */
     public boolean findBookByTitleInteractive() {
         IO.println("Hitta bok via titel...");
@@ -857,7 +964,10 @@ public class LibraryManager {
     }
 
     /**
-     * Hittar en tidning med hjälp av titel.
+     * Söker efter en tidning med hjälp av titel.
+     * 
+     * @param title titeln som ska sökas efter
+     * @return tidningen om den hittas, annars null
      */
     public Magazine findMagazineByTitle(String title) {
         for (Magazine magazine : magazines) {
@@ -869,7 +979,9 @@ public class LibraryManager {
     }
 
     /**
-     * Läser in titel och söker efter en tidning.
+     * Läser in titel från användaren och söker efter en tidning.
+     * 
+     * @return true om tidningen hittades, annars false
      */
     public boolean findMagazineByTitleInteractive() {
         IO.println("Hitta tidning via titel...");
@@ -894,7 +1006,10 @@ public class LibraryManager {
     }
 
     /**
-     * Hittar en användare med hjälp av id.
+     * Söker efter en användare med hjälp av id.
+     * 
+     * @param id användarens id
+     * @return användaren om den hittas, annars null
      */
     public User findUserById(String id) {
         for (User user : users) {
@@ -906,17 +1021,19 @@ public class LibraryManager {
     }
 
     /**
-     * Söker efter användare med hjälp av e-postadress
+     * Söker efter en användare med hjälp av e-postadress.
      * 
      * @param email e-postadressen som ska sökas efter
-     * @return användare om det finns, annars null
+     * @return användare om den hittas, annars null
      */
     public User findUserByEmail(String email) {
         return userMap.get(email.toLowerCase());
     }
 
     /**
-     * Läser in e-post och söker efter en användare.
+     * Läser in en e-postadress från användaren och söker efter en användare.
+     * 
+     * @return true om användaren hittades, annars false
      */
     public boolean findUserByEmailInteractive() {
         IO.println("Hitta användare via e-post...");
@@ -940,6 +1057,12 @@ public class LibraryManager {
         return true;
     }
 
+    /**
+     * Söker efter ett mediaobjekt med hjälp av titel.
+     * 
+     * @param title titeln som ska sökas efter
+     * @return mediaobjektet om det hittas, annars null
+     */
     public Media findMediaByTitle(String title) {
         for (Media media : mediaItems) {
             if (media.getTitle().equalsIgnoreCase(title)) {
@@ -949,6 +1072,11 @@ public class LibraryManager {
         return null;
     }
 
+    /**
+     * Läser in en titel från användaren och söker efter ett mediaobjekt.
+     * 
+     * @return true om mediaobjektet hittades, annars false
+     */
     public boolean findMediaByTitleInteractive() {
         IO.println("Hitta media via titel...");
 
@@ -973,7 +1101,7 @@ public class LibraryManager {
     /**
      * Avgör om en användare får låna eller inte.
      * 
-     * @param customerId användarens användar id
+     * @param customerId användarens id
      * @return true om användaren inte är avstängd, annars false
      */
     public boolean canUserBorrow(String customerId) {
@@ -981,7 +1109,9 @@ public class LibraryManager {
     }
 
     /**
-     * Läser in användar-id och kontrollerar om användaren får låna.
+     * Läser in användar-id från användaren och kontrollerar om användaren får låna.
+     * 
+     * @return true om kontrollen genomfördes, annars false
      */
     public boolean checkUserBorrow() {
         IO.println("Kontrollerar om användare får låna...");
@@ -1010,6 +1140,11 @@ public class LibraryManager {
      ****** Lån *******
      *****************/
 
+    /**
+     * Lånar ut en bok till en användare och registrerar lånet i lånelistan och på fil.
+     * 
+     * @return true om utlåningen lyckades, annars false
+     */
     public boolean borrowBook() {
         IO.println("Låna bok...");
 
@@ -1051,6 +1186,11 @@ public class LibraryManager {
         return true;
     }
 
+    /**
+     * Tar emot en återlämnad bok, uppdaterar tillgängligheten och tar bort lånet.
+     * 
+     * @return true om återlämningen lyckades, annars false
+     */
     public boolean returnBook() {
         IO.println("Lämna tillbaka bok...");
 
@@ -1092,6 +1232,11 @@ public class LibraryManager {
         return true;
     }
 
+    /**
+     * Lånar ut en tidning till en användare och registrerar lånet i lånelistan och på fil.
+     * 
+     * @return true om utlåningen lyckades, annars false
+     */
     public boolean borrowMagazine() {
         IO.println("Låna tidning...");
 
@@ -1133,6 +1278,11 @@ public class LibraryManager {
         return true;
     }
 
+    /**
+     * Tar emot en återlämnad tidning, uppdaterar tillgängligheten och tar bort lånet.
+     * 
+     * @return true om återlämningen lyckades, annars false
+     */
     public boolean returnMagazine() {
         IO.println("Lämna tillbaka tidning...");
 
@@ -1174,6 +1324,11 @@ public class LibraryManager {
         return true;
     }
 
+    /**
+     * Lånar ut ett mediaobjekt till en användare och registrerar lånet i lånelistan och på fil.
+     * 
+     * @return true om utlåningen lyckades, annars false
+     */
     public boolean borrowMedia() {
         IO.println("Låna media...");
 
@@ -1215,6 +1370,11 @@ public class LibraryManager {
         return true;
     }
 
+    /**
+     * Tar emot ett återlämnat mediaobjekt, uppdaterar tillgängligheten och tar bort lånet.
+     * 
+     * @return true om återlämningen lyckades, annars false
+     */
     public boolean returnMedia() {
         IO.println("Lämna tillbaka media...");
 
@@ -1256,6 +1416,12 @@ public class LibraryManager {
         return true;
     }
 
+    /**
+     * Kontrollerar om ett objekt redan är utlånat.
+     * 
+     * @param itemId id för objektet som ska kontrolleras
+     * @return true om objektet är utlånat, annars false
+     */
     public boolean isItemLoaned(String itemId) {
         for (Loan loan : loans) {
             if (loan.getItemId().equalsIgnoreCase(itemId)) {
@@ -1265,6 +1431,12 @@ public class LibraryManager {
         return false;
     }
 
+    /**
+     * Söker efter ett lån med hjälp av objektets id.
+     * 
+     * @param itemId id för objektet som lånet gäller
+     * @return lånet om det hittas, annars null
+     */
     public Loan findLoanByItemId(String itemId) {
         for (Loan loan : loans) {
             if (loan.getItemId().equalsIgnoreCase(itemId)) {
@@ -1274,6 +1446,12 @@ public class LibraryManager {
         return null;
     }
 
+    /**
+     * Hämtar titeln på det objekt som hör till ett visst lån.
+     * 
+     * @param loan lånet som ska kontrolleras
+     * @return titeln på objektet, eller "Okänd titel" om objektet inte hittas
+     */
     public String findItemTitleByLoan(Loan loan) {
         if (loan.getItemType().equalsIgnoreCase("book")) {
             for (Book book : books) {
@@ -1298,6 +1476,9 @@ public class LibraryManager {
         return "Okänd titel";
     }
 
+    /**
+     * Skriver ut alla registrerade lån med användarnamn, titel och objekttyp.
+     */
     public void printLoans() {
         IO.println("Skriver ut alla lån...");
 
@@ -1326,7 +1507,7 @@ public class LibraryManager {
      *********************/
 
     /**
-     * Skriver ut böcker sorterade på titel.
+     * Skriver ut alla böcker sorterade i alfabetisk ordning efter titel.
      */
     public void printBooksSorted() {
         IO.println("Skriver ut alla böcker...");
@@ -1344,7 +1525,7 @@ public class LibraryManager {
     }
 
     /**
-     * Skriver ut tidningar sorterade på titel.
+     * Skriver ut alla tidningar sorterade  i alfabetisk ordning efter titel.
      */
     public void printMagazinesSorted() {
         IO.println("Skriver ut alla tidningar...");
@@ -1362,7 +1543,7 @@ public class LibraryManager {
     }
 
     /**
-     * Skriver ut användare sorterade på namn.
+     * Skriver ut användare sorterade i alfabetisk ordning efter namn.
      */
     public void printUsersSorted() {
         IO.println("Skriver ut alla användare...");
@@ -1380,7 +1561,7 @@ public class LibraryManager {
     }
 
     /**
-     * Skriver ut avstängda användare sorterade på id.
+     * Skriver ut alla avstängda användare sorterade efter id.
      */
     public void printSuspendedUsersSorted() {
         IO.println("Skriver ut alla avstängda användare...");
@@ -1397,6 +1578,9 @@ public class LibraryManager {
         }
     }
 
+    /**
+     * Skriver ut all media i den lokala samlingen.
+     */
     public void printMedia() {
         IO.println("Skriver ut all media...");
 
@@ -1414,6 +1598,11 @@ public class LibraryManager {
      **** Streams *****
      *****************/
 
+    /**
+     * Hämtar alla mediatitlar med hjälp av stream och retunerar dem i en lista.
+     * 
+     * @return en lista med alla mediatitlar
+     */
     public ArrayList<String> getMediaTitlesStream() {
         return new ArrayList<>(
                 mediaItems.stream()
@@ -1421,12 +1610,23 @@ public class LibraryManager {
                         .toList());
     }
 
+    /**
+     * Kontrollerar med hjälp av stream om en titel finns bland böcker, tidningar eller media.
+     * 
+     * @param title titeln som ska kontrolleras
+     * @return true om titeln finns, annars false
+     */
     public boolean titleExistsStream(String title) {
         return books.stream().anyMatch(book -> book.matchesTitle(title))
                 || magazines.stream().anyMatch(magazine -> magazine.matchesTitle(title))
                 || mediaItems.stream().anyMatch(media -> media.matchesTitle(title));
     }
 
+    /**
+     * Hämtar alla utlånade böcker med hjälp av stream.
+     * 
+     * @return en lista med utlånade böcker
+     */
     public ArrayList<Book> getBorrowedBooksStream() {
         return new ArrayList<>(
                 books.stream()
@@ -1434,6 +1634,11 @@ public class LibraryManager {
                         .toList());
     }
 
+    /**
+     * Hämtar all tillgänglig media med hjälp av stream.
+     * 
+     * @return en lista med tillgänglig media
+     */
     public ArrayList<Media> getAvailableMediaStream() {
         return new ArrayList<>(
                 mediaItems.stream()
@@ -1441,12 +1646,20 @@ public class LibraryManager {
                         .toList());
     }
 
+    /**
+     * Beräknar det totala antalet sidor för alla böcker med hjälp av stream.
+     * 
+     * @return summan av alla sidantal
+     */
     public int getTotalPagesStream() {
         return books.stream()
                 .mapToInt(Book::getPages)
                 .sum();
     }
 
+    /**
+     * Skriver ut all media sorterad i alfabetisk ordning efter titel med hjälp av stream.
+     */
     public void printMediaSortedStream() {
         IO.println("Skriver ut media sorterad på titel...");
 
@@ -1455,6 +1668,9 @@ public class LibraryManager {
                 .forEach(media -> IO.println(media.getInfo()));
     }
 
+    /**
+     * Skriver ut alla utlånade böcker med hjälp av stream.
+     */
     public void printBorrowedBooksStream() {
         IO.println("Skriver ut utlånade böcker...");
 
@@ -1468,6 +1684,9 @@ public class LibraryManager {
         borrowedBooks.forEach(book -> IO.println(book.getInfo()));
     }
 
+    /**
+     * Skriver ut all tillgänglig media med hjälp av stream.
+     */
     public void printAvailableMediaStream() {
         IO.println("Skriver ut tillgänglig media...");
 
@@ -1481,6 +1700,9 @@ public class LibraryManager {
         availableMedia.forEach(media -> IO.println(media.getInfo()));
     }
 
+    /**
+     * Skriver ut alla mediatitlar med hjälp av stream.
+     */
     public void printMediaTitlesStream() {
         IO.println("Skriver ut alla mediatitlar...");
 
@@ -1494,6 +1716,9 @@ public class LibraryManager {
         titles.forEach(title -> IO.println(title));
     }
 
+    /**
+     * Läser in en titel från användaren och kontrollerar med hjälp av stream om titeln finns.
+     */
     public void checkTitleExistsStreamInteractive() {
         IO.println("Kontrollerar om titel finns...");
 
@@ -1506,6 +1731,10 @@ public class LibraryManager {
         }
     }
 
+    /**
+     * Läser in en författare från användaren och skriver ut alla böcker av den författaren
+     * med hjälp av stream.
+     */
     public void printBooksByAuthorStreamInteractive() {
         IO.println("Filtrerar böcker efter författare...");
 
@@ -1529,6 +1758,10 @@ public class LibraryManager {
         filteredBooks.forEach(book -> IO.println(book.getInfo()));
     }
 
+    /**
+     * Läser in en genre från användaren och skriver ut alla böcker i den genren
+     * med hjälp av stream.
+     */
     public void printBooksByGenreStreamInteractive() {
         IO.println("Filtrerar böcker efter genre...");
 
@@ -1552,6 +1785,9 @@ public class LibraryManager {
         filteredBooks.forEach(book -> IO.println(book.getInfo()));
     }
 
+    /**
+     * Skriver ut alla böcker sorterade efter författare med hjälp av stream.
+     */
     public void printBooksSortedByAuthorStream() {
         IO.println("Skriver ut böcker sorterade efter författaren...");
 
@@ -1565,6 +1801,9 @@ public class LibraryManager {
                 .forEach(book -> IO.println(book.getInfo()));
     }
 
+    /**
+     * Skriver ut alla böcker sorterade efter genre med hjälp av stream.
+     */
     public void printBooksSortedByGenreStream() {
         IO.println("Skriver ut böcker sorterade efter genre...");
 
@@ -1578,6 +1817,10 @@ public class LibraryManager {
                 .forEach(book -> IO.println(book.getInfo()));
     }
 
+    /**
+     * Läser in en författare från användaren och räknar hur många böcker som finns
+     * av den författaren med hjälp av stream.
+     */
     public void countBooksByAuthorStreamInteractive() {
         IO.println("Räknar böcker av en författare...");
 
@@ -1595,6 +1838,9 @@ public class LibraryManager {
         IO.println("Antal böcker av " + author + ": " + count);
     }
 
+    /**
+     * Skriver ut alla boktitlar med hjälp av stream.
+     */
     public void printBookTitlesStream() {
         IO.println("Skriver ut alla boktitlar...");
 
@@ -1608,6 +1854,9 @@ public class LibraryManager {
                 .forEach(title -> IO.println(title));
     }
 
+    /**
+     * Skriver ut alla bokförfattare med hjälp av stream.
+     */
     public void printBookAuthorsStream() {
         IO.println("Skriver ut alla bokförfattare...");
 
@@ -1626,8 +1875,11 @@ public class LibraryManager {
      ***********************/
 
     /**
-     * Läser in text och fortsätter fråga tills användaren skrivit något som inte är
-     * tomt.
+     * Läser in text från användaren och fortsätter fråga tills ett icke-tomt värde anges.
+     * 
+     * @param prompt texten som visas för användaren
+     * @param fieldName namnet på fältet som används i felmeddelandet
+     * @return en ifylld textsträng utan inledande eller avslutande blanksteg
      */
     private String readRequiredText(String prompt, String fieldName) {
         while (true) {
@@ -1642,8 +1894,12 @@ public class LibraryManager {
     }
 
     /**
-     * Läser in ett heltal och fortsätter fråga tills användaren skriver ett giltigt
-     * tal större än 0.
+     * Läser in ett heltal från användaren och fortsätter fråga tills ett giltigt 
+     * positivt heltal anges.
+     * 
+     * @param prompt texten som visas för användaren
+     * @param fieldName namnet på fältet som används i felmeddelandet
+     * @return ett heltal större än 0
      */
     private int readPositiveInt(String prompt, String fieldName) {
         while (true) {
@@ -1663,6 +1919,12 @@ public class LibraryManager {
         }
     }
 
+    /**
+     * Hämtar en giltig användare för utlåning.
+     * Metoden kontrollerar att användaren finns och att användaren inte är avstängd.
+     * 
+     * @return användaren om den får låna, annars null
+     */
     private User getValidBorrowUser() {
         if (users.isEmpty()) {
             IO.println("Inga användare är hämtade. Hämta användare först.");
@@ -1684,6 +1946,13 @@ public class LibraryManager {
         return user;
     }
 
+    /**
+     * Kontrollerar om en samling innehåller data innan en operation utförs.
+     * 
+     * @param isEmpty true om samlingen är tom, annars false
+     * @param message meddelandet som ska skrivas ut om samlingen är tom
+     * @return true om samlingen innehåller data, annars false
+     */
     private boolean checkCollectionLoaded(boolean isEmpty, String message) {
         if (isEmpty) {
             IO.println(message);
@@ -1692,6 +1961,13 @@ public class LibraryManager {
         return true;
     }
 
+    /**
+     * Skapar ett nytt lån, lägger till det i lånelistan och sparar lånen till fil.
+     * 
+     * @param userId id för användaren som lånar
+     * @param itemId id för objektet som lånas
+     * @param itemType typen av objektet som lånas
+     */
     private void createAndSaveLoan(String userId, String itemId, String itemType) {
         Loan newLoan = new Loan(userId, itemId, itemType);
         loans.add(newLoan);
@@ -1719,7 +1995,7 @@ public class LibraryManager {
     }
 
     /**
-     * Läser in lån från fil och uppdateringar tillgängligheten på utlånade objekt.
+     * Läser in lån från fil och uppdaterar tillgängligheten på utlånade objekt.
      */
     public void loadLoansFromFile() {
         try {
@@ -1769,6 +2045,12 @@ public class LibraryManager {
         }
     }
 
+    /**
+     * Söker efter en bok med hjälp av id.
+     * 
+     * @param id bokens id
+     * @return boken om den hittas, annars null
+     */
     public Book findBookById(String id) {
         for (Book book : books) {
             if (book.getId().equalsIgnoreCase(id)) {
@@ -1778,6 +2060,12 @@ public class LibraryManager {
         return null;
     }
 
+    /**
+     * Söker efter en tidning med hjälp av id.
+     * 
+     * @param id tidningens id
+     * @return tidningen om den hittas, annars null
+     */
     public Magazine findMagazineById(String id) {
         for (Magazine magazine : magazines) {
             if (magazine.getId().equalsIgnoreCase(id)) {
@@ -1787,6 +2075,12 @@ public class LibraryManager {
         return null;
     }
 
+    /**
+     * Söker efter ett mediaobjekt med hjälp av id.
+     * 
+     * @param id mediaobjektets id
+     * @return mediaobjektet om det hittas, annars null
+     */
     public Media findMediaById(String id) {
         for (Media media : mediaItems) {
             if (media.getId().equalsIgnoreCase(id)) {
@@ -1796,6 +2090,9 @@ public class LibraryManager {
         return null;
     }
 
+    /**
+     * Läser in all grunddata från servern och laddar därefter in lån från fil.
+     */
     public void loadAllData() {
         fetchBooks();
         fetchMagazines();
@@ -1805,6 +2102,13 @@ public class LibraryManager {
         loadLoansFromFile();
     }
 
+    /**
+     * Uppdaterar en boks tillgänglighet på servern.
+     * 
+     * @param book boken som ska uppdateras
+     * @param newAvailability den nya tillgängligheten
+     * @return true om uppdateringen lyckades, annars false
+     */
     public boolean updateBookAvailabilityOnServer(Book book, boolean newAvailability) {
         Book updatedBook = new Book(
                 book.getId(),
@@ -1825,6 +2129,13 @@ public class LibraryManager {
         return true;
     }
 
+    /**
+     * Uppdaterar en tidnings tillgänglighet på servern
+     * 
+     * @param magazine tidningen som ska uppdateras
+     * @param newAvailability den nya tillgängligheten
+     * @return true om uppdateringen lyckades, annars false
+     */
     public boolean updateMagazineAvailabilityOnServer(Magazine magazine, boolean newAvailability) {
         Magazine updatedMagazine = new Magazine(
                 magazine.getId(),
@@ -1845,6 +2156,15 @@ public class LibraryManager {
         return true;
     }
 
+    /**
+     * Uppdaterar ett mediaobjekts tillgänglighet på servern.
+     * Metoden skapar rätt subklass beroende på om objektet är Game,
+     * Movie eller MusicAlbum.
+     * 
+     * @param media mediaobjektet som ska uppdateras
+     * @param newAvailability den nya tillgängligheten
+     * @return true om uppdateringen lyckades, annars false
+     */
     public boolean updateMediaAvailabilityOnServer(Media media, boolean newAvailability) {
         Media updatedMedia = null;
 
@@ -1890,6 +2210,9 @@ public class LibraryManager {
      ** Arvshierarki media **
      ***********************/
 
+     /**
+      * Sparar hela media-arvshierarkin till en JSON-fil.
+      */
     public void saveMediaToFile() {
         try {
             Gson gsonPretty = new GsonBuilder().setPrettyPrinting().create();
@@ -1902,6 +2225,10 @@ public class LibraryManager {
         }
     }
 
+    /**
+     * Läser in media från fil och omvandlar JSON-data till rätt subklasser
+     * i media-arvshierarkin.
+     */
     public void loadMediaFromFile() {
         try {
             Path filePath = Paths.get(mediaFileName);
