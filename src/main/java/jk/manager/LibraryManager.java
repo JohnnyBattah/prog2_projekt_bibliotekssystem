@@ -110,7 +110,6 @@ public class LibraryManager {
         this.books = gson.fromJson(booksBody, bookListType);
 
         IO.println("Böcker hämtade från servern. Antal: " + books.size());
-        loadLoansFromFile();
         return true;
     }
 
@@ -170,7 +169,6 @@ public class LibraryManager {
         this.magazines = gson.fromJson(magazinesBody, magazineListType);
 
         IO.println("Tidningar hämtade från servern. Antal: " + magazines.size());
-        loadLoansFromFile();
         return true;
     }
 
@@ -373,7 +371,6 @@ public class LibraryManager {
         }
 
         IO.println("Media hämtad från servern. Antal: " + mediaItems.size());
-        loadLoansFromFile();
         return true;
     }
 
@@ -1216,6 +1213,11 @@ public class LibraryManager {
             return false;
         }
 
+        if (!updateBookAvailabilityOnServer(bookToBorrow, false)) {
+            IO.println("Kunde inte uppdatera bokens tillgänglighet på servern.");
+            return false;
+        }
+
         Loan newLoan = new Loan(userId, bookToBorrow.getId(), "book");
         loans.add(newLoan);
         bookToBorrow.setIsAvailable(false);
@@ -1251,6 +1253,11 @@ public class LibraryManager {
 
         if (loanToRemove == null) {
             IO.println("Boken är inte utlånad.");
+            return false;
+        }
+
+        if (!updateBookAvailabilityOnServer(bookToReturn, true)) {
+            IO.println("Kunde inte uppdatera bokens tillgänglighet på servern.");
             return false;
         }
 
@@ -1306,6 +1313,11 @@ public class LibraryManager {
             return false;
         }
 
+        if (!updateMagazineAvailabilityOnServer(magazineToBorrow, false)) {
+            IO.println("Kunde inte uppdatera tidningens tillgänglighet på servern.");
+            return false;
+        }
+
         Loan newLoan = new Loan(userId, magazineToBorrow.getId(), "magazine");
         loans.add(newLoan);
         magazineToBorrow.setIsAvailable(false);
@@ -1341,6 +1353,11 @@ public class LibraryManager {
 
         if (loanToRemove == null) {
             IO.println("Tidningen är inte utlånad.");
+            return false;
+        }
+
+        if (!updateMagazineAvailabilityOnServer(magazineToReturn, true)) {
+            IO.println("Kunde inte uppdatera tidningens tillgänglighet på servern.");
             return false;
         }
 
@@ -1396,6 +1413,11 @@ public class LibraryManager {
             return false;
         }
 
+        if (!updateMediaAvailabilityOnServer(mediaToBorrow, false)) {
+            IO.println("Kunde inte uppdatera mediets tillgänglighet på servern.");
+            return false;
+        }
+
         Loan newLoan = new Loan(userId, mediaToBorrow.getId(), "media");
         loans.add(newLoan);
         mediaToBorrow.setIsAvailable(false);
@@ -1431,6 +1453,11 @@ public class LibraryManager {
 
         if (loanToRemove == null) {
             IO.println("Mediet är inte utlånat.");
+            return false;
+        }
+
+        if (!updateMediaAvailabilityOnServer(mediaToReturn, true)) {
+            IO.println("Kunde inte uppdatera mediets tillgänglighet på servern.");
             return false;
         }
 
@@ -1946,6 +1973,7 @@ public class LibraryManager {
         fetchUsers();
         fetchSuspendedUsers();
         fetchMedia();
+        loadLoansFromFile();
     }
 
     public boolean updateBookAvailabilityOnServer(Book book, boolean newAvailability) {
