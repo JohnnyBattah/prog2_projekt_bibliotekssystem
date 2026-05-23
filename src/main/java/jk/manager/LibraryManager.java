@@ -62,6 +62,7 @@ public class LibraryManager {
     private Set<String> suspendedIdSet;
 
     private final String loansFileName = "loans.json";
+    private final String mediaFileName = "media.json";
 
     private String baseURL;
     private Gson gson;
@@ -2089,5 +2090,21 @@ public class LibraryManager {
         }
         return true;
     }
+
+    /************************
+     ** Arvshierarki media **
+     ***********************/
+
+     public void saveMediaToFile() {
+        try {
+            Gson gsonPretty = new GsonBuilder().setPrettyPrinting().create();
+            String json = gsonPretty.toJson(mediaItems);
+            Path filePath = Paths.get(mediaFileName);
+            Files writeString(filePath, json);
+            IO.println("Media sparad till fil.");
+        } catch (IOException e) {
+            IO.println("Fel vid skrivning av media till fil: " + e.getMessage());
+        }
+     }
 
 }
