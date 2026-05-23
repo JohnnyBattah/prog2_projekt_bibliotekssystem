@@ -32,6 +32,12 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.io.IOException;
+import com.google.gson.GsonBuilder;
+
 /**
  * Författare: Johnny Battah
  * Klassen LibraryManager ansvarar för logiken i bibliotekssystemet.
@@ -54,6 +60,8 @@ public class LibraryManager {
 
     private Map<String, User> userMap;
     private Set<String> suspendedIdSet;
+
+    private final String loansFileName = "loans.json";
 
     private String baseURL;
     private Gson gson;
