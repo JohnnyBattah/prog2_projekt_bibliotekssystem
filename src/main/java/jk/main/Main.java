@@ -4,17 +4,24 @@ import jk.manager.LibraryManager;
 import kong.unirest.Unirest;
 
 /**
- * Författare: Johnny Battah
  * Programmet är ett bibliotekssystem som kommunicerar med en JSON-server.
  * Användaren kan via menyer hämta, skriva ut, skapa, söka och ta bort
- * böcker, tidningar, användare och avstängda användare.
- * Programmet kan också söka böcker och tidningar via titel, söka användare
- * via e-post och kontrollera om en användare får låna eller inte.
+ * böcker, tidningar, användare, avstängda användare och media.
+ * Programmet kan också hantera lån, återlämning, streams och filhantering.
  * Main ansvarar för menyerna och skickar vidare användarens val till
- * LibraryManager där själva logiken finns.
+ * LibraryManager där själva programmets logik finns.
+ * 
+ * @author Johnny Battah
+ * @version 1.0
+ * @since 2026
  */
 
 public class Main {
+    /**
+     * Startar programmet, läser in data och visar huvudmenyn.
+     * 
+     * @param args eventuella argument från kommandoraden
+     */
     public static void main(String[] args) {
         LibraryManager manager = new LibraryManager();
         manager.loadAllData();
@@ -387,6 +394,12 @@ public class Main {
         Unirest.shutDown(); // Stänger Unirest när programmet är klart
     }
 
+    /**
+     * Läser in ett menyval från användaren och fortsätter fråga tills en giltigt heltal anges.
+     * 
+     * @param prompt texten som visas för användaren
+     * @return användarens menyval som heltal
+     */
     private static int readMenuChoice(String prompt) {
         while (true) {
             String input = IO.readln(prompt);
