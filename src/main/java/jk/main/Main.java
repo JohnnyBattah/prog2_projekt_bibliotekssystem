@@ -97,10 +97,11 @@ public class Main {
                                     2. Hämta en tidning
                                     3. Hämta en användare
                                     4. Hämta en avstängd användare
-                                    5. Tillbaka
+                                    5. Hämta media
+                                    6. Tillbaka
                                 """);
 
-                        String hämtaEnInput = IO.readln("Välj ett alternativ (1-5): ");
+                        String hämtaEnInput = IO.readln("Välj ett alternativ (1-6): ");
                         int hämtaEnVal;
 
                         try {
@@ -115,7 +116,8 @@ public class Main {
                             case 2 -> manager.fetchOneMagazine();
                             case 3 -> manager.fetchOneUser();
                             case 4 -> manager.fetchOneSuspendedUser();
-                            case 5 -> hämtaEnMeny = false;
+                            case 5 -> manager.fetchOneMedia();
+                            case 6 -> hämtaEnMeny = false;
                             default -> IO.println("Ogiltigt val. Ange ett nummer från menyn.");
                         }
                     }
@@ -242,10 +244,11 @@ public class Main {
                                     2. Ta bort tidning via titel
                                     3. Ta bort användare via e-post
                                     4. Ta bort avstängd användare via id
-                                    5. Tillbaka
+                                    5. Ta bort media via titel
+                                    6. Tillbaka
                                 """);
 
-                        String taBortInput = IO.readln("Välj ett alternativ (1-5): ");
+                        String taBortInput = IO.readln("Välj ett alternativ (1-6): ");
                         int taBortVal;
 
                         try {
@@ -260,7 +263,8 @@ public class Main {
                             case 2 -> manager.deleteMagazine();
                             case 3 -> manager.deleteUser();
                             case 4 -> manager.deleteSuspendedUser();
-                            case 5 -> taBortMeny = false;
+                            case 5 -> manager.deleteMedia();
+                            case 6 -> taBortMeny = false;
                             default -> IO.println("Ogiltigt val. Ange ett nummer från menyn.");
                         }
                     }

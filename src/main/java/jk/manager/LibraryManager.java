@@ -110,6 +110,7 @@ public class LibraryManager {
         this.books = gson.fromJson(booksBody, bookListType);
 
         IO.println("Böcker hämtade från servern. Antal: " + books.size());
+        loadLoansFromFile();
         return true;
     }
 
@@ -169,6 +170,7 @@ public class LibraryManager {
         this.magazines = gson.fromJson(magazinesBody, magazineListType);
 
         IO.println("Tidningar hämtade från servern. Antal: " + magazines.size());
+        loadLoansFromFile();
         return true;
     }
 
@@ -371,6 +373,52 @@ public class LibraryManager {
         }
 
         IO.println("Media hämtad från servern. Antal: " + mediaItems.size());
+        loadLoansFromFile();
+        return true;
+    }
+
+    public boolean fetchOneMedia() {
+        String mediaId = IO.readln("Ange mediets id: ").trim();
+
+        if (mediaId.isBlank()) {
+            IO.println("Id får inte vara tomt.");
+            return false;
+        }
+
+        HttpResponse<String> response;
+
+        try {
+            response = Unirest.get(baseURL + "/media/" + mediaId).asString();
+        } catch (UnirestException e) {
+            IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
+            return false;
+        }
+
+        if (response.getStatus() != 200) {
+            IO.println("Ingen media hittades med det id:t. Statuskod: " + response.getStatus());
+            return false;
+        }
+
+        JsonObject obj = JsonParser.parseString(response.getBody()).getAsJsonObject();
+        String type = obj.get("type").getAsString();
+
+        Media media = null;
+
+        if (type.equalsIgnoreCase("game")) {
+            media = gson.fromJson(obj, Game.class);
+        } else if (type.equalsIgnoreCase("movie")) {
+            media = gson.fromJson(obj, Movie.class);
+        } else if (type.equalsIgnoreCase("music_album")) {
+            media = gson.fromJson(obj, MusicAlbum.class);
+        }
+
+        if (media == null) {
+            IO.println("Okänd mediatyp.");
+            return false;
+        }
+
+        IO.println("Media hämtad från servern:");
+        IO.println(media.getInfo());
         return true;
     }
 
@@ -843,6 +891,57 @@ public class LibraryManager {
                 return;
             }
         }
+    }
+
+    public boolean deleteMediaByTitleFromServer(String title) {
+        Media mediaToDelete = findMediaByTitle(title);
+
+        if (mediaToDelete == null) {
+            IO.println("Ingen media hittades med den titeln.");
+            return false;
+        }
+
+        String mediaIdToDelete = mediaToDelete.getId();
+
+        HttpResponse<String> deleteMediaResponse;
+        try {
+            deleteMediaResponse = Unirest.delete(baseURL + "media/" + mediaIdToDelete)
+                    .asString();
+        } catch (UnirestException e) {
+            IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
+            return false;
+        }
+
+        int deleteMediaStatus = deleteMediaResponse
+                .getStatus();
+
+        if (deleteMediaStatus == 404) {
+            IO.println("Ingen media hittades med det id:t.");
+            return false;
+        }
+
+        if (deleteMediaStatus != 200 && deleteMediaStatus != 204) {
+            IO.println("Fel vid borttagning av media. Statuskod: " + deleteMediaStatus);
+            IO.println("Svar från servern: " + deleteMediaResponse.getBody());
+            return false;
+        }
+
+        mediaItems.remove(mediaToDelete);
+        IO.println("Media togs bort från servern och från den lokala samlingen.");
+        return true;
+    }
+
+    public boolean deleteMedia() {
+        IO.println("Tar bort media via titel...");
+
+        if (mediaItems.isEmpty()) {
+            IO.println("Ingen media är hämtad. Hämta media först.");
+            return false;
+        }
+
+        String mediaTitleToDelete = readRequiredText("Ange titel: ", "Titel");
+
+        return deleteMediaByTitleFromServer(mediaTitleToDelete);
     }
 
     /******************
@@ -1847,7 +1946,120 @@ public class LibraryManager {
         fetchUsers();
         fetchSuspendedUsers();
         fetchMedia();
-        loadLoansFromFile();
+    }
+
+    public boolean updateBookAvailabilityOnServer(Book book, boolean newAvailability) {
+        Book updatedBook = new Book(
+                book.getId(),
+                book.getTitle(),
+                newAvailability,
+                book.getAuthor(),
+                book.getGenre(),
+                book.getPages());
+
+        String jsonBody = gson.toJson(updatedBook);
+        HttpResponse<String> response;
+
+        try {
+            response = Unirest.put(baseURL + "books/" + book.getId())
+                    .header("Content-Type", "application/json")
+                    .body(jsonBody)
+                    .asString();
+        } catch (UnirestException e) {
+            IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
+            return false;
+        }
+
+        int status = response.getStatus();
+        if (status != 200 && status != 204) {
+            IO.println("Fel vid uppdatering av bok. Statuskod: " + status);
+            IO.println("Svar från servern: " + response.getBody());
+            return false;
+        }
+        return true;
+    }
+
+    public boolean updateMagazineAvailabilityOnServer(Magazine magazine, boolean newAvailability) {
+        Magazine updatedMagazine = new Magazine(
+                magazine.getId(),
+                magazine.getTitle(),
+                newAvailability,
+                magazine.getIssueNumber(),
+                magazine.getCategory(),
+                magazine.getPublishedYear());
+
+        String jsonBody = gson.toJson(updatedMagazine);
+        HttpResponse<String> response;
+
+        try {
+            response = Unirest.put(baseURL + "magazines/" + magazine.getId())
+                    .header("Content-Type", "application/json")
+                    .body(jsonBody)
+                    .asString();
+        } catch (UnirestException e) {
+            IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
+            return false;
+        }
+
+        int status = response.getStatus();
+        if (status != 200 && status != 204) {
+            IO.println("Fel vid uppdatering av tidning. Statuskod: " + status);
+            IO.println("Svar från servern: " + response.getBody());
+            return false;
+        }
+        return true;
+    }
+
+    public boolean updateMediaAvailabilityOnServer(Media media, boolean newAvailability) {
+        Media updatedMedia = null;
+
+        if (media instanceof Game game) {
+            updatedMedia = new Game(
+                    game.getId(),
+                    game.getTitle(),
+                    newAvailability,
+                    game.getGenre(),
+                    game.getAge());
+        } else if (media instanceof Movie movie) {
+            updatedMedia = new Movie(
+                    movie.getId(),
+                    movie.getTitle(),
+                    newAvailability,
+                    movie.getGenre(),
+                    movie.getMinutes());
+        } else if (media instanceof MusicAlbum musicAlbum) {
+            updatedMedia = new MusicAlbum(
+                    musicAlbum.getId(),
+                    musicAlbum.getTitle(),
+                    newAvailability,
+                    musicAlbum.getArtist());
+        }
+
+        if (updatedMedia == null) {
+            IO.println("Okänd mediatyp.");
+            return false;
+        }
+
+        String jsonBody = gson.toJson(updatedMedia);
+        HttpResponse<String> response;
+
+        try {
+            response = Unirest.put(baseURL + "media/" + media.getId())
+                    .header("Content-Type", "application/json")
+                    .body(jsonBody)
+                    .asString();
+        } catch (UnirestException e) {
+            IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
+            return false;
+        }
+
+        int status = response.getStatus();
+        if (status != 200 && status != 204) {
+            IO.println("Fel vid uppdatering av media. Statuskod: " + status);
+            IO.println("Svar från servern: " + response.getBody());
+            return false;
+        }
+        return true;
     }
 
 }
