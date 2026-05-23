@@ -1,0 +1,25 @@
+--no-fonts
+-classpath
+'C:/Users/johnny.battah/.m2/repository/com/google/code/gson/gson/2.13.2/gson-2.13.2.jar;C:/Users/johnny.battah/.m2/repository/com/google/errorprone/error_prone_annotations/2.41.0/error_prone_annotations-2.41.0.jar;C:/Users/johnny.battah/.m2/repository/com/konghq/unirest-java/3.14.5/unirest-java-3.14.5.jar;C:/Users/johnny.battah/.m2/repository/org/apache/httpcomponents/httpclient/4.5.13/httpclient-4.5.13.jar;C:/Users/johnny.battah/.m2/repository/org/apache/httpcomponents/httpcore/4.4.13/httpcore-4.4.13.jar;C:/Users/johnny.battah/.m2/repository/commons-logging/commons-logging/1.2/commons-logging-1.2.jar;C:/Users/johnny.battah/.m2/repository/org/apache/httpcomponents/httpmime/4.5.13/httpmime-4.5.13.jar;C:/Users/johnny.battah/.m2/repository/org/apache/httpcomponents/httpcore-nio/4.4.13/httpcore-nio-4.4.13.jar;C:/Users/johnny.battah/.m2/repository/org/apache/httpcomponents/httpasyncclient/4.1.5/httpasyncclient-4.1.5.jar;C:/Users/johnny.battah/.m2/repository/commons-codec/commons-codec/1.15/commons-codec-1.15.jar'
+-encoding
+'UTF-8'
+-protected
+-source
+'25'
+-sourcepath
+'C:/Users/johnny.battah/Documents/Java_Projekt/prog2_projekt_bibliotekssystem/src/main/java'
+-author
+-bottom
+'Copyright &#169; 2026. All rights reserved.'
+-charset
+'UTF-8'
+-d
+'C:/Users/johnny.battah/Documents/Java_Projekt/prog2_projekt_bibliotekssystem/target/reports/apidocs'
+-docencoding
+'UTF-8'
+-doctitle
+'prog2_projekt_bibliotekssystem 1.0-SNAPSHOT API'
+-use
+-version
+-windowtitle
+'prog2_projekt_bibliotekssystem 1.0-SNAPSHOT API'
