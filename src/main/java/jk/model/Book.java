@@ -27,21 +27,27 @@ public class Book extends LibraryItem implements Comparable<Book> {
     /**
      * Skapar ett nytt Book-objekt med angivna värden.
      * 
-     * @param id bokens id
-     * @param title bokens titel
+     * @param id          bokens id
+     * @param title       bokens titel
      * @param isAvailable anger om boken är tillgänglig för lån
-     * @param author bokens författare
-     * @param genre bokens genre
-     * @param pages antal sidor i boken
-     * @throws IllegalArgumentEXception om title, author eller genre är tomma
-     *         eller om pages är mindre än eller lika med 0
+     * @param author      bokens författare
+     * @param genre       bokens genre
+     * @param pages       antal sidor i boken
+     * @throws IllegalArgumentException om title, author eller genre är tomma
+     *                                  eller om pages är mindre än eller lika med 0
      */
     public Book(String id, String title, boolean isAvailable, String author, String genre, int pages) {
         super(id, title, isAvailable);
-        if (author == null || author.isBlank()) { throw new IllegalArgumentException("Författare får inte vara tom.");}
-        if (genre == null || genre.isBlank()) { throw new IllegalArgumentException("Genre får inte vara tom.");}
-        if (pages <= 0) { throw new IllegalArgumentException("Antal sidor måste vara större än 0.");}
-        
+        if (author == null || author.isBlank()) {
+            throw new IllegalArgumentException("Författare får inte vara tom.");
+        }
+        if (genre == null || genre.isBlank()) {
+            throw new IllegalArgumentException("Genre får inte vara tom.");
+        }
+        if (pages <= 0) {
+            throw new IllegalArgumentException("Antal sidor måste vara större än 0.");
+        }
+
         this.author = author;
         this.genre = genre;
         this.pages = pages;
@@ -81,7 +87,9 @@ public class Book extends LibraryItem implements Comparable<Book> {
      * @throws IllegalArgumentException om författaren är tom
      */
     public void setAuthor(String author) {
-        if (author == null || author.isBlank()) { throw new IllegalArgumentException("Författare får inte vara tom.");}
+        if (author == null || author.isBlank()) {
+            throw new IllegalArgumentException("Författare får inte vara tom.");
+        }
         this.author = author;
     }
 
@@ -92,18 +100,22 @@ public class Book extends LibraryItem implements Comparable<Book> {
      * @throws IllegalArgumentException om genren är tom
      */
     public void setGenre(String genre) {
-        if (genre == null || genre.isBlank()) { throw new IllegalArgumentException("Genre får inte vara tom.");}
+        if (genre == null || genre.isBlank()) {
+            throw new IllegalArgumentException("Genre får inte vara tom.");
+        }
         this.genre = genre;
     }
 
     /**
-     * Anger ett nytt sidoantal för boken.
+     * Anger ett nytt sidantal för boken.
      * 
      * @param pages bokens nya antal sidor
      * @throws IllegalArgumentException om antal sidor är mindre än eller lika med 0
      */
     public void setPages(int pages) {
-        if (pages <= 0) { throw new IllegalArgumentException("Antal sidor måste vara större än 0.");}
+        if (pages <= 0) {
+            throw new IllegalArgumentException("Antal sidor måste vara större än 0.");
+        }
         this.pages = pages;
     }
 
@@ -111,7 +123,8 @@ public class Book extends LibraryItem implements Comparable<Book> {
      * Jämför denna bok med en annan bok utifrån titel i alfabetisk ordning.
      * 
      * @param other den andra boken som jämförelsen görs med
-     * @return ett negativt tal, 0 eller ett positivt tal beroende på sorteringsordningen
+     * @return ett negativt tal, 0 eller ett positivt tal beroende på
+     *         sorteringsordningen
      */
     @Override
     public int compareTo(Book other) {
@@ -119,9 +132,10 @@ public class Book extends LibraryItem implements Comparable<Book> {
     }
 
     /**
-     * Retunerar en textbeskrivning av boken.
+     * Returnerar en textbeskrivning av boken.
      * 
-     * @return information om bokens id, titel, författare, genre, sidantal och tillgängligthet
+     * @return information om bokens id, titel, författare, genre, sidantal och
+     *         tillgänglighet
      */
     @Override
     public String getInfo() {

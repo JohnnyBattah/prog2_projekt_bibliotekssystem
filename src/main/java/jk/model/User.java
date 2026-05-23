@@ -2,12 +2,12 @@ package jk.model;
 
 /**
  * Klassen User representerar en användare i bibliotekssystemet.
- * Den innehåller information om en kund i form av id, namn och e-postadress.
+ * Klassen innehåller information om en användare i form av id, namn och e-postadress.
  * User-objekt används bland annat när programmet hämtar, skapar, söker
  * och tar bort användare från servern.
  * Klassen implementerar Comparable<User> så att användare kan sorteras
  * alfabetiskt efter namn vid utskrift i programmet.
- * Klassen används av LibraryManager vid hämtnings, skapande, sökning
+ * Klassen används av LibraryManager vid hämtning, skapande, sökning
  * och borttagning av användare.
  * 
  * @author Johnny Battah
@@ -28,15 +28,21 @@ public class User implements Comparable<User> {
     /**
      * Skapar ett nytt User-objekt med angivna värden.
      * 
-     * @param id användarens id
-     * @param name användarens namn
-     * @param email användare e-postadress
+     * @param id    användarens id
+     * @param name  användarens namn
+     * @param email användarens e-postadress
      * @throws IllegalArgumentException om namn eller e-postadress är tomma
      */
     public User(String id, String name, String email) {
-        if (id != null && id.isBlank()) { throw new IllegalArgumentException("Id får inte vara tomt.");}
-        if (name == null || name.isBlank()) { throw new IllegalArgumentException("Namn får inte vara tomt.");}
-        if (email == null || email.isBlank()) { throw new IllegalArgumentException("E-post får inte vara tom.");}
+        if (id != null && id.isBlank()) {
+            throw new IllegalArgumentException("Id får inte vara tomt.");
+        }
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Namn får inte vara tomt.");
+        }
+        if (email == null || email.isBlank()) {
+            throw new IllegalArgumentException("E-post får inte vara tom.");
+        }
 
         this.id = id;
         this.name = name;
@@ -77,23 +83,27 @@ public class User implements Comparable<User> {
      * @throws IllegalArgumentException om namnet är tomt
      */
     public void setName(String name) {
-        if (name == null || name.isBlank()) { throw new IllegalArgumentException("Namn får inte vara tomt.");}
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Namn får inte vara tomt.");
+        }
         this.name = name;
     }
 
     /**
      * Anger en ny e-postadress för användaren.
      * 
-     * @param name använadrens nya e-postadress
+     * @param email användarens e-postadress
      * @throws IllegalArgumentException om e-postadressen är tom
      */
     public void setEmail(String email) {
-        if (email == null || email.isBlank()) { throw new IllegalArgumentException("E-post får inte vara tom.");}
+        if (email == null || email.isBlank()) {
+            throw new IllegalArgumentException("E-post får inte vara tom.");
+        }
         this.email = email;
     }
 
     /**
-     * Retunerar en textbeskrivning av användaren.
+     * Returnerar en textbeskrivning av användaren.
      * 
      * @return information om användarens id, namn och e-postadress
      */
@@ -107,10 +117,12 @@ public class User implements Comparable<User> {
     }
 
     /**
-     * Jämför denna användare med en annan användare utifrån namn i alfabetisk ordning.
+     * Jämför denna användare med en annan användare utifrån namn i alfabetisk
+     * ordning.
      * 
      * @param other den andra användaren som jämförelsen görs med
-     * @return ett negativt tal, 0 eller ett positivt tal beroende på sorteringsordningen
+     * @return ett negativt tal, 0 eller ett positivt tal beroende på
+     *         sorteringsordningen
      */
     @Override
     public int compareTo(User other) {

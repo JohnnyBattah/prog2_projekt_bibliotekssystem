@@ -18,7 +18,7 @@ package jk.model;
  */
 
 public class SuspendedUser implements Comparable<SuspendedUser> {
-    /** Id för avstängningsposen. */
+    /** Id för avstängningsposten. */
     private String id;
 
     /** Id för användaren som är avstängd. */
@@ -27,13 +27,17 @@ public class SuspendedUser implements Comparable<SuspendedUser> {
     /**
      * Skapar ett nytt SuspendedUser-objekt med angivna värden.
      * 
-     * @param id id för avstängningsposten
-     * @param customer_id if för användaren som är avstängd
+     * @param id          Id för avstängningsposten
+     * @param customer_id id för användaren som är avstängd
      * @throws IllegalArgumentException om customer_id är tomt
      */
     public SuspendedUser(String id, String customer_id) {
-        if (id != null && id.isBlank()) { throw new IllegalArgumentException("Id får inte vara tomt.");}
-        if (customer_id == null || customer_id.isBlank()) { throw new IllegalArgumentException("Användar id får inte vara tomt.");}
+        if (id != null && id.isBlank()) {
+            throw new IllegalArgumentException("Id får inte vara tomt.");
+        }
+        if (customer_id == null || customer_id.isBlank()) {
+            throw new IllegalArgumentException("Användar id får inte vara tomt.");
+        }
 
         this.id = id;
         this.customer_id = customer_id;
@@ -60,16 +64,18 @@ public class SuspendedUser implements Comparable<SuspendedUser> {
     /**
      * Anger ett nytt användar-id för avstängningen.
      * 
-     * @param customer_id customer_id id för den avstängda användaren
+     * @param customer_id id för användaren som är avstängd
      * @throws IllegalArgumentException om användar-id är tomt
      */
     public void setCustomer_id(String customer_id) {
-        if (customer_id == null || customer_id.isBlank()) { throw new IllegalArgumentException("Användar id får inte vara tomt.");}
+        if (customer_id == null || customer_id.isBlank()) {
+            throw new IllegalArgumentException("Användar id får inte vara tomt.");
+        }
         this.customer_id = customer_id;
     }
 
     /**
-     * Retunerar en textbeskrivning av den avstängda användaren.
+     * Returnerar en textbeskrivning av den avstängda användaren.
      * 
      * @return information om avstängningspostens id och användarens id
      */
@@ -82,10 +88,11 @@ public class SuspendedUser implements Comparable<SuspendedUser> {
     }
 
     /**
-     * Jämför denna avstängda användare med en annan utifrån id i sifferordning.
+     * Jämför denna avstängda användare med en annan utifrån id i alfabetisk ordning.
      * 
      * @param other den andra avstängda användaren som jämförelsen görs med
-     * @return ett negativt tal, 0 eller ett positivt tal beroende på sorteringsordningen
+     * @return ett negativt tal, 0 eller ett positivt tal beroende på
+     *         sorteringsordningen
      */
     @Override
     public int compareTo(SuspendedUser other) {

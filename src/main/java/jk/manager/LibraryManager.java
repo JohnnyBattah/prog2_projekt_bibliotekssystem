@@ -1141,7 +1141,8 @@ public class LibraryManager {
      *****************/
 
     /**
-     * Lånar ut en bok till en användare och registrerar lånet i lånelistan och på fil.
+     * Lånar ut en bok till en användare och registrerar lånet i lånelistan och på
+     * fil.
      * 
      * @return true om utlåningen lyckades, annars false
      */
@@ -1233,7 +1234,8 @@ public class LibraryManager {
     }
 
     /**
-     * Lånar ut en tidning till en användare och registrerar lånet i lånelistan och på fil.
+     * Lånar ut en tidning till en användare och registrerar lånet i lånelistan och
+     * på fil.
      * 
      * @return true om utlåningen lyckades, annars false
      */
@@ -1279,7 +1281,8 @@ public class LibraryManager {
     }
 
     /**
-     * Tar emot en återlämnad tidning, uppdaterar tillgängligheten och tar bort lånet.
+     * Tar emot en återlämnad tidning, uppdaterar tillgängligheten och tar bort
+     * lånet.
      * 
      * @return true om återlämningen lyckades, annars false
      */
@@ -1325,7 +1328,8 @@ public class LibraryManager {
     }
 
     /**
-     * Lånar ut ett mediaobjekt till en användare och registrerar lånet i lånelistan och på fil.
+     * Lånar ut ett mediaobjekt till en användare och registrerar lånet i lånelistan
+     * och på fil.
      * 
      * @return true om utlåningen lyckades, annars false
      */
@@ -1371,7 +1375,8 @@ public class LibraryManager {
     }
 
     /**
-     * Tar emot ett återlämnat mediaobjekt, uppdaterar tillgängligheten och tar bort lånet.
+     * Tar emot ett återlämnat mediaobjekt, uppdaterar tillgängligheten och tar bort
+     * lånet.
      * 
      * @return true om återlämningen lyckades, annars false
      */
@@ -1525,7 +1530,7 @@ public class LibraryManager {
     }
 
     /**
-     * Skriver ut alla tidningar sorterade  i alfabetisk ordning efter titel.
+     * Skriver ut alla tidningar sorterade i alfabetisk ordning efter titel.
      */
     public void printMagazinesSorted() {
         IO.println("Skriver ut alla tidningar...");
@@ -1599,7 +1604,7 @@ public class LibraryManager {
      *****************/
 
     /**
-     * Hämtar alla mediatitlar med hjälp av stream och retunerar dem i en lista.
+     * Hämtar alla mediatitlar med hjälp av stream och returnerar dem i en lista.
      * 
      * @return en lista med alla mediatitlar
      */
@@ -1611,7 +1616,8 @@ public class LibraryManager {
     }
 
     /**
-     * Kontrollerar med hjälp av stream om en titel finns bland böcker, tidningar eller media.
+     * Kontrollerar med hjälp av stream om en titel finns bland böcker, tidningar
+     * eller media.
      * 
      * @param title titeln som ska kontrolleras
      * @return true om titeln finns, annars false
@@ -1658,7 +1664,8 @@ public class LibraryManager {
     }
 
     /**
-     * Skriver ut all media sorterad i alfabetisk ordning efter titel med hjälp av stream.
+     * Skriver ut all media sorterad i alfabetisk ordning efter titel med hjälp av
+     * stream.
      */
     public void printMediaSortedStream() {
         IO.println("Skriver ut media sorterad på titel...");
@@ -1717,7 +1724,8 @@ public class LibraryManager {
     }
 
     /**
-     * Läser in en titel från användaren och kontrollerar med hjälp av stream om titeln finns.
+     * Läser in en titel från användaren och kontrollerar med hjälp av stream om
+     * titeln finns.
      */
     public void checkTitleExistsStreamInteractive() {
         IO.println("Kontrollerar om titel finns...");
@@ -1732,7 +1740,8 @@ public class LibraryManager {
     }
 
     /**
-     * Läser in en författare från användaren och skriver ut alla böcker av den författaren
+     * Läser in en författare från användaren och skriver ut alla böcker av den
+     * författaren
      * med hjälp av stream.
      */
     public void printBooksByAuthorStreamInteractive() {
@@ -1875,9 +1884,10 @@ public class LibraryManager {
      ***********************/
 
     /**
-     * Läser in text från användaren och fortsätter fråga tills ett icke-tomt värde anges.
+     * Läser in text från användaren och fortsätter fråga tills ett icke-tomt värde
+     * anges.
      * 
-     * @param prompt texten som visas för användaren
+     * @param prompt    texten som visas för användaren
      * @param fieldName namnet på fältet som används i felmeddelandet
      * @return en ifylld textsträng utan inledande eller avslutande blanksteg
      */
@@ -1894,10 +1904,10 @@ public class LibraryManager {
     }
 
     /**
-     * Läser in ett heltal från användaren och fortsätter fråga tills ett giltigt 
+     * Läser in ett heltal från användaren och fortsätter fråga tills ett giltigt
      * positivt heltal anges.
      * 
-     * @param prompt texten som visas för användaren
+     * @param prompt    texten som visas för användaren
      * @param fieldName namnet på fältet som används i felmeddelandet
      * @return ett heltal större än 0
      */
@@ -1921,7 +1931,8 @@ public class LibraryManager {
 
     /**
      * Hämtar en giltig användare för utlåning.
-     * Metoden kontrollerar att användaren finns och att användaren inte är avstängd.
+     * Metoden kontrollerar att användaren finns och att användaren inte är
+     * avstängd.
      * 
      * @return användaren om den får låna, annars null
      */
@@ -1964,8 +1975,8 @@ public class LibraryManager {
     /**
      * Skapar ett nytt lån, lägger till det i lånelistan och sparar lånen till fil.
      * 
-     * @param userId id för användaren som lånar
-     * @param itemId id för objektet som lånas
+     * @param userId   id för användaren som lånar
+     * @param itemId   id för objektet som lånas
      * @param itemType typen av objektet som lånas
      */
     private void createAndSaveLoan(String userId, String itemId, String itemType) {
@@ -2105,7 +2116,7 @@ public class LibraryManager {
     /**
      * Uppdaterar en boks tillgänglighet på servern.
      * 
-     * @param book boken som ska uppdateras
+     * @param book            boken som ska uppdateras
      * @param newAvailability den nya tillgängligheten
      * @return true om uppdateringen lyckades, annars false
      */
@@ -2132,7 +2143,7 @@ public class LibraryManager {
     /**
      * Uppdaterar en tidnings tillgänglighet på servern
      * 
-     * @param magazine tidningen som ska uppdateras
+     * @param magazine        tidningen som ska uppdateras
      * @param newAvailability den nya tillgängligheten
      * @return true om uppdateringen lyckades, annars false
      */
@@ -2161,7 +2172,7 @@ public class LibraryManager {
      * Metoden skapar rätt subklass beroende på om objektet är Game,
      * Movie eller MusicAlbum.
      * 
-     * @param media mediaobjektet som ska uppdateras
+     * @param media           mediaobjektet som ska uppdateras
      * @param newAvailability den nya tillgängligheten
      * @return true om uppdateringen lyckades, annars false
      */
@@ -2210,9 +2221,9 @@ public class LibraryManager {
      ** Arvshierarki media **
      ***********************/
 
-     /**
-      * Sparar hela media-arvshierarkin till en JSON-fil.
-      */
+    /**
+     * Sparar hela media-arvshierarkin till en JSON-fil.
+     */
     public void saveMediaToFile() {
         try {
             Gson gsonPretty = new GsonBuilder().setPrettyPrinting().create();

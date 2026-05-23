@@ -93,7 +93,7 @@ public class Magazine extends LibraryItem implements Comparable<Magazine> {
     }
 
     /**
-     * Anger en ny kategori för tidningen
+     * Anger en ny kategori för tidningen.
      * 
      * @param category tidningens nya kategori
      * @throws IllegalArgumentException om kategorin är tom
@@ -108,8 +108,9 @@ public class Magazine extends LibraryItem implements Comparable<Magazine> {
     /**
      * Anger ett nytt publiceringår för tidningen.
      * 
-     * @param publishedYear tidningens nya publiceringår
-     * @throws IllegalArgumentException om publiceringsåret är mindre än eller lika med 0
+     * @param publishedYear tidningens nya publiceringsår
+     * @throws IllegalArgumentException om publiceringsåret är mindre än eller lika
+     *                                  med 0
      */
     public void setPublishedYear(int publishedYear) {
         if (publishedYear <= 0) {
@@ -122,7 +123,8 @@ public class Magazine extends LibraryItem implements Comparable<Magazine> {
      * Jämför denna tidning med en annan tidning utifrån titel i alfabetisk ordning.
      * 
      * @param other den andra tidningen som jämförelsen görs med
-     * @return ett negativt tal, 0 eller ett positivt tal beroende på sorteringsordningen
+     * @return ett negativt tal, 0 eller ett positivt tal beroende på
+     *         sorteringsordningen
      */
     @Override
     public int compareTo(Magazine other) {
@@ -130,7 +132,7 @@ public class Magazine extends LibraryItem implements Comparable<Magazine> {
     }
 
     /**
-     * Retunerar en textbeskrivning av tidningen.
+     * Returnerar en textbeskrivning av tidningen.
      * 
      * @return information om tidningens id, titel, nummer, kategori,
      *         publiceringsår och tillgänglighet
