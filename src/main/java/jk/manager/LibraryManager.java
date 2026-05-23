@@ -2095,16 +2095,56 @@ public class LibraryManager {
      ** Arvshierarki media **
      ***********************/
 
-     public void saveMediaToFile() {
+    public void saveMediaToFile() {
         try {
             Gson gsonPretty = new GsonBuilder().setPrettyPrinting().create();
             String json = gsonPretty.toJson(mediaItems);
             Path filePath = Paths.get(mediaFileName);
-            Files writeString(filePath, json);
+            Files.writeString(filePath, json);
             IO.println("Media sparad till fil.");
         } catch (IOException e) {
             IO.println("Fel vid skrivning av media till fil: " + e.getMessage());
         }
-     }
+    }
+
+    public void loadMediaFromFile() {
+        try {
+            Path filePath = Paths.get(mediaFileName);
+
+            if (!Files.exists(filePath)) {
+                IO.println("Ingen mediafil hittades.");
+                return;
+            }
+            String jsonData = Files.readString(filePath);
+
+            if (jsonData.isBlank()) {
+                IO.println("Mediafilen är tom.");
+                return;
+            }
+
+            JsonArray jsonArray = JsonParser.parseString(jsonData).getAsJsonArray();
+            mediaItems.clear();
+
+            for (JsonElement element : jsonArray) {
+                JsonObject obj = element.getAsJsonObject();
+                String type = obj.get("type").getAsString();
+
+                if (type.equalsIgnoreCase("game")) {
+                    Game game = gson.fromJson(obj, Game.class);
+                    mediaItems.add(game);
+                } else if (type.equalsIgnoreCase("movie")) {
+                    Movie movie = gson.fromJson(obj, Movie.class);
+                    mediaItems.add(movie);
+                } else if (type.equalsIgnoreCase("music_album")) {
+                    MusicAlbum musicAlbum = gson.fromJson(obj, MusicAlbum.class);
+                    mediaItems.add(musicAlbum);
+                }
+            }
+
+            IO.println("Media inläst från fil. Antal: " + mediaItems.size());
+        } catch (IOException e) {
+            IO.println("Fel vid filinläsning av media: " + e.getMessage());
+        }
+    }
 
 }
