@@ -1744,7 +1744,7 @@ public class LibraryManager {
         }
     }
 
-    private void saveLoansToFile() {
+    public void saveLoansToFile() {
         try {
             Gson gsonPretty = new GsonBuilder().setPrettyPrinting().create();
             String json = gsonPretty.toJson(loans);
@@ -1755,4 +1755,79 @@ public class LibraryManager {
             IO.println("Fel vidskrivande till fil: " + e.getMessage());
         }
     }
+
+    public void loadLoansFromFile() {
+        try {
+            Path filePath = Paths.get(loansFileName);
+
+            if (!Files.exists(filePath)) {
+                IO.println("Ingen lånefil hittades. Startar med tom lånelista.");
+                return;
+            }
+
+            String jsonData = Files.readString(filePath);
+
+            if (jsonData.isBlank()) {
+                IO.println("Lånefilen är tom. Startar med tom lånelista.");
+                return;
+            }
+
+            Type loanListType = new TypeToken<ArrayList<Loan>>() {}.getType();
+            ArrayList<Loan> loadedLoans = gson.fromJson(jsonData, loanListType);
+
+            if (loadedLoans != null) {
+                loans = loadedLoans;
+            }
+
+            for (Loan loan : loans) {
+                if (loan.getItemType().equalsIgnoreCase("book")) {
+                    Book book = findBookById(loan.getItemId());
+                    if (book != null) {
+                        book.setIsAvailable(false);
+                    }
+                } else if (loan.getItemType().equalsIgnoreCase("magazine")) {
+                    Magazine magazine = findMagazineById(loan.getItemId());
+                    if (magazine != null) {
+                        magazine.setIsAvailable(false);
+                    }
+                } else if (loan.getItemType().equalsIgnoreCase("media")) {
+                    Media media = findMediaById(loan.getItemId());
+                    if (media != null) {
+                        media.setIsAvailable(false);
+                    }
+            }
+
+            IO.println("Lån inlästa från fil. Antal: " + loans.size());
+        } catch (IOException e) {
+            IO.println("Fel vid filinläsning: " + e.getMessage());
+        }
+    }
+
+    public Book findBookById(String id) {
+        for (Book book : books) {
+            if (book.getId().equalsIgnoreCase(id)) {
+                return book;
+            }
+        }
+        return null;
+    }
+
+    public Magazine findMagazineById(String id) {
+        for (Magazine magazine : magazines) {
+            if (magazine.getId().equalsIgnoreCase(id)) {
+                return magazine;
+            }
+        }
+        return null;
+    }
+
+    public Media findMediaById(String id) {
+        for (Media media : mediaItems) {
+            if (media.getId().equalsIgnoreCase(id)) {
+              Media  return media;
+            }
+        }
+        return null;
+    }
+
 }
