@@ -606,6 +606,15 @@ public class LibraryManager {
         return addSuspendedUserToServer(customerId);
     }
 
+    /**
+     * Skapar ett nytt spel och skickar det till servern.
+     * Om serveranropet lyckas sparas spelet också i den lokala samlingen.
+     *
+     * @param title spelets titel
+     * @param genre spelets genre
+     * @param age   spelets rekommenderade ålder eller åldersgräns
+     * @return true om spelet sparades korrekt, annars false
+     */
     public boolean addGameToServer(String title, String genre, int age) {
         Game newGame = new Game(null, title, true, genre, age);
         String gameJson = gson.toJson(newGame);
@@ -624,6 +633,12 @@ public class LibraryManager {
         return true;
     }
 
+    /**
+     * Läser in information om ett spel från användaren och lägger till det på
+     * servern.
+     *
+     * @return true om spelet lades till korrekt, annars false
+     */
     public boolean addGame() {
         IO.println("Lägger till ett spel på servern...");
         String title = readRequiredText("Ange titel: ", "Titel");
@@ -639,6 +654,15 @@ public class LibraryManager {
         return addGameToServer(title, genre, age);
     }
 
+    /**
+     * Skapar en ny film och skickar den till servern.
+     * Om serveranropet lyckas sparas filmen också i den lokala samlingen.
+     *
+     * @param title   filmens titel
+     * @param genre   filmens genre
+     * @param minutes filmens längd i minuter
+     * @return true om filmen sparades korrekt, annars false
+     */
     public boolean addMovieToServer(String title, String genre, int minutes) {
         Movie newMovie = new Movie(null, title, true, genre, minutes);
         String movieJson = gson.toJson(newMovie);
@@ -657,6 +681,12 @@ public class LibraryManager {
         return true;
     }
 
+    /**
+     * Läser in information om en film från användaren och lägger till den på
+     * servern.
+     *
+     * @return true om filmen lades till korrekt, annars false
+     */
     public boolean addMovie() {
         IO.println("Lägger till en film på servern...");
         String title = readRequiredText("Ange titel: ", "Titel");
@@ -672,6 +702,14 @@ public class LibraryManager {
         return addMovieToServer(title, genre, minutes);
     }
 
+    /**
+     * Skapar ett nytt musikalbum och skickar det till servern.
+     * Om serveranropet lyckas sparas musikalbumet också i den lokala samlingen.
+     *
+     * @param title  musikalbumets titel
+     * @param artist namnet på artisten
+     * @return true om musikalbumet sparades korrekt, annars false
+     */
     public boolean addMusicAlbumToServer(String title, String artist) {
         MusicAlbum newMusicAlbum = new MusicAlbum(null, title, true, artist);
         String musicAlbumJson = gson.toJson(newMusicAlbum);
@@ -690,6 +728,12 @@ public class LibraryManager {
         return true;
     }
 
+    /**
+     * Läser in information om ett musikalbum från användaren och lägger till det på
+     * servern.
+     *
+     * @return true om musikalbumet lades till korrekt, annars false
+     */
     public boolean addMusicAlbum() {
         IO.println("Lägger till ett musikalbum på servern...");
         String title = readRequiredText("Ange titel: ", "Titel");
