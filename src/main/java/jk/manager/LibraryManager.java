@@ -1841,6 +1841,13 @@ public class LibraryManager {
         return null;
     }
 
-    
+    public void loadAllData() {
+        fetchBooks();
+        fetchMagazines();
+        fetchUsers();
+        fetchSuspendedUsers();
+        fetchMedia();
+        loadLoansFromFile();
+    }
 
 }
