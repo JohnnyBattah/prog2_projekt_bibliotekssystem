@@ -174,17 +174,41 @@ public class Main {
                                     2. Lägg till tidning på servern
                                     3. Lägg till användare på servern
                                     4. Lägg till avstängd användare på servern
-                                    5. Tillbaka
+                                    5. Lägg till media på servern
+                                    6. Tillbaka
                                 """);
 
-                        int läggTillVal = readMenuChoice("Välj ett alternativ (1-5): ");
+                        int läggTillVal = readMenuChoice("Välj ett alternativ (1-6): ");
 
                         switch (läggTillVal) {
                             case 1 -> manager.addBook();
                             case 2 -> manager.addMagazine();
                             case 3 -> manager.addUser();
                             case 4 -> manager.addSuspendedUser();
-                            case 5 -> läggTillMeny = false;
+                            case 5 -> {
+                                boolean mediaMeny = true;
+
+                                while (mediaMeny) {
+                                    IO.println("""
+                                                === LÄGG TILL MEDIA ===
+                                                1. Lägg till spel
+                                                2. Lägg till film
+                                                3. Lägg till musikalbum
+                                                4. Tillbaka
+                                            """);
+
+                                    int mediaVal = readMenuChoice("Välj ett alternativ (1-4): ");
+
+                                    switch (mediaVal) {
+                                        case 1 -> manager.addGame();
+                                        case 2 -> manager.addMovie();
+                                        case 3 -> manager.addMusicAlbum();
+                                        case 4 -> mediaMeny = false;
+                                        default -> IO.println("Ogiltigt val. Ange ett nummer från menyn.");
+                                    }
+                                }
+                            }
+                            case 6 -> läggTillMeny = false;
                             default -> IO.println("Ogiltigt val. Ange ett nummer från menyn.");
                         }
                     }

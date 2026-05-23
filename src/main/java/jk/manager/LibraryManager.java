@@ -606,6 +606,104 @@ public class LibraryManager {
         return addSuspendedUserToServer(customerId);
     }
 
+    public boolean addGameToServer(String title, String genre, int age) {
+        Game newGame = new Game(null, title, true, genre, age);
+        String gameJson = gson.toJson(newGame);
+
+        String responseBody = apiClient.post("/media", gameJson);
+
+        if (responseBody == null) {
+            IO.println("Fel vid skapande av spel.");
+            return false;
+        }
+
+        Game savedGame = gson.fromJson(responseBody, Game.class);
+        mediaItems.add(savedGame);
+
+        IO.println("Spelet lades till på servern och i den lokala samlingen.");
+        return true;
+    }
+
+    public boolean addGame() {
+        IO.println("Lägger till ett spel på servern...");
+        String title = readRequiredText("Ange titel: ", "Titel");
+
+        if (findMediaByTitle(title) != null) {
+            IO.println("Det finns redan media med den titeln.");
+            return false;
+        }
+
+        String genre = readRequiredText("Ange genre: ", "Genre");
+        int age = readPositiveInt("Ange ålder: ", "Ålder");
+
+        return addGameToServer(title, genre, age);
+    }
+
+    public boolean addMovieToServer(String title, String genre, int minutes) {
+        Movie newMovie = new Movie(null, title, true, genre, minutes);
+        String movieJson = gson.toJson(newMovie);
+
+        String responseBody = apiClient.post("/media", movieJson);
+
+        if (responseBody == null) {
+            IO.println("Fel vid skapande av film.");
+            return false;
+        }
+
+        Movie savedMovie = gson.fromJson(responseBody, Movie.class);
+        mediaItems.add(savedMovie);
+
+        IO.println("Filmen lades till på servern och i den lokala samlingen.");
+        return true;
+    }
+
+    public boolean addMovie() {
+        IO.println("Lägger till en film på servern...");
+        String title = readRequiredText("Ange titel: ", "Titel");
+
+        if (findMediaByTitle(title) != null) {
+            IO.println("Det finns redan media med den titeln.");
+            return false;
+        }
+
+        String genre = readRequiredText("Ange genre: ", "Genre");
+        int minutes = readPositiveInt("Ange minuter: ", "Minuter");
+
+        return addMovieToServer(title, genre, minutes);
+    }
+
+    public boolean addMusicAlbumToServer(String title, String artist) {
+        MusicAlbum newMusicAlbum = new MusicAlbum(null, title, true, artist);
+        String musicAlbumJson = gson.toJson(newMusicAlbum);
+
+        String responseBody = apiClient.post("/media", musicAlbumJson);
+
+        if (responseBody == null) {
+            IO.println("Fel vid skapande av musikalbum.");
+            return false;
+        }
+
+        MusicAlbum savedMusicAlbum = gson.fromJson(responseBody, MusicAlbum.class);
+        mediaItems.add(savedMusicAlbum);
+
+        IO.println("Musikalbumet lades till på servern och i den lokala samlingen.");
+        return true;
+    }
+
+    public boolean addMusicAlbum() {
+        IO.println("Lägger till ett musikalbum på servern...");
+        String title = readRequiredText("Ange titel: ", "Titel");
+
+        if (findMediaByTitle(title) != null) {
+            IO.println("Det finns redan media med den titeln.");
+            return false;
+        }
+
+        String artist = readRequiredText("Ange artist: ", "Artist");
+
+        return addMusicAlbumToServer(title, artist);
+    }
+
     /******************
      **** Ta bort *****
      *****************/
