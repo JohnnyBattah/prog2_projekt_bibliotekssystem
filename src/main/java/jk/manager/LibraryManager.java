@@ -1743,4 +1743,16 @@ public class LibraryManager {
             }
         }
     }
+
+    private void saveLoansToFile() {
+        try {
+            Gson gsonPretty = new GsonBuilder().setPrettyPrinting().create();
+            String json = gsonPretty.toJson(loans);
+            Path filePath = Paths.get(loansFileName);
+            Files.writeString(filePath, json);
+            IO.println("Lån sparade till fil.");
+        } catch (IOException e) {
+            IO.println("Fel vidskrivande till fil: " + e.getMessage());
+        }
+    }
 }
