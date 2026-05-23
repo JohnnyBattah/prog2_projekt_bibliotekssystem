@@ -135,21 +135,14 @@ public class LibraryManager {
      */
     public boolean fetchMagazines() {
         IO.println("Hämtar alla tidningar...");
-        HttpResponse<String> magazinesResponse;
-        try {
-            magazinesResponse = apiClient.get("/magazines");
-        } catch (UnirestException e) {
-            IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
+
+        String magazinesBody = apiClient.fetchAll("/magazines");
+
+        if (magazinesBody == null) {
+            IO.println("Fel vid hämtning av tidningar.");
             return false;
         }
 
-        int magazineStatus = magazinesResponse.getStatus();
-        if (magazineStatus != 200) {
-            IO.println("Fel från servern vid hämtning av tidningar. Statuskod: " + magazineStatus);
-            return false;
-        }
-
-        String magazinesBody = magazinesResponse.getBody();
         Type magazineListType = new TypeToken<ArrayList<Magazine>>() {
         }.getType();
         this.magazines = gson.fromJson(magazinesBody, magazineListType);
@@ -169,21 +162,14 @@ public class LibraryManager {
             return false;
         }
 
-        HttpResponse<String> response;
+        String body = apiClient.fetchOne("/magazines", magazineId);
 
-        try {
-            response = apiClient.get("/magazines/" + magazineId);
-        } catch (UnirestException e) {
-            IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
+        if (body == null) {
+            IO.println("Ingen tidning hittades med det id:t.");
             return false;
         }
 
-        if (response.getStatus() != 200) {
-            IO.println("Ingen tidning hittades med det id:t. Statuskod: " + response.getStatus());
-            return false;
-        }
-
-        Magazine magazine = gson.fromJson(response.getBody(), Magazine.class);
+        Magazine magazine = gson.fromJson(body, Magazine.class);
         IO.println("Tidning hämtad från servern:");
         IO.println(magazine.getInfo());
         return true;
@@ -194,22 +180,14 @@ public class LibraryManager {
      */
     public boolean fetchUsers() {
         IO.println("Hämtar alla användare...");
-        HttpResponse<String> usersResponse;
 
-        try {
-            usersResponse = apiClient.get("/users");
-        } catch (UnirestException e) {
-            IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
+        String usersBody = apiClient.fetchAll("/users");
+
+        if (usersBody == null) {
+            IO.println("Fel vid hämtning av användare.");
             return false;
         }
 
-        int userStatus = usersResponse.getStatus();
-        if (userStatus != 200) {
-            IO.println("Fel från servern vid hämtning av användare. Statuskod: " + userStatus);
-            return false;
-        }
-
-        String usersBody = usersResponse.getBody();
         Type userListType = new TypeToken<ArrayList<User>>() {
         }.getType();
         this.users = gson.fromJson(usersBody, userListType);
@@ -234,21 +212,14 @@ public class LibraryManager {
             return false;
         }
 
-        HttpResponse<String> response;
+        String body = apiClient.fetchOne("/users", userId);
 
-        try {
-            response = apiClient.get("/users/" + userId);
-        } catch (UnirestException e) {
-            IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
+        if (body == null) {
+            IO.println("Fel vid hämtning av användare.");
             return false;
         }
 
-        if (response.getStatus() != 200) {
-            IO.println("Ingen användare hittades med det id:t. Statuskod: " + response.getStatus());
-            return false;
-        }
-
-        User user = gson.fromJson(response.getBody(), User.class);
+        User user = gson.fromJson(body, User.class);
         IO.println("Användare hämtad från servern:");
         IO.println(user.getInfo());
         return true;
@@ -259,21 +230,14 @@ public class LibraryManager {
      */
     public boolean fetchSuspendedUsers() {
         IO.println("Hämtar alla avstängda användare...");
-        HttpResponse<String> suspendedResponse;
-        try {
-            suspendedResponse = apiClient.get("/suspended");
-        } catch (UnirestException e) {
-            IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
+        
+        String suspendedBody = apiClient.fetchAll("/suspended");
+
+        if (suspendedBody == null) {
+            IO.println("Fel vid hämtning av avstängda användare.");
             return false;
         }
 
-        int suspendedStatus = suspendedResponse.getStatus();
-        if (suspendedStatus != 200) {
-            IO.println("Fel vid hämtning av avstängda användare. Statuskod: " + suspendedStatus);
-            return false;
-        }
-
-        String suspendedBody = suspendedResponse.getBody();
         Type suspendedListType = new TypeToken<ArrayList<SuspendedUser>>() {
         }.getType();
         this.suspendedUsers = gson.fromJson(suspendedBody, suspendedListType);
@@ -298,21 +262,14 @@ public class LibraryManager {
             return false;
         }
 
-        HttpResponse<String> response;
+        String body = apiClient.fetchOne("/suspended", suspendedId);
 
-        try {
-            response = apiClient.get("/suspended/" + suspendedId);
-        } catch (UnirestException e) {
-            IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
+        if (body == null) {
+            IO.println("Ingen avstängda användare hittades med det id:t.");
             return false;
         }
 
-        if (response.getStatus() != 200) {
-            IO.println("Ingen avstängd användare hittades med det id:t. Statuskod: " + response.getStatus());
-            return false;
-        }
-
-        SuspendedUser suspendedUser = gson.fromJson(response.getBody(), SuspendedUser.class);
+        SuspendedUser suspendedUser = gson.fromJson(body, SuspendedUser.class);
         IO.println("Avstängd användare hämtad från servern:");
         IO.println(suspendedUser.getInfo());
         return true;
@@ -321,21 +278,13 @@ public class LibraryManager {
     public boolean fetchMedia() {
         IO.println("Hämtar all media...");
 
-        HttpResponse<String> mediaResponse;
-        try {
-            mediaResponse = apiClient.get("/media");
-        } catch (UnirestException e) {
-            IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
+        String mediaBody = apiClient.fetchAll("/media");
+
+        if (mediaBody == null) {
+            IO.println("Fel vid hämtning av media.");
             return false;
         }
 
-        int mediaStatus = mediaResponse.getStatus();
-        if (mediaStatus != 200) {
-            IO.println("Fel från servern vid hämtning av media. Statuskod: " + mediaStatus);
-            return false;
-        }
-
-        String mediaBody = mediaResponse.getBody();
         JsonArray jsonArray = JsonParser.parseString(mediaBody).getAsJsonArray();
 
         mediaItems.clear();
@@ -368,21 +317,14 @@ public class LibraryManager {
             return false;
         }
 
-        HttpResponse<String> response;
+        String body = apiClient.fetchOne("/media", mediaId);
 
-        try {
-            response = apiClient.get("/media/" + mediaId);
-        } catch (UnirestException e) {
-            IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
+        if (body == null) {
+            IO.println("Ingen media hittades med det id:t.");
             return false;
         }
 
-        if (response.getStatus() != 200) {
-            IO.println("Ingen media hittades med det id:t. Statuskod: " + response.getStatus());
-            return false;
-        }
-
-        JsonObject obj = JsonParser.parseString(response.getBody()).getAsJsonObject();
+        JsonObject obj = JsonParser.parseString(body).getAsJsonObject();
         String type = obj.get("type").getAsString();
 
         Media media = null;
@@ -458,22 +400,14 @@ public class LibraryManager {
         Magazine newServerMagazine = new Magazine(null, title, true, issueNumber, category, publishedYear);
         String magazineJson = gson.toJson(newServerMagazine);
 
-        HttpResponse<String> postMagazineResponse;
-        try {
-            postMagazineResponse = apiClient.postJson("magazines", magazineJson);
-        } catch (UnirestException e) {
-            IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
+        String responseBody = apiClient.post("/magazines", magazineJson);
+
+        if (responseBody == null) {
+            IO.println("Fel vid skapande av tidning.");
             return false;
         }
 
-        int postMagazineStatus = postMagazineResponse.getStatus();
-        if (postMagazineStatus != 201 && postMagazineStatus != 200) {
-            IO.println("Fel vid skapande av tidning. Statuskod: " + postMagazineStatus);
-            IO.println("Svar från servern: " + postMagazineResponse.getBody());
-            return false;
-        }
-
-        Magazine savedMagazine = gson.fromJson(postMagazineResponse.getBody(), Magazine.class);
+        Magazine savedMagazine = gson.fromJson(responseBody, Magazine.class);
         magazines.add(savedMagazine);
 
         IO.println("Tidningen lades till på servern och i den lokala samlingen.");
@@ -506,22 +440,14 @@ public class LibraryManager {
         User newUser = new User(null, name, email);
         String userJson = gson.toJson(newUser);
 
-        HttpResponse<String> postUserResponse;
-        try {
-            postUserResponse = apiClient.postJson("users", userJson);
-        } catch (UnirestException e) {
-            IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
+        String responseBody = apiClient.post("/users", userJson);
+
+        if (responseBody == null) {
+            IO.println("Fel vid skapande av användare.");
             return false;
         }
 
-        int postUserStatus = postUserResponse.getStatus();
-        if (postUserStatus != 201 && postUserStatus != 200) {
-            IO.println("Fel vid skapande av användare. Statuskod: " + postUserStatus);
-            IO.println("Svar från servern: " + postUserResponse.getBody());
-            return false;
-        }
-
-        User savedUser = gson.fromJson(postUserResponse.getBody(), User.class);
+        User savedUser = gson.fromJson(responseBody, User.class);
         users.add(savedUser);
         userMap.put(savedUser.getEmail().toLowerCase(), savedUser);
 
@@ -553,22 +479,14 @@ public class LibraryManager {
         SuspendedUser newSuspendedUser = new SuspendedUser(null, customerId);
         String suspendedJson = gson.toJson(newSuspendedUser);
 
-        HttpResponse<String> postSuspendedResponse;
-        try {
-            postSuspendedResponse = apiClient.postJson("suspended", suspendedJson);
-        } catch (UnirestException e) {
-            IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
+        String responseBody = apiClient.post("/suspended", suspendedJson);
+
+        if (responseBody == null) {
+            IO.println("Fel vid skapande av avstängd användare.");
             return false;
         }
 
-        int postSuspendedStatus = postSuspendedResponse.getStatus();
-        if (postSuspendedStatus != 201 && postSuspendedStatus != 200) {
-            IO.println("Fel vid skapande av avstängd användare. Statuskod: " + postSuspendedStatus);
-            IO.println("Svar från servern: " + postSuspendedResponse.getBody());
-            return false;
-        }
-
-        SuspendedUser savedSuspendedUser = gson.fromJson(postSuspendedResponse.getBody(), SuspendedUser.class);
+        SuspendedUser savedSuspendedUser = gson.fromJson(responseBody, SuspendedUser.class);
         suspendedUsers.add(savedSuspendedUser);
         suspendedIdSet.add(savedSuspendedUser.getCustomer_id());
 
