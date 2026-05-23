@@ -607,29 +607,39 @@ public class LibraryManager {
     }
 
     /**
-     * Skapar ett nytt spel och skickar det till servern.
-     * Om serveranropet lyckas sparas spelet också i den lokala samlingen.
+     * Skapar ett nytt mediaobjekt och skickar det till servern.
+     * Om serveranropet lyckas sparas mediaobjektet också i den lokala samlingen.
      *
-     * @param title spelets titel
-     * @param genre spelets genre
-     * @param age   spelets rekommenderade ålder eller åldersgräns
-     * @return true om spelet sparades korrekt, annars false
+     * @param media mediaobjektet som ska sparas
+     * @return true om mediaobjektet sparades korrekt, annars false
      */
-    public boolean addGameToServer(String title, String genre, int age) {
-        Game newGame = new Game(null, title, true, genre, age);
-        String gameJson = gson.toJson(newGame);
-
-        String responseBody = apiClient.post("/media", gameJson);
+    public boolean addMediaToServer(Media media) {
+        String mediaJson = gson.toJson(media);
+        String responseBody = apiClient.post("/media", mediaJson);
 
         if (responseBody == null) {
-            IO.println("Fel vid skapande av spel.");
+            IO.println("Fel vid skapande av media.");
             return false;
         }
 
-        Game savedGame = gson.fromJson(responseBody, Game.class);
-        mediaItems.add(savedGame);
+        JsonObject obj = JsonParser.parseString(responseBody).getAsJsonObject();
+        String type = obj.get("type").getAsString();
 
-        IO.println("Spelet lades till på servern och i den lokala samlingen.");
+        if (type.equalsIgnoreCase("game")) {
+            Game savedGame = gson.fromJson(obj, Game.class);
+            mediaItems.add(savedGame);
+        } else if (type.equalsIgnoreCase("movie")) {
+            Movie savedMovie = gson.fromJson(obj, Movie.class);
+            mediaItems.add(savedMovie);
+        } else if (type.equalsIgnoreCase("music_album")) {
+            MusicAlbum savedMusicAlbum = gson.fromJson(obj, MusicAlbum.class);
+            mediaItems.add(savedMusicAlbum);
+        } else {
+            IO.println("Okänd mediatyp från servern.");
+            return false;
+        }
+
+        IO.println("Media lades till på servern och i den lokala samlingen.");
         return true;
     }
 
@@ -651,34 +661,8 @@ public class LibraryManager {
         String genre = readRequiredText("Ange genre: ", "Genre");
         int age = readPositiveInt("Ange ålder: ", "Ålder");
 
-        return addGameToServer(title, genre, age);
-    }
-
-    /**
-     * Skapar en ny film och skickar den till servern.
-     * Om serveranropet lyckas sparas filmen också i den lokala samlingen.
-     *
-     * @param title   filmens titel
-     * @param genre   filmens genre
-     * @param minutes filmens längd i minuter
-     * @return true om filmen sparades korrekt, annars false
-     */
-    public boolean addMovieToServer(String title, String genre, int minutes) {
-        Movie newMovie = new Movie(null, title, true, genre, minutes);
-        String movieJson = gson.toJson(newMovie);
-
-        String responseBody = apiClient.post("/media", movieJson);
-
-        if (responseBody == null) {
-            IO.println("Fel vid skapande av film.");
-            return false;
-        }
-
-        Movie savedMovie = gson.fromJson(responseBody, Movie.class);
-        mediaItems.add(savedMovie);
-
-        IO.println("Filmen lades till på servern och i den lokala samlingen.");
-        return true;
+        Game newGame = new Game(null, title, true, genre, age);
+        return addMediaToServer(newGame);
     }
 
     /**
@@ -699,33 +683,8 @@ public class LibraryManager {
         String genre = readRequiredText("Ange genre: ", "Genre");
         int minutes = readPositiveInt("Ange minuter: ", "Minuter");
 
-        return addMovieToServer(title, genre, minutes);
-    }
-
-    /**
-     * Skapar ett nytt musikalbum och skickar det till servern.
-     * Om serveranropet lyckas sparas musikalbumet också i den lokala samlingen.
-     *
-     * @param title  musikalbumets titel
-     * @param artist namnet på artisten
-     * @return true om musikalbumet sparades korrekt, annars false
-     */
-    public boolean addMusicAlbumToServer(String title, String artist) {
-        MusicAlbum newMusicAlbum = new MusicAlbum(null, title, true, artist);
-        String musicAlbumJson = gson.toJson(newMusicAlbum);
-
-        String responseBody = apiClient.post("/media", musicAlbumJson);
-
-        if (responseBody == null) {
-            IO.println("Fel vid skapande av musikalbum.");
-            return false;
-        }
-
-        MusicAlbum savedMusicAlbum = gson.fromJson(responseBody, MusicAlbum.class);
-        mediaItems.add(savedMusicAlbum);
-
-        IO.println("Musikalbumet lades till på servern och i den lokala samlingen.");
-        return true;
+        Movie newMovie = new Movie(null, title, true, genre, minutes);
+        return addMediaToServer(newMovie);
     }
 
     /**
@@ -745,7 +704,8 @@ public class LibraryManager {
 
         String artist = readRequiredText("Ange artist: ", "Artist");
 
-        return addMusicAlbumToServer(title, artist);
+        MusicAlbum newMusicAlbum = new MusicAlbum(null, title, true, artist);
+        return addMediaToServer(newMusicAlbum);
     }
 
     /******************
