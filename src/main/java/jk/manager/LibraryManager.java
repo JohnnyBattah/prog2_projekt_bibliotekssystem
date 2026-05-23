@@ -622,20 +622,17 @@ public class LibraryManager {
             return false;
         }
 
-        JsonObject obj = JsonParser.parseString(responseBody).getAsJsonObject();
-        String type = obj.get("type").getAsString();
-
-        if (type.equalsIgnoreCase("game")) {
-            Game savedGame = gson.fromJson(obj, Game.class);
+        if (media instanceof Game) {
+            Game savedGame = gson.fromJson(responseBody, Game.class);
             mediaItems.add(savedGame);
-        } else if (type.equalsIgnoreCase("movie")) {
-            Movie savedMovie = gson.fromJson(obj, Movie.class);
+        } else if (media instanceof Movie) {
+            Movie savedMovie = gson.fromJson(responseBody, Movie.class);
             mediaItems.add(savedMovie);
-        } else if (type.equalsIgnoreCase("music_album")) {
-            MusicAlbum savedMusicAlbum = gson.fromJson(obj, MusicAlbum.class);
+        } else if (media instanceof MusicAlbum) {
+            MusicAlbum savedMusicAlbum = gson.fromJson(responseBody, MusicAlbum.class);
             mediaItems.add(savedMusicAlbum);
         } else {
-            IO.println("Okänd mediatyp från servern.");
+            IO.println("Okänd mediatyp.");
             return false;
         }
 
