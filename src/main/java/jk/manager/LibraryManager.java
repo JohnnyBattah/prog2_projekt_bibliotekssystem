@@ -65,13 +65,11 @@ public class LibraryManager {
 
     private LibraryApiClient apiClient;
 
-    private String baseURL;
     private Gson gson;
 
     public LibraryManager() {
-        baseURL = "http://localhost:3000/";
         gson = new Gson();
-        apiClient = new LibraryApiClient(baseURL);
+        apiClient = new LibraryApiClient();
 
         books = new ArrayList<>();
         magazines = new ArrayList<>();
@@ -93,21 +91,13 @@ public class LibraryManager {
     public boolean fetchBooks() {
         IO.println("Hämtar alla böcker...");
 
-        HttpResponse<String> booksResponse;
-        try {
-            booksResponse = apiClient.get("/books");
-        } catch (UnirestException e) {
-            IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
+        String booksBody = apiClient.fetchAll("/books");
+
+        if (booksBody == null) {
+            IO.println("Fel vid hämtning av böcker.");
             return false;
         }
 
-        int bookStatus = booksResponse.getStatus();
-        if (bookStatus != 200) {
-            IO.println("Fel från servern vid hämtning av böcker. Statuskod: " + bookStatus);
-            return false;
-        }
-
-        String booksBody = booksResponse.getBody();
         Type bookListType = new TypeToken<ArrayList<Book>>() {
         }.getType();
         this.books = gson.fromJson(booksBody, bookListType);
@@ -127,21 +117,14 @@ public class LibraryManager {
             return false;
         }
 
-        HttpResponse<String> response;
+        String body = apiClient.fetchOne("/books", bookId);
 
-        try {
-            response = apiClient.get("/books/" + bookId);
-        } catch (UnirestException e) {
-            IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
+        if (body == null) {
+            IO.println("Fel vid hämtning av bok.");
             return false;
         }
 
-        if (response.getStatus() != 200) {
-            IO.println("Ingen bok hittades med det id:t. Statuskod: " + response.getStatus());
-            return false;
-        }
-
-        Book book = gson.fromJson(response.getBody(), Book.class);
+        Book book = gson.fromJson(body, Book.class);
         IO.println("Bok hämtad från servern:");
         IO.println(book.getInfo());
         return true;
@@ -433,22 +416,14 @@ public class LibraryManager {
         Book newBook = new Book(null, title, true, author, genre, pages);
         String bookJson = gson.toJson(newBook);
 
-        HttpResponse<String> postBookResponse;
-        try {
-            postBookResponse = apiClient.postJson("books", bookJson);
-        } catch (UnirestException e) {
-            IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
+        String responseBody = apiClient.post("/books", bookJson);
+
+        if (responseBody == null) {
+            IO.println("Fel vid skapande av bok.");
             return false;
         }
 
-        int postBookStatus = postBookResponse.getStatus();
-        if (postBookStatus != 201 && postBookStatus != 200) {
-            IO.println("Fel vid skapande av bok. Statuskod: " + postBookStatus);
-            IO.println("Svar från servern: " + postBookResponse.getBody());
-            return false;
-        }
-
-        Book savedBook = gson.fromJson(postBookResponse.getBody(), Book.class);
+        Book savedBook = gson.fromJson(responseBody, Book.class);
         books.add(savedBook);
 
         IO.println("Boken lades till på servern och i den lokala samlingen.");
