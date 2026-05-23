@@ -15,6 +15,9 @@ public abstract class LibraryItem implements Searchable {
     protected boolean isAvailable;
 
     public LibraryItem(String id, String title, boolean isAvailable) {
+        if (id != null && id.isBlank()) { throw new IllegalArgumentException("Id får inte vara tomt.");}
+        if (title == null || title.isBlank()) { throw new IllegalArgumentException("Titel får inte vara tom.");}
+
         this.id = id;
         this.title = title;
         this.isAvailable = isAvailable;
@@ -37,6 +40,7 @@ public abstract class LibraryItem implements Searchable {
     }
 
     public void setTitle(String title) {
+        if (title == null || title.isBlank()) { throw new IllegalArgumentException("Titel får inte vara tom.");}
         this.title = title;
     }
 

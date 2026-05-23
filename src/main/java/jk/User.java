@@ -16,6 +16,10 @@ public class User implements Comparable<User> {
     private String email;
 
     public User(String id, String name, String email) {
+        if (id != null && id.isBlank()) { throw new IllegalArgumentException("Id får inte vara tomt.");}
+        if (name == null || name.isBlank()) { throw new IllegalArgumentException("Namn får inte vara tomt.");}
+        if (email == null || email.isBlank()) { throw new IllegalArgumentException("E-post får inte vara tom.");}
+
         this.id = id;
         this.name = name;
         this.email = email;
@@ -34,10 +38,12 @@ public class User implements Comparable<User> {
     }
 
     public void setName(String name) {
+        if (name == null || name.isBlank()) { throw new IllegalArgumentException("Namn får inte vara tomt.");}
         this.name = name;
     }
 
     public void setEmail(String email) {
+        if (email == null || email.isBlank()) { throw new IllegalArgumentException("E-post får inte vara tom.");}
         this.email = email;
     }
 

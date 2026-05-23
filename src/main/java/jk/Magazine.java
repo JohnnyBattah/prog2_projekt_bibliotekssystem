@@ -17,6 +17,9 @@ public class Magazine extends LibraryItem implements Comparable<Magazine> {
 
     public Magazine(String id, String title, boolean isAvailable, int issueNumber, String category, int publishedYear) {
         super(id, title, isAvailable);
+        if (issueNumber <= 0) { throw new IllegalArgumentException("Nummer måste vara större än 0.");}
+        if (category == null || category.isBlank()) { throw new IllegalArgumentException("Ketegori får inte vara tomt.");}
+        if (publishedYear <= 0) { throw new IllegalArgumentException("Publiceringsår måste vara större än 0.");}
         this.issueNumber = issueNumber;
         this.category = category;
         this.publishedYear = publishedYear;

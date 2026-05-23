@@ -6,6 +6,9 @@ public class Game extends Media {
 
     public Game(String id, String title, boolean isAvailable, String genre, int age) {
         super(id, "game", title, isAvailable);
+        if (genre == null || genre.isBlank()) { throw new IllegalArgumentException("Genre får inte vara tom.");}
+        if (age < 0) { throw new IllegalArgumentException("Ålder får inte vara negativ.");}
+
         this.genre = genre;
         this.age = age;
     }

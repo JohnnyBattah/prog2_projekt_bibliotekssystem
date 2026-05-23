@@ -61,60 +61,9 @@ public class LibraryManager {
         suspendedIdSet = new HashSet<>();
     }
 
-    public boolean fetchMedia() {
-        IO.println("Hämtar all media...");
-
-        HttpResponse<String> mediaResponse;
-        try {
-            mediaResponse = Unirest.get(baseURL + "/media").asString();
-        } catch (UnirestException e) {
-            IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
-            return false;
-        }
-
-        int mediaStatus = mediaResponse.getStatus();
-        if (mediaStatus != 200) {
-            IO.println("Fel från servern vid hämtning av media. Statuskod: " + mediaStatus);
-            return false;
-        }
-
-        String mediaBody = mediaResponse.getBody();
-        JsonArray jsonArray = JsonParser.parseString(mediaBody).getAsJsonArray();
-
-        mediaItems.clear();
-
-        for (JsonElement element : jsonArray) {
-            JsonObject obj = element.getAsJsonObject();
-            String type = obj.get("type").getAsString();
-
-            if (type.equalsIgnoreCase("game")) {
-                Game game = gson.fromJson(obj, Game.class);
-                mediaItems.add(game);
-            } else if (type.equalsIgnoreCase("movie")) {
-                Movie movie = gson.fromJson(obj, Movie.class);
-                mediaItems.add(movie);
-            } else if (type.equalsIgnoreCase("music_album")) {
-                MusicAlbum musicAlbum = gson.fromJson(obj, MusicAlbum.class);
-                mediaItems.add(musicAlbum);
-            }
-        }
-
-        IO.println("Media hämtad från servern. Antal: " + mediaItems.size());
-        return true;
-    }
-
-    public void printMedia() {
-        IO.println("Skriver ut all media...");
-
-        if (mediaItems.isEmpty()) {
-            IO.println("Ingen media finns.");
-            return;
-        }
-
-        for (Media media : mediaItems) {
-            IO.println(media.getInfo());
-        }
-    }
+    /******************
+     ****** Hämta ******
+     *****************/
 
     /**
      * Hämtar alla böcker från servern och sparar dem i listan.
@@ -364,6 +313,52 @@ public class LibraryManager {
         return true;
     }
 
+    public boolean fetchMedia() {
+        IO.println("Hämtar all media...");
+
+        HttpResponse<String> mediaResponse;
+        try {
+            mediaResponse = Unirest.get(baseURL + "/media").asString();
+        } catch (UnirestException e) {
+            IO.println("Fel vid uppkoppling mot servern: " + e.getLocalizedMessage());
+            return false;
+        }
+
+        int mediaStatus = mediaResponse.getStatus();
+        if (mediaStatus != 200) {
+            IO.println("Fel från servern vid hämtning av media. Statuskod: " + mediaStatus);
+            return false;
+        }
+
+        String mediaBody = mediaResponse.getBody();
+        JsonArray jsonArray = JsonParser.parseString(mediaBody).getAsJsonArray();
+
+        mediaItems.clear();
+
+        for (JsonElement element : jsonArray) {
+            JsonObject obj = element.getAsJsonObject();
+            String type = obj.get("type").getAsString();
+
+            if (type.equalsIgnoreCase("game")) {
+                Game game = gson.fromJson(obj, Game.class);
+                mediaItems.add(game);
+            } else if (type.equalsIgnoreCase("movie")) {
+                Movie movie = gson.fromJson(obj, Movie.class);
+                mediaItems.add(movie);
+            } else if (type.equalsIgnoreCase("music_album")) {
+                MusicAlbum musicAlbum = gson.fromJson(obj, MusicAlbum.class);
+                mediaItems.add(musicAlbum);
+            }
+        }
+
+        IO.println("Media hämtad från servern. Antal: " + mediaItems.size());
+        return true;
+    }
+
+    /******************
+     *** Lägg till ****
+     *****************/
+
     /**
      * Lägger till en ny bok på servern och sparar den lokalt i listan.
      */
@@ -578,6 +573,10 @@ public class LibraryManager {
 
         return addSuspendedUserToServer(customerId);
     }
+
+    /******************
+     **** Ta bort *****
+     *****************/
 
     /**
      * Tar bort en bok från servern och lokalt med hjälp av titel.
@@ -816,6 +815,22 @@ public class LibraryManager {
     }
 
     /**
+     * Tar bort en avstängd användare ur den lokala listan med hjälp av id.
+     */
+    public void removeSuspendedUserById(String id) {
+        for (int i = 0; i < suspendedUsers.size(); i++) {
+            if (suspendedUsers.get(i).getId().equalsIgnoreCase(id)) {
+                suspendedUsers.remove(i);
+                return;
+            }
+        }
+    }
+
+    /******************
+     ** Sök/kontroll **
+     *****************/
+
+    /**
      * Kontrollerar om en boktitel redan finns i samlingen.
      */
     public boolean bookTitleExists(String title) {
@@ -851,137 +866,6 @@ public class LibraryManager {
      */
     public boolean isUserAlreadySuspended(String customerId) {
         return suspendedIdSet.contains(customerId);
-    }
-
-    /**
-     * Tar bort en avstängd användare ur den lokala listan med hjälp av id.
-     */
-    public void removeSuspendedUserById(String id) {
-        for (int i = 0; i < suspendedUsers.size(); i++) {
-            if (suspendedUsers.get(i).getId().equalsIgnoreCase(id)) {
-                suspendedUsers.remove(i);
-                return;
-            }
-        }
-    }
-
-    public void printLoans() {
-        IO.println("Skriver ut alla lån...");
-
-        if (loans.isEmpty()) {
-            IO.println("Det finns inga registrerade lån.");
-            return;
-        }
-
-        for (Loan loan : loans) {
-            User user = findUserById(loan.getUserId());
-            String userName;
-            if (user != null) {
-                userName = user.getName();
-            } else {
-                userName = "Okänd användare";
-            }
-
-            String itemTitle = findItemTitleByLoan(loan);
-
-            IO.println("Användare: " + userName + ", Titel: " + itemTitle + ", Typ: " + loan.getItemType());
-        }
-    }
-
-    /**
-     * Skriver ut böcker sorterade på titel.
-     */
-    public void printBooksSorted() {
-        IO.println("Skriver ut alla böcker...");
-        ArrayList<Book> sortedBooks = new ArrayList<>(books);
-        Collections.sort(sortedBooks);
-
-        if (sortedBooks.isEmpty()) {
-            IO.println("Inga böcker finns.");
-        } else {
-            IO.println("=== Böcker sorterade på titel ===");
-            for (Book book : sortedBooks) {
-                IO.println(book.getInfo());
-            }
-        }
-    }
-
-    /**
-     * Skriver ut tidningar sorterade på titel.
-     */
-    public void printMagazinesSorted() {
-        IO.println("Skriver ut alla tidningar...");
-        ArrayList<Magazine> sortedMagazines = new ArrayList<>(magazines);
-        Collections.sort(sortedMagazines);
-
-        if (sortedMagazines.isEmpty()) {
-            IO.println("Inga tidningar finns.");
-        } else {
-            IO.println("=== Tidningar sorterade på titel ===");
-            for (Magazine magazine : sortedMagazines) {
-                IO.println(magazine.getInfo());
-            }
-        }
-    }
-
-    /**
-     * Skriver ut användare sorterade på namn.
-     */
-    public void printUsersSorted() {
-        IO.println("Skriver ut alla användare...");
-        ArrayList<User> sortedUsers = new ArrayList<>(users);
-        Collections.sort(sortedUsers);
-
-        if (sortedUsers.isEmpty()) {
-            IO.println("Inga användare finns.");
-        } else {
-            IO.println("=== Användare sorterade på namn ===");
-            for (User user : sortedUsers) {
-                IO.println(user.getInfo());
-            }
-        }
-    }
-
-    /**
-     * Skriver ut avstängda användare sorterade på id.
-     */
-    public void printSuspendedUsersSorted() {
-        IO.println("Skriver ut alla avstängda användare...");
-        ArrayList<SuspendedUser> sortedSuspendedUsers = new ArrayList<>(suspendedUsers);
-        Collections.sort(sortedSuspendedUsers);
-
-        if (sortedSuspendedUsers.isEmpty()) {
-            IO.println("Inga avstängda användare finns.");
-        } else {
-            IO.println("=== Avstängda användare ===");
-            for (SuspendedUser suspendedUser : sortedSuspendedUsers) {
-                IO.println(suspendedUser.getInfo());
-            }
-        }
-    }
-
-    public String findItemTitleByLoan(Loan loan) {
-        if (loan.getItemType().equalsIgnoreCase("book")) {
-            for (Book book : books) {
-                if (book.getId().equalsIgnoreCase(loan.getItemId())) {
-                    return book.getTitle();
-                }
-            }
-        } else if (loan.getItemType().equalsIgnoreCase("magazine")) {
-            for (Magazine magazine : magazines) {
-                if (magazine.getId().equalsIgnoreCase(loan.getItemId())) {
-                    return magazine.getTitle();
-                }
-            }
-        } else if (loan.getItemType().equalsIgnoreCase("media")) {
-            for (Media media : mediaItems) {
-                if (media.getId().equalsIgnoreCase(loan.getItemId())) {
-                    return media.getTitle();
-                }
-            }
-        }
-
-        return "Okänd titel";
     }
 
     /**
@@ -1102,6 +986,36 @@ public class LibraryManager {
         return true;
     }
 
+    public Media findMediaByTitle(String title) {
+        for (Media media : mediaItems) {
+            if (media.getTitle().equalsIgnoreCase(title)) {
+                return media;
+            }
+        }
+        return null;
+    }
+
+    public boolean findMediaByTitleInteractive() {
+        IO.println("Hitta media via titel...");
+
+        if (mediaItems.isEmpty()) {
+            IO.println("Ingen media är hämtad. Hämta media först.");
+            return false;
+        }
+
+        String title = readRequiredText("Ange titel: ", "Titel");
+        Media foundMedia = findMediaByTitle(title);
+
+        if (foundMedia == null) {
+            IO.println("Ingen media hittades med den titeln.");
+            return false;
+        }
+
+        IO.println("Media hittades:");
+        IO.println(foundMedia.getInfo());
+        return true;
+    }
+
     /**
      * Avgör om en användare får låna eller inte.
      * Returnerar false om användarens id finns bland de avstängda användarna.
@@ -1136,88 +1050,9 @@ public class LibraryManager {
         return true;
     }
 
-    public Media findMediaByTitle(String title) {
-        for (Media media : mediaItems) {
-            if (media.getTitle().equalsIgnoreCase(title)) {
-                return media;
-            }
-        }
-        return null;
-    }
-
-    public boolean findMediaByTitleInteractive() {
-        IO.println("Hitta media via titel...");
-
-        if (mediaItems.isEmpty()) {
-            IO.println("Ingen media är hämtad. Hämta media först.");
-            return false;
-        }
-
-        String title = readRequiredText("Ange titel: ", "Titel");
-        Media foundMedia = findMediaByTitle(title);
-
-        if (foundMedia == null) {
-            IO.println("Ingen media hittades med den titeln.");
-            return false;
-        }
-
-        IO.println("Media hittades:");
-        IO.println(foundMedia.getInfo());
-        return true;
-    }
-
-    public boolean borrowMedia() {
-        IO.println("Låna media...");
-
-        if (users.isEmpty()) {
-            IO.println("Inga användare är hämtade. Hämta användare först.");
-            return false;
-        }
-
-        if (mediaItems.isEmpty()) {
-            IO.println("Ingen media är hämtad. Hämta media först.");
-            return false;
-        }
-
-        String userId = readRequiredText("Ange användarens id: ", "Användarens id");
-        User userToBorrow = findUserById(userId);
-
-        if (userToBorrow == null) {
-            IO.println("Ingen användare hittades med det id:t.");
-            return false;
-        }
-
-        if (!canUserBorrow(userId)) {
-            IO.println("Användaren är avstängd och får inte låna.");
-            return false;
-        }
-
-        String mediaTitle = readRequiredText("Ange mediets titel: ", "Titel");
-        Media mediaToBorrow = findMediaByTitle(mediaTitle);
-
-        if (mediaToBorrow == null) {
-            IO.println("Ingen media hittades med den titeln.");
-            return false;
-        }
-
-        if (!mediaToBorrow.getIsAvailable()) {
-            IO.println("Mediet är inte tillgängligt.");
-            return false;
-        }
-
-        if (isItemLoaned(mediaToBorrow.getId())) {
-            IO.println("Mediet är redan utlånat.");
-            return false;
-        }
-
-        Loan newLoan = new Loan(userId, mediaToBorrow.getId(), "media");
-        loans.add(newLoan);
-        mediaToBorrow.setIsAvailable(false);
-
-        IO.println("Mediet lånades ut.");
-        IO.println(newLoan.getInfo());
-        return true;
-    }
+    /******************
+     ****** Lån *******
+     *****************/
 
     public boolean borrowBook() {
         IO.println("Låna bok...");
@@ -1269,41 +1104,6 @@ public class LibraryManager {
 
         IO.println("Boken lånades ut.");
         IO.println(newLoan.getInfo());
-        return true;
-    }
-
-    public boolean returnMedia() {
-        IO.println("Lämna tillbaka media...");
-
-        if (mediaItems.isEmpty()) {
-            IO.println("Ingen media är hämtad. Hämta media först.");
-            return false;
-        }
-
-        if (loans.isEmpty()) {
-            IO.println("Det finns inga registrerade lån.");
-            return false;
-        }
-
-        String mediaTitle = readRequiredText("Ange mediets titel: ", "Titel");
-        Media mediaToReturn = findMediaByTitle(mediaTitle);
-
-        if (mediaToReturn == null) {
-            IO.println("Ingen media hittades med den titeln.");
-            return false;
-        }
-
-        Loan loanToRemove = findLoanByItemId(mediaToReturn.getId());
-
-        if (loanToRemove == null) {
-            IO.println("Mediet är inte utlånat.");
-            return false;
-        }
-
-        loans.remove(loanToRemove);
-        mediaToReturn.setIsAvailable(true);
-
-        IO.println("Mediet har lämnats tillbaka.");
         return true;
     }
 
@@ -1430,42 +1230,92 @@ public class LibraryManager {
         return true;
     }
 
-    /**
-     * Läser in text och fortsätter fråga tills användaren skrivit något som inte är
-     * tomt.
-     */
-    private String readRequiredText(String prompt, String fieldName) {
-        while (true) {
-            String input = IO.readln(prompt).trim();
+    public boolean borrowMedia() {
+        IO.println("Låna media...");
 
-            if (input.isBlank()) {
-                IO.println(fieldName + " får inte vara tomt.");
-            } else {
-                return input;
-            }
+        if (users.isEmpty()) {
+            IO.println("Inga användare är hämtade. Hämta användare först.");
+            return false;
         }
+
+        if (mediaItems.isEmpty()) {
+            IO.println("Ingen media är hämtad. Hämta media först.");
+            return false;
+        }
+
+        String userId = readRequiredText("Ange användarens id: ", "Användarens id");
+        User userToBorrow = findUserById(userId);
+
+        if (userToBorrow == null) {
+            IO.println("Ingen användare hittades med det id:t.");
+            return false;
+        }
+
+        if (!canUserBorrow(userId)) {
+            IO.println("Användaren är avstängd och får inte låna.");
+            return false;
+        }
+
+        String mediaTitle = readRequiredText("Ange mediets titel: ", "Titel");
+        Media mediaToBorrow = findMediaByTitle(mediaTitle);
+
+        if (mediaToBorrow == null) {
+            IO.println("Ingen media hittades med den titeln.");
+            return false;
+        }
+
+        if (!mediaToBorrow.getIsAvailable()) {
+            IO.println("Mediet är inte tillgängligt.");
+            return false;
+        }
+
+        if (isItemLoaned(mediaToBorrow.getId())) {
+            IO.println("Mediet är redan utlånat.");
+            return false;
+        }
+
+        Loan newLoan = new Loan(userId, mediaToBorrow.getId(), "media");
+        loans.add(newLoan);
+        mediaToBorrow.setIsAvailable(false);
+
+        IO.println("Mediet lånades ut.");
+        IO.println(newLoan.getInfo());
+        return true;
     }
 
-    /**
-     * Läser in ett heltal och fortsätter fråga tills användaren skriver ett giltigt
-     * tal större än 0.
-     */
-    private int readPositiveInt(String prompt, String fieldName) {
-        while (true) {
-            String input = IO.readln(prompt).trim();
+    public boolean returnMedia() {
+        IO.println("Lämna tillbaka media...");
 
-            try {
-                int value = Integer.parseInt(input);
-
-                if (value <= 0) {
-                    IO.println(fieldName + " måste vara större än 0.");
-                } else {
-                    return value;
-                }
-            } catch (NumberFormatException e) {
-                IO.println(fieldName + " måste vara ett heltal.");
-            }
+        if (mediaItems.isEmpty()) {
+            IO.println("Ingen media är hämtad. Hämta media först.");
+            return false;
         }
+
+        if (loans.isEmpty()) {
+            IO.println("Det finns inga registrerade lån.");
+            return false;
+        }
+
+        String mediaTitle = readRequiredText("Ange mediets titel: ", "Titel");
+        Media mediaToReturn = findMediaByTitle(mediaTitle);
+
+        if (mediaToReturn == null) {
+            IO.println("Ingen media hittades med den titeln.");
+            return false;
+        }
+
+        Loan loanToRemove = findLoanByItemId(mediaToReturn.getId());
+
+        if (loanToRemove == null) {
+            IO.println("Mediet är inte utlånat.");
+            return false;
+        }
+
+        loans.remove(loanToRemove);
+        mediaToReturn.setIsAvailable(true);
+
+        IO.println("Mediet har lämnats tillbaka.");
+        return true;
     }
 
     public boolean isItemLoaned(String itemId) {
@@ -1486,23 +1336,145 @@ public class LibraryManager {
         return null;
     }
 
-    public long countAvailableBooksStream() {
-        return books.stream()
-                .filter(Book::getIsAvailable)
-                .count();
+    public String findItemTitleByLoan(Loan loan) {
+        if (loan.getItemType().equalsIgnoreCase("book")) {
+            for (Book book : books) {
+                if (book.getId().equalsIgnoreCase(loan.getItemId())) {
+                    return book.getTitle();
+                }
+            }
+        } else if (loan.getItemType().equalsIgnoreCase("magazine")) {
+            for (Magazine magazine : magazines) {
+                if (magazine.getId().equalsIgnoreCase(loan.getItemId())) {
+                    return magazine.getTitle();
+                }
+            }
+        } else if (loan.getItemType().equalsIgnoreCase("media")) {
+            for (Media media : mediaItems) {
+                if (media.getId().equalsIgnoreCase(loan.getItemId())) {
+                    return media.getTitle();
+                }
+            }
+        }
+
+        return "Okänd titel";
     }
 
-    public long countAvailableMediaStream() {
-        return mediaItems.stream()
-                .filter(Media::getIsAvailable)
-                .count();
+    public void printLoans() {
+        IO.println("Skriver ut alla lån...");
+
+        if (loans.isEmpty()) {
+            IO.println("Det finns inga registrerade lån.");
+            return;
+        }
+
+        for (Loan loan : loans) {
+            User user = findUserById(loan.getUserId());
+            String userName;
+            if (user != null) {
+                userName = user.getName();
+            } else {
+                userName = "Okänd användare";
+            }
+
+            String itemTitle = findItemTitleByLoan(loan);
+
+            IO.println("Användare: " + userName + ", Titel: " + itemTitle + ", Typ: " + loan.getItemType());
+        }
     }
 
-    public long countAvailableMagazinesStream() {
-        return magazines.stream()
-                .filter(Magazine::getIsAvailable)
-                .count();
+    /**********************
+     * Vanliga utskrifter *
+     *********************/
+
+    /**
+     * Skriver ut böcker sorterade på titel.
+     */
+    public void printBooksSorted() {
+        IO.println("Skriver ut alla böcker...");
+        ArrayList<Book> sortedBooks = new ArrayList<>(books);
+        Collections.sort(sortedBooks);
+
+        if (sortedBooks.isEmpty()) {
+            IO.println("Inga böcker finns.");
+        } else {
+            IO.println("=== Böcker sorterade på titel ===");
+            for (Book book : sortedBooks) {
+                IO.println(book.getInfo());
+            }
+        }
     }
+
+    /**
+     * Skriver ut tidningar sorterade på titel.
+     */
+    public void printMagazinesSorted() {
+        IO.println("Skriver ut alla tidningar...");
+        ArrayList<Magazine> sortedMagazines = new ArrayList<>(magazines);
+        Collections.sort(sortedMagazines);
+
+        if (sortedMagazines.isEmpty()) {
+            IO.println("Inga tidningar finns.");
+        } else {
+            IO.println("=== Tidningar sorterade på titel ===");
+            for (Magazine magazine : sortedMagazines) {
+                IO.println(magazine.getInfo());
+            }
+        }
+    }
+
+    /**
+     * Skriver ut användare sorterade på namn.
+     */
+    public void printUsersSorted() {
+        IO.println("Skriver ut alla användare...");
+        ArrayList<User> sortedUsers = new ArrayList<>(users);
+        Collections.sort(sortedUsers);
+
+        if (sortedUsers.isEmpty()) {
+            IO.println("Inga användare finns.");
+        } else {
+            IO.println("=== Användare sorterade på namn ===");
+            for (User user : sortedUsers) {
+                IO.println(user.getInfo());
+            }
+        }
+    }
+
+    /**
+     * Skriver ut avstängda användare sorterade på id.
+     */
+    public void printSuspendedUsersSorted() {
+        IO.println("Skriver ut alla avstängda användare...");
+        ArrayList<SuspendedUser> sortedSuspendedUsers = new ArrayList<>(suspendedUsers);
+        Collections.sort(sortedSuspendedUsers);
+
+        if (sortedSuspendedUsers.isEmpty()) {
+            IO.println("Inga avstängda användare finns.");
+        } else {
+            IO.println("=== Avstängda användare ===");
+            for (SuspendedUser suspendedUser : sortedSuspendedUsers) {
+                IO.println(suspendedUser.getInfo());
+            }
+        }
+    }
+
+    public void printMedia() {
+        IO.println("Skriver ut all media...");
+
+        if (mediaItems.isEmpty()) {
+            IO.println("Ingen media finns.");
+            return;
+        }
+
+        for (Media media : mediaItems) {
+            IO.println(media.getInfo());
+        }
+    }
+
+    /******************
+     **** Streams *****
+     *****************/
 
     public ArrayList<String> getMediaTitlesStream() {
         return new ArrayList<>(
@@ -1515,14 +1487,6 @@ public class LibraryManager {
         return books.stream().anyMatch(book -> book.matchesTitle(title))
                 || magazines.stream().anyMatch(magazine -> magazine.matchesTitle(title))
                 || mediaItems.stream().anyMatch(media -> media.matchesTitle(title));
-    }
-
-    public void printMediaSortedStream() {
-        IO.println("Skriver ut media sorterad på titel...");
-
-        mediaItems.stream()
-                .sorted((m1, m2) -> m1.getTitle().compareToIgnoreCase(m2.getTitle()))
-                .forEach(media -> IO.println(media.getInfo()));
     }
 
     public ArrayList<Book> getBorrowedBooksStream() {
@@ -1543,6 +1507,14 @@ public class LibraryManager {
         return books.stream()
                 .mapToInt(Book::getPages)
                 .sum();
+    }
+
+    public void printMediaSortedStream() {
+        IO.println("Skriver ut media sorterad på titel...");
+
+        mediaItems.stream()
+                .sorted((m1, m2) -> m1.getTitle().compareToIgnoreCase(m2.getTitle()))
+                .forEach(media -> IO.println(media.getInfo()));
     }
 
     public void printBorrowedBooksStream() {
@@ -1711,46 +1683,45 @@ public class LibraryManager {
                 .forEach(author -> IO.println(author));
     }
 
-    public void printAvailableBooksStream() {
-        IO.println("Skriver ut tillgängliga böcker...");
+    /************************
+     * Privata hjälpmetoder *
+     ***********************/
 
-        if (books.isEmpty()) {
-            IO.println("Inga böcker är hämtade.");
-            return;
+    /**
+     * Läser in text och fortsätter fråga tills användaren skrivit något som inte är
+     * tomt.
+     */
+    private String readRequiredText(String prompt, String fieldName) {
+        while (true) {
+            String input = IO.readln(prompt).trim();
+
+            if (input.isBlank()) {
+                IO.println(fieldName + " får inte vara tomt.");
+            } else {
+                return input;
+            }
         }
-
-        books.stream()
-                .filter(Book::getIsAvailable)
-                .forEach(book -> IO.println(book.getInfo()));
     }
 
-    public void printBooksSortedByTitleStream() {
-        IO.println("Skriver ut böcker sorterade efter titel...");
+    /**
+     * Läser in ett heltal och fortsätter fråga tills användaren skriver ett giltigt
+     * tal större än 0.
+     */
+    private int readPositiveInt(String prompt, String fieldName) {
+        while (true) {
+            String input = IO.readln(prompt).trim();
 
-        if (books.isEmpty()) {
-            IO.println("Inga böcker är hämtade.");
-            return;
+            try {
+                int value = Integer.parseInt(input);
+
+                if (value <= 0) {
+                    IO.println(fieldName + " måste vara större än 0.");
+                } else {
+                    return value;
+                }
+            } catch (NumberFormatException e) {
+                IO.println(fieldName + " måste vara ett heltal.");
+            }
         }
-
-        books.stream()
-                .sorted((b1, b2) -> b1.getTitle().compareToIgnoreCase(b2.getTitle()))
-                .forEach(book -> IO.println(book.getInfo()));
     }
-
-    public void printTotalPagesStream() {
-        IO.println("Räknar totalt antal sidor i alla böcker...");
-
-        if (books.isEmpty()) {
-            IO.println("Inga böcker är hämtade.");
-            return;
-        }
-
-        int totalPages = books.stream()
-                    .mapToInt(Book::getPages)
-                    .sum();
-
-        IO.println("Totalt antal sidor: " + totalPages);
-    }
-
-    
 }

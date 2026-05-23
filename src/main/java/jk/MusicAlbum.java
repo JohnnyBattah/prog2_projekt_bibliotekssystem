@@ -5,6 +5,8 @@ public class MusicAlbum extends Media {
 
     public MusicAlbum(String id, String title, boolean isAvailable, String artist) {
         super(id, "music_album", title, isAvailable);
+        if (artist == null || artist.isBlank()) { throw new IllegalArgumentException("Artist får inte vara tom.");}
+
         this.artist = artist;
     }
 

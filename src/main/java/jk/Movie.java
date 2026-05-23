@@ -6,6 +6,9 @@ public class Movie extends Media {
 
     public Movie(String id, String title, boolean isAvailable, String genre, int minutes) {
         super(id, "movie", title, isAvailable);
+        if (genre == null || genre.isBlank()) { throw new IllegalArgumentException("Genre får inte vara tom.");}
+        if (minutes <= 0) { throw new IllegalArgumentException("Antal minuter måste vara större än 0.");}
+
         this.genre = genre;
         this.minutes = minutes;
     }

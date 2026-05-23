@@ -17,6 +17,10 @@ public class Book extends LibraryItem implements Comparable<Book> {
 
     public Book(String id, String title, boolean isAvailable, String author, String genre, int pages) {
         super(id, title, isAvailable);
+        if (author == null || author.isBlank()) { throw new IllegalArgumentException("Författare får inte vara tom.");}
+        if (genre == null || genre.isBlank()) { throw new IllegalArgumentException("Genre får inte vara tom.");}
+        if (pages <= 0) { throw new IllegalArgumentException("Antal sidor måste vara större än 0.");}
+        
         this.author = author;
         this.genre = genre;
         this.pages = pages;

@@ -17,6 +17,9 @@ public class SuspendedUser implements Comparable<SuspendedUser> {
     private String customer_id;
 
     public SuspendedUser(String id, String customer_id) {
+        if (id != null && id.isBlank()) { throw new IllegalArgumentException("Id får inte vara tomt.");}
+        if (customer_id == null || customer_id.isBlank()) { throw new IllegalArgumentException("Användar id får inte vara tomt.");}
+
         this.id = id;
         this.customer_id = customer_id;
     }
